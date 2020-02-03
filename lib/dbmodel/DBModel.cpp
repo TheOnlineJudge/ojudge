@@ -33,11 +33,25 @@ DBModel::DBModel(const std::string &postgresDb) {
 			category->order = 0;
 			session.add(std::move(category));
 
-			std::unique_ptr<Settings> settings(new Settings());
-			settings->siteTitle = "OJudge";
-			settings->siteLogo = "images/logo.svg";
-			settings->siteColor = "#337ab7";
-			session.add(std::move(settings));
+			std::unique_ptr<Settings> settings1(new Settings());
+			settings1->settingName = "siteTitle";
+			settings1->settingValue = "OJudge";
+			session.add(std::move(settings1));
+
+			std::unique_ptr<Settings> settings2(new Settings());
+			settings2->settingName = "siteLogo";
+			settings2->settingValue = "images/logo.svg";
+			session.add(std::move(settings2));
+
+			std::unique_ptr<Settings> settings3(new Settings());
+			settings3->settingName = "siteColor";
+			settings3->settingValue = "#337ab7";
+			session.add(std::move(settings3));
+
+			std::unique_ptr<Settings> settings4(new Settings());
+			settings4->settingName = "customCSS";
+			settings4->settingValue = "";
+			session.add(std::move(settings4));
 		}
         } catch (std::exception &e) {
                 std::cerr << e.what() << std::endl;

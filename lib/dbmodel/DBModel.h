@@ -92,17 +92,13 @@ public:
 
 class Settings {
 public:
-	std::string siteTitle ;
-	std::string siteLogo ;
-	std::string siteColor ;
-	std::string customCSS ;
+	std::string settingName ;
+	std::string settingValue ;
 
 	template<class Action>
 	void persist(Action& a) {
-		dbo::field(a, siteTitle, "sitetitle");
-		dbo::field(a, siteLogo, "sitelogo");
-		dbo::field(a, siteColor, "sitecolor");
-		dbo::field(a, customCSS, "customcss");
+		dbo::field(a, settingName, "settingname");
+		dbo::field(a, settingValue, "settingvalue");
 	}
 };
 
