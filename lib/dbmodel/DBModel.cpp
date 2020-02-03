@@ -18,6 +18,7 @@ DBModel::DBModel(const std::string &postgresDb) {
 	session.mapClass<Category>("category");
 	session.mapClass<Problem>("problem");
 	session.mapClass<Testcase>("testcase");
+	session.mapClass<Settings>("settings");
 	session.mapClass<Submission>("submission");
 	session.mapClass<Verdict>("verdict");
 
@@ -25,10 +26,32 @@ DBModel::DBModel(const std::string &postgresDb) {
                 session.createTables();
                 std::cerr << "Created database." << std::endl;
 		{	dbo::Transaction transaction(session) ;
+
+			// Setting some default values in the database
 			std::unique_ptr<Category> category(new Category());
 			category->title = "Root";
 			category->order = 0;
 			session.add(std::move(category));
+
+			std::unique_ptr<Settings> settings1(new Settings());
+			settings1->settingName = "siteTitle";
+			settings1->settingValue = "OJudge";
+			session.add(std::move(settings1));
+
+			std::unique_ptr<Settings> settings2(new Settings());
+			settings2->settingName = "siteLogo";
+			settings2->settingValue = "images/logo.svg";
+			session.add(std::move(settings2));
+
+			std::unique_ptr<Settings> settings3(new Settings());
+			settings3->settingName = "siteColor";
+			settings3->settingValue = "#337ab7";
+			session.add(std::move(settings3));
+
+			std::unique_ptr<Settings> settings4(new Settings());
+			settings4->settingName = "customCSS";
+			settings4->settingValue = "";
+			session.add(std::move(settings4));
 		}
         } catch (std::exception &e) {
                 std::cerr << e.what() << std::endl;

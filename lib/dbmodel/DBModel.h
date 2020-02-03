@@ -20,8 +20,9 @@ namespace dbo = Wt::Dbo;
 
 class Category ;
 class Problem ;
-class Testcase ;
+class Settings ;
 class Submission ;
+class Testcase ;
 class Verdict ;
 
 typedef dbo::collection< dbo::ptr<Category> > Categories ;
@@ -86,6 +87,18 @@ public:
 	void persist(Action& a) {
 		dbo::field(a, title, "title");
 		dbo::belongsTo(a, problem, "problem", Dbo::NotNull) ;
+	}
+};
+
+class Settings {
+public:
+	std::string settingName ;
+	std::string settingValue ;
+
+	template<class Action>
+	void persist(Action& a) {
+		dbo::field(a, settingName, "settingname");
+		dbo::field(a, settingValue, "settingvalue");
 	}
 };
 
