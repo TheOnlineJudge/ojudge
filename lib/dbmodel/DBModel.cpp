@@ -25,10 +25,18 @@ DBModel::DBModel(const std::string &postgresDb) {
                 session.createTables();
                 std::cerr << "Created database." << std::endl;
 		{	dbo::Transaction transaction(session) ;
+
+			// Setting some default values in the database
 			std::unique_ptr<Category> category(new Category());
 			category->title = "Root";
 			category->order = 0;
 			session.add(std::move(category));
+
+			std::unique_ptr<Settings> settings(new Settings());
+			settings->siteTitle = "OJudge";
+			settings->siteLogo = "images/logo.svg";
+			settings->siteColor = "#337ab7";
+			session.add(std::move(settings));
 		}
         } catch (std::exception &e) {
                 std::cerr << e.what() << std::endl;
