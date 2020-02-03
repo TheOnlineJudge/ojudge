@@ -18,6 +18,7 @@ DBModel::DBModel(const std::string &postgresDb) {
 	session.mapClass<Category>("category");
 	session.mapClass<Problem>("problem");
 	session.mapClass<Testcase>("testcase");
+	session.mapClass<Settings>("settings");
 	session.mapClass<Submission>("submission");
 	session.mapClass<Verdict>("verdict");
 
