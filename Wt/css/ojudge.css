@@ -1,0 +1,257 @@
+@font-face {
+  font-family:'OJudge Title';
+  src:local('Arial');
+}
+
+:root {
+  --ojcolor: #337ab7;
+}
+
+html,
+body {
+  height:100%;
+}
+
+.ojtitle {
+  font-family:'OJudge Title';
+  font-size:72px;
+  margin:0px;
+  padding-left:15px;
+  color:var(--ojcolor);
+}
+
+.ojfloattitle {
+  font-family:'OJudge Title';
+  font-size:32px;
+  margin:0px;
+  padding-left:15px;
+  padding-top:10px !important;
+  color:white;
+  height:50px;
+}
+
+.hometitle {
+  font-family:'OJudge Title';
+  font-size:48px;
+  width:100%;
+  text-align:center;
+  padding-top:50px;
+  color: var(--ojcolor);
+}
+
+.pagetitle {
+  font-family:'OJudge Title';
+  font-size: 32px;
+  color: var(--ojcolor);
+}
+
+.tmpproblems {
+  background-color: green;
+}
+
+.footer a {
+  color:white;
+}
+
+.footerHead {
+  font-family:'OJudge Title';
+  font-size:20px;
+  color:white;
+}
+
+.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.maxwidth {
+  width: 100%;
+}
+
+.maxheight {
+  height: 100%;
+}
+
+.stdwidth {
+  max-width: 1280px;
+}
+
+.header {
+  height: 102px;
+  margin-bottom: 1px;
+}
+
+.footer {
+  background-color:var(--ojcolor);
+  height: 170px;
+}
+
+.maincontent {
+  min-height: calc(100vh - 272px);
+  margin-bottom: -1px;
+}
+
+.boxes {
+  height:400px;
+  margin-top:40px;
+}
+
+.box {
+  height:400px;
+  width: 300px;
+}
+
+.box:hover {
+  box-shadow: 0px 0px 16px;
+  cursor:pointer;
+}
+
+.box1 {
+  background-color:blue;
+}
+
+.box2 {
+  background-color:green;
+}
+
+.box3 {
+  background-color:yellow;
+}
+
+.mypanel {
+  margin:0px;
+  box-shadow:none !important;
+  border:0;
+  border-color:transparent;
+  border-radius:4px;
+}
+
+.mypanel > .panel-heading {
+  color:#eee;
+  background-image:none !important;
+  background-color:var(--ojcolor);
+  border:0;
+  border-radius:4px;
+}
+
+.myTree .icon {
+	height:18px;
+}
+
+.myProblemsCategories,
+.myProblemsCategories .Wt-treeview .Wt-tv-br, .Wt-treeview ul .Wt-tv-c {
+	border:0px;
+}
+
+.myProblemsCategories .Wt-header {
+	display:none;
+}
+
+@media (min-width: 768px) {
+  .mynavbar {
+    border-color: transparent !important;
+    background-image: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .floatbar {
+    border-color: transparent !important;
+    height:50px !important;
+    background-image: none !important;
+    background-color:var(--ojcolor) !important;
+    box-shadow: 0 6px 8px -8px rgba(0, 0, 0, 0.8), 0 16px 20px -20px rgba(0, 0, 0, 0.19) !important;
+    border-bottom-left-radius: 5px !important;
+    border-bottom-right-radius: 5px !important;
+  }
+
+  .mynavbar .navbar-collapse {
+    padding-left: 15px !important;
+    padding-right: 20px !important;
+  }
+
+  .floatbar .navbar-collapse {
+    padding-left: 15px !important;
+    padding-right: 20px !important;
+    height: 50px !important;
+  }
+
+  .mynavbar .navbar-nav > li {
+    margin-left: 2px !important;
+    padding-top:25px !important;
+  }
+
+  .floatbar .navbar-nav > li {
+    margin-left: 2px !important;
+    padding-top:5px !important;
+  }
+
+  .floatbar .navbar-left {
+    height:50px !important;
+    padding-top:5px !important;
+  }
+
+  .mynavbar .navbar-form {
+    margin: 0px;
+    padding: 0px;
+  }
+
+  .floatbar .navbar-form {
+    margin: 0px;
+    padding: 0px;
+  }
+
+  .mynavbar .navbar-nav > li > a {
+    color: var(--ojcolor) !important;
+    height: 40px !important;
+    padding-top: 10px !important;
+    padding-bottom: 15px !important;
+    text-shadow: none !important;
+  }
+
+  .floatbar .navbar-nav > li > a {
+    color: white !important;
+    height: 40px !important;
+    padding-top: 10px !important;
+    padding-bottom: 15px !important;
+    text-shadow: none !important;
+  }
+
+  .mynavbar .navbar-nav > li > a:hover,
+  .mynavbar .navbar-nav > li > a:focus {
+    color: #23527c !important;
+    background-color: #eee !important;
+    border-radius: 4px !important;
+  }
+
+  .floatbar .navbar-nav > li > a:hover,
+  .floatbar .navbar-nav > li > a:focus {
+    color: #23527c !important;
+    background-color: #eee !important;
+    border-radius: 4px !important;
+  }
+
+  .mynavbar .navbar-nav > .active > a,
+  .mynavbar .navbar-nav > .active > a:hover,
+  .mynavbar .navbar-nav > .active > a:focus,
+  .mynavbar .navbar-nav > .open > a,
+  .mynavbar .navbar-nav > .open > a:hover,
+  .mynavbar .navbar-nav > .open > a:focus {
+    color: white !important;
+    background-color: var(--ojcolor) !important;
+    border-radius: 4px !important;
+    background-image: none !important;
+  }
+
+  .floatbar .navbar-nav > .active > a,
+  .floatbar .navbar-nav > .active > a:hover,
+  .floatbar .navbar-nav > .active > a:focus,
+  .floatbar .navbar-nav > .open > a,
+  .floatbar .navbar-nav > .open > a:hover,
+  .floatbar .navbar-nav > .open > a:focus {
+    color: var(--ojcolor) !important;
+    background-color: white  !important;
+    border-radius: 4px !important;
+    background-image: none !important;
+  }
+}
