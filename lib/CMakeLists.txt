@@ -8,6 +8,7 @@ viewmodels/ViewModels.cpp
 AboutWidget.cpp
 AdminWidget.cpp
 AdminCategoryWidget.cpp
+AdminSettingsWidget.cpp
 AuthWidget.cpp
 ContactWidget.cpp
 ContestsWidget.cpp

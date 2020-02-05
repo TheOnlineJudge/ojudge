@@ -18,7 +18,7 @@ DBModel::DBModel(const std::string &postgresDb) {
 	session.mapClass<Category>("category");
 	session.mapClass<Problem>("problem");
 	session.mapClass<Testcase>("testcase");
-	session.mapClass<Settings>("settings");
+	session.mapClass<Setting>("setting");
 	session.mapClass<Submission>("submission");
 	session.mapClass<Verdict>("verdict");
 
@@ -33,25 +33,19 @@ DBModel::DBModel(const std::string &postgresDb) {
 			category->order = 0;
 			session.add(std::move(category));
 
-			std::unique_ptr<Settings> settings1(new Settings());
-			settings1->settingName = "siteTitle";
-			settings1->settingValue = "OJudge";
-			session.add(std::move(settings1));
+			std::vector< std::pair<std::string,std::string> > defaultSettings;
+			
+			defaultSettings.push_back(std::make_pair("siteTitle","OJudge"));
+			defaultSettings.push_back(std::make_pair("siteLogo", "images/logo.svg"));
+			defaultSettings.push_back(std::make_pair("siteColor", "#337ab7"));
+			defaultSettings.push_back(std::make_pair("googleAnalytics", ""));
 
-			std::unique_ptr<Settings> settings2(new Settings());
-			settings2->settingName = "siteLogo";
-			settings2->settingValue = "images/logo.svg";
-			session.add(std::move(settings2));
-
-			std::unique_ptr<Settings> settings3(new Settings());
-			settings3->settingName = "siteColor";
-			settings3->settingValue = "#337ab7";
-			session.add(std::move(settings3));
-
-			std::unique_ptr<Settings> settings4(new Settings());
-			settings4->settingName = "customCSS";
-			settings4->settingValue = "";
-			session.add(std::move(settings4));
+			for(const std::pair<std::string, std::string> &i : defaultSettings) {
+				std::unique_ptr<Setting> setting(new Setting());
+				setting->settingName = i.first;
+				setting->settingValue = i.second;
+				session.add(std::move(setting));
+			}
 		}
         } catch (std::exception &e) {
                 std::cerr << e.what() << std::endl;
@@ -80,6 +74,19 @@ dbo::ptr<Category> DBModel::addCategory(std::string title, int parent) {
 
 Categories DBModel::getCategories() {
 
-       dbo::Transaction transaction(session) ;
-       return session.find<Category>().orderBy("parent_id,\"order\"");
+	dbo::Transaction transaction(session) ;
+	return session.find<Category>().orderBy("parent_id,\"order\"");
+}
+
+Settings DBModel::getSettings() {
+
+	dbo::Transaction transaction(session);
+	return session.find<Setting>();
+}
+
+std::string DBModel::getSetting(std::string settingName) {
+
+	dbo::Transaction transaction(session);
+	Dbo::ptr<Setting> setting = session.find<Setting>().where("settingname = ?").bind(settingName);
+	return setting->settingValue;
 }

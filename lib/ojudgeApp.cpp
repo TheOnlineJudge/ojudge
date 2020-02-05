@@ -30,6 +30,7 @@
 #include <Wt/WAbstractItemModel.h>
 #include "../version.h"
 #include "viewmodels/ViewModels.h"
+#include "dbmodel/DBModel.h"
 #include "AboutWidget.h"
 #include "AdminWidget.h"
 #include "ContactWidget.h"
@@ -53,11 +54,13 @@
 using namespace Wt;
 namespace po = boost::program_options;
 
-ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *viewModels) : WApplication(env), session_(session), viewModels_(viewModels) {
+ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *viewModels, DBModel *dbmodel) : WApplication(env), session_(session), viewModels_(viewModels), dbmodel_(dbmodel) {
 
-	require("https://www.googletagmanager.com/gtag/js?id=UA-143237893-1");
+	if(dbmodel_->getSetting("googleAnalytics") != "")
+		require(std::string("https://www.googletagmanager.com/gtag/js?id=") + dbmodel_->getSetting("googleAnalytics"));
 
-	setTitle("OJudge") ;
+	setTitle(WString(dbmodel_->getSetting("siteTitle"))) ;
+	instance()->styleSheet().addRule(":root", std::string("--ojcolor: ") + dbmodel_->getSetting("siteColor"));
 	useStyleSheet("css/ojudge.css");
 	setLoadingIndicator(cpp14::make_unique<WOverlayLoadingIndicator>());
 
@@ -95,20 +98,20 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
         mainStack_->addStyleClass("stdwidth");
         mainStack_->addStyleClass("maincontent");
 
-        auto footerWidget = root()->addWidget(std::move(cpp14::make_unique<FooterWidget>()));
+        auto footerWidget = root()->addWidget(std::move(cpp14::make_unique<FooterWidget>(dbmodel_)));
         footerWidget->addStyleClass("center");
         footerWidget->addStyleClass("stdwidth");
         footerWidget->addStyleClass("footer");
 
-	auto logo = cpp14::make_unique<WImage>("images/logo.svg");
+	auto logo = cpp14::make_unique<WImage>(dbmodel_->getSetting("siteLogo"));
 	logo->setHeight(WLength(90));
 	navigationBar->addWidget(std::move(logo));
 
-	auto title = cpp14::make_unique<WText>("OJudge");
+	auto title = cpp14::make_unique<WText>(dbmodel_->getSetting("siteTitle"));
         title->addStyleClass("ojtitle");
         navigationBar->addWidget(std::move(title));
 
-	auto floattitle = cpp14::make_unique<WText>("OJudge");
+	auto floattitle = cpp14::make_unique<WText>(dbmodel_->getSetting("siteTitle"));
 	floattitle->addStyleClass("ojfloattitle");
 	floattitle->setHeight(WLength(50));
 	floatNavBar_->addWidget(std::move(floattitle));
@@ -187,7 +190,7 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	profileFloatMenu_ = mainFloatMenu_->addItem(std::move(item));
 
 	aboutWidget_ = mainStack_->addWidget(cpp14::make_unique<AboutWidget>());
-	adminWidget_ = mainStack_->addWidget(cpp14::make_unique<AdminWidget>(session_,viewModels_));
+	adminWidget_ = mainStack_->addWidget(cpp14::make_unique<AdminWidget>(session_,viewModels_,dbmodel_));
 	contactWidget_ = mainStack_->addWidget(cpp14::make_unique<ContactWidget>());
 	factsWidget_ = mainStack_->addWidget(cpp14::make_unique<FactsWidget>());
 	languagesWidget_ = mainStack_->addWidget(cpp14::make_unique<LanguagesWidget>());

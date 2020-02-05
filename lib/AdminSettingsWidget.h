@@ -7,25 +7,20 @@
  * Read the LICENSE file for information on license terms
  *********************************************************************/
 
-#ifndef ADMINWIDGET_H
-#define ADMINWIDGET_H
+#ifndef ADMINSETTINGSWIDGET_H
+#define ADMINSETTINGSWIDGET_H
 
 #include <Wt/WContainerWidget.h>
-#include <Wt/WAbstractItemModel.h>
 
-class Session;
-class ViewModels;
 class DBModel;
 
-class AdminWidget : public Wt::WContainerWidget {
+class AdminSettingsWidget : public Wt::WContainerWidget {
 public:
-	AdminWidget(Session *session, ViewModels *viewModels, DBModel *dbmodel);
+	AdminSettingsWidget(DBModel *dbmodel) ;
 
 private:
-	Session *session_;
-	ViewModels *viewModels_;
 	DBModel *dbmodel_;
 
 };
 
-#endif // ADMINWIDGET_H
+#endif // ADMINSETTINGSWIDGET_H

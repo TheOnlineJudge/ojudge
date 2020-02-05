@@ -12,9 +12,14 @@
 
 #include <Wt/WContainerWidget.h>
 
+class DBModel ;
+
 class FooterWidget : public Wt::WContainerWidget {
 public:
-	FooterWidget();
+	FooterWidget(DBModel *dbmodel);
+
+private:
+	DBModel *dbmodel_;
 
 };
 
