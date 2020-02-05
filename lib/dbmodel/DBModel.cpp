@@ -37,7 +37,7 @@ DBModel::DBModel(const std::string &postgresDb) {
 			
 			defaultSettings.push_back(std::make_pair("siteTitle","OJudge"));
 			defaultSettings.push_back(std::make_pair("siteLogo", "images/logo.svg"));
-			defaultSettings.push_back(std::make_pair("siteColor", "#337ab7"));
+			defaultSettings.push_back(std::make_pair("siteColor", "#0055ff"));
 			defaultSettings.push_back(std::make_pair("googleAnalytics", ""));
 
 			for(const std::pair<std::string, std::string> &i : defaultSettings) {
