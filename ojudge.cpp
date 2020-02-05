@@ -39,7 +39,7 @@ std::unique_ptr<WApplication> createApplication(const WEnvironment &env) {
         DBModel *dbmodel = new DBModel(dbConnect.str().c_str());
 	ViewModels *viewModels = new ViewModels(dbmodel);
 
-	return cpp14::make_unique<ojudgeApp>(env,session,viewModels) ;
+	return cpp14::make_unique<ojudgeApp>(env,session,viewModels,dbmodel) ;
 }
 
 int main(int argc, char **argv) {

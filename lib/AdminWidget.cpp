@@ -12,13 +12,15 @@
 #include <Wt/WHBoxLayout.h>
 #include <Wt/WTabWidget.h>
 #include "authmodel/Session.h"
+#include "dbmodel/DBModel.h"
 #include "viewmodels/ViewModels.h"
 #include "AdminCategoryWidget.h"
+#include "AdminSettingsWidget.h"
 #include "AdminWidget.h"
 
 using namespace Wt;
 
-AdminWidget::AdminWidget(Session *session,ViewModels *viewModels) : session_(session),viewModels_(viewModels) {
+AdminWidget::AdminWidget(Session *session,ViewModels *viewModels,DBModel *dbmodel) : session_(session),viewModels_(viewModels),dbmodel_(dbmodel) {
 
 	auto mainLayout = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout->setContentsMargins(0,0,0,0);
@@ -35,7 +37,7 @@ AdminWidget::AdminWidget(Session *session,ViewModels *viewModels) : session_(ses
 	tabWidget->addTab(cpp14::make_unique<WText>("Contests tab"),"Contests",ContentLoading::Lazy);
 	tabWidget->addTab(cpp14::make_unique<WText>("Users tab"),"Users",ContentLoading::Lazy);
 	tabWidget->addTab(cpp14::make_unique<WText>("Languages tab"),"Languages",ContentLoading::Lazy);
-	tabWidget->addTab(cpp14::make_unique<WText>("Settings tab"),"Settings",ContentLoading::Lazy);
+	tabWidget->addTab(cpp14::make_unique<AdminSettingsWidget>(dbmodel_),"Settings",ContentLoading::Lazy);
 
 }
 

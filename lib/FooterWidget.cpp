@@ -16,11 +16,12 @@
 #include <string>
 #include <sstream>
 #include "../version.h"
+#include "dbmodel/DBModel.h"
 #include "FooterWidget.h"
 
 using namespace Wt;
 
-FooterWidget::FooterWidget() {
+FooterWidget::FooterWidget(DBModel *dbmodel) : dbmodel_(dbmodel) {
 
 	setPadding(WLength(5));
 	addStyleClass(WString("footer"));
@@ -34,7 +35,7 @@ FooterWidget::FooterWidget() {
 	auto aboutWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>());
 	auto aboutLayout = aboutWidget->setLayout(cpp14::make_unique<WVBoxLayout>());
 	aboutLayout->setContentsMargins(0,0,0,0);
-	auto aboutTitle = aboutLayout->addWidget(cpp14::make_unique<WText>("OJudge"));
+	auto aboutTitle = aboutLayout->addWidget(cpp14::make_unique<WText>(dbmodel_->getSetting("siteTitle")));
 	aboutTitle->addStyleClass(WString("footerHead"));
 
 	aboutLayout->addWidget(cpp14::make_unique<WAnchor>(WLink(LinkType::InternalPath,"/about"),"About"));

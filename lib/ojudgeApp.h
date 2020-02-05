@@ -23,11 +23,12 @@
 
 class Session;
 class ViewModels;
+class DBModel;
 
 class ojudgeApp : public Wt::WApplication {
 
 public:
-	ojudgeApp(const Wt::WEnvironment& env, Session *session, ViewModels *viewModels) ;
+	ojudgeApp(const Wt::WEnvironment& env, Session *session, ViewModels *viewModels, DBModel *dbmodel) ;
 	void authEvent();
 
 private:
@@ -59,6 +60,7 @@ private:
 
 	Session *session_ ;
 	ViewModels *viewModels_;
+	DBModel *dbmodel_;
 
 };
 

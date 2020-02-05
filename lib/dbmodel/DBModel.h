@@ -20,7 +20,7 @@ namespace dbo = Wt::Dbo;
 
 class Category ;
 class Problem ;
-class Settings ;
+class Setting ;
 class Submission ;
 class Testcase ;
 class Verdict ;
@@ -30,6 +30,7 @@ typedef dbo::collection< dbo::ptr<Problem> > Problems ;
 typedef dbo::collection< dbo::ptr<Testcase> > Testcases ;
 typedef dbo::collection< dbo::ptr<Submission> > Submissions ;
 typedef dbo::collection< dbo::ptr<Verdict> > Verdicts ;
+typedef dbo::collection< dbo::ptr<Setting> > Settings ;
 
 class Category {
 public:
@@ -90,7 +91,7 @@ public:
 	}
 };
 
-class Settings {
+class Setting {
 public:
 	std::string settingName ;
 	std::string settingValue ;
@@ -144,8 +145,13 @@ public:
         ~DBModel();
 
 	dbo::Transaction startTransaction();
+
 	dbo::ptr<Category> addCategory(std::string title, int parent);
 	Categories getCategories();
+
+	Settings getSettings();
+	std::string getSetting(std::string settingName);
+	
 
 private:
 	dbo::Session session;

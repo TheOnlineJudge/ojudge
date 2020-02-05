@@ -18,7 +18,7 @@ DBModel::DBModel(const std::string &postgresDb) {
 	session.mapClass<Category>("category");
 	session.mapClass<Problem>("problem");
 	session.mapClass<Testcase>("testcase");
-	session.mapClass<Settings>("settings");
+	session.mapClass<Setting>("setting");
 	session.mapClass<Submission>("submission");
 	session.mapClass<Verdict>("verdict");
 
@@ -38,11 +38,10 @@ DBModel::DBModel(const std::string &postgresDb) {
 			defaultSettings.push_back(std::make_pair("siteTitle","OJudge"));
 			defaultSettings.push_back(std::make_pair("siteLogo", "images/logo.svg"));
 			defaultSettings.push_back(std::make_pair("siteColor", "#337ab7"));
-			defaultSettings.push_back(std::make_pair("customCSS", ""));
 			defaultSettings.push_back(std::make_pair("googleAnalytics", ""));
 
 			for(const std::pair<std::string, std::string> &i : defaultSettings) {
-				std::unique_ptr<Settings> setting(new Settings());
+				std::unique_ptr<Setting> setting(new Setting());
 				setting->settingName = i.first;
 				setting->settingValue = i.second;
 				session.add(std::move(setting));
@@ -75,6 +74,19 @@ dbo::ptr<Category> DBModel::addCategory(std::string title, int parent) {
 
 Categories DBModel::getCategories() {
 
-       dbo::Transaction transaction(session) ;
-       return session.find<Category>().orderBy("parent_id,\"order\"");
+	dbo::Transaction transaction(session) ;
+	return session.find<Category>().orderBy("parent_id,\"order\"");
+}
+
+Settings DBModel::getSettings() {
+
+	dbo::Transaction transaction(session);
+	return session.find<Setting>();
+}
+
+std::string DBModel::getSetting(std::string settingName) {
+
+	dbo::Transaction transaction(session);
+	Dbo::ptr<Setting> setting = session.find<Setting>().where("settingname = ?").bind(settingName);
+	return setting->settingValue;
 }
