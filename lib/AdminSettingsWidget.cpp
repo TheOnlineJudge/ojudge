@@ -27,7 +27,7 @@ AdminSettingsWidget::AdminSettingsWidget(DBModel *dbmodel) : dbmodel_(dbmodel) {
 		
 		auto edit = cpp14::make_unique<WLineEdit>(setting->settingValue);
 		
-		result->bindString("label",setting->settingName) ;
+		result->bindString("label",WString::tr(setting->settingName)) ;
 		result->bindWidget("edit", std::move(edit));
 	}
 }
