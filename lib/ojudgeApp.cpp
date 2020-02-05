@@ -70,7 +70,7 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	setTheme(bootstrapTheme);
 
 	useStyleSheet("resources/themes/bootstrap/3/bootstrap-theme.min.css");
-	messageResourceBundle().use("Wt/templates/templates");
+	messageResourceBundle().use("templates/templates");
 
 	root()->setMargin(WLength(0));
 	root()->setPadding(WLength(0));
