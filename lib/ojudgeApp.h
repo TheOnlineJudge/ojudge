@@ -38,6 +38,7 @@ private:
 	Wt::WContainerWidget *aboutWidget_ ;
 	Wt::WContainerWidget *adminWidget_ ;
 	Wt::WContainerWidget *contactWidget_ ;
+	Wt::WContainerWidget *contributeWidget_ ;
 	Wt::WContainerWidget *factsWidget_ ;
 	Wt::WContainerWidget *languagesWidget_ ;
 	Wt::WContainerWidget *profileWidget_ ;
