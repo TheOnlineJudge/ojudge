@@ -49,9 +49,8 @@ FooterWidget::FooterWidget(DBModel *dbmodel) : dbmodel_(dbmodel) {
 	auto contributeTitle = contributeLayout->addWidget(cpp14::make_unique<WText>("Contribute"));
 	contributeTitle->addStyleClass(WString("footerHead"));
 
+	contributeLayout->addWidget(cpp14::make_unique<WAnchor>(WLink(LinkType::InternalPath,"/contribute"),"Contribute"));
 	contributeLayout->addWidget(cpp14::make_unique<WAnchor>(WLink(LinkType::InternalPath,"/sponsors"),"Our Sponsors"));
-	contributeLayout->addWidget(cpp14::make_unique<WAnchor>(WLink(LinkType::InternalPath,"/contribute/patreon"),"Patreon"));
-	contributeLayout->addWidget(cpp14::make_unique<WAnchor>(WLink(LinkType::InternalPath,"/contribute/onetime"),"One Time Donations"));
 	contributeLayout->addStretch(1);
 
 	auto helpWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>());

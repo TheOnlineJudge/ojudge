@@ -147,11 +147,6 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	WLink contestsFloatMenuLink(LinkType::InternalPath,"/contests");
 	contestsFloatMenu->setLink(contestsFloatMenuLink);
 
-        auto contributeMenu = mainMenu_->addItem(WString("Contribute"),std::move(cpp14::make_unique<ContributeWidget>()));
-	auto contributeFloatMenu = mainFloatMenu_->addItem(WString("Contribute"));
-	WLink contributeFloatMenuLink(LinkType::InternalPath,"/contribute");
-	contributeFloatMenu->setLink(contributeFloatMenuLink);
-
         dashboardMenu_ = mainMenu_->addItem(WString("Dashboard"),std::move(cpp14::make_unique<DashboardWidget>()));
 	dashboardFloatMenu_ = mainFloatMenu_->addItem(WString("Dashboard"));
 
@@ -193,6 +188,7 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	aboutWidget_ = mainStack_->addWidget(cpp14::make_unique<AboutWidget>());
 	adminWidget_ = mainStack_->addWidget(cpp14::make_unique<AdminWidget>(session_,viewModels_,dbmodel_));
 	contactWidget_ = mainStack_->addWidget(cpp14::make_unique<ContactWidget>());
+	contributeWidget_ = mainStack_->addWidget(cpp14::make_unique<ContributeWidget>());
 	factsWidget_ = mainStack_->addWidget(cpp14::make_unique<FactsWidget>());
 	languagesWidget_ = mainStack_->addWidget(cpp14::make_unique<LanguagesWidget>());
         profileWidget_ = mainStack_->addWidget(cpp14::make_unique<ProfileWidget>(session_));
@@ -275,6 +271,8 @@ void ojudgeApp::pathChanged(std::string newPath) {
 		mainStack_->setCurrentWidget(tutorialWidget_);
 	} else if (newPath=="/contact") {
 		mainStack_->setCurrentWidget(contactWidget_);
+	} else if (newPath=="/contribute") {
+		mainStack_->setCurrentWidget(contributeWidget_);
         } else {
 		if(mainMenu_->currentItem() != NULL)
 			mainMenu_->currentItem()->renderSelected(true);
