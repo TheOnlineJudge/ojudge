@@ -15,6 +15,7 @@
 #include "dbmodel/DBModel.h"
 #include "viewmodels/ViewModels.h"
 #include "AdminCategoryWidget.h"
+#include "AdminProblemWidget.h"
 #include "AdminSettingsWidget.h"
 #include "AdminWidget.h"
 
@@ -32,7 +33,7 @@ AdminWidget::AdminWidget(Session *session,ViewModels *viewModels,DBModel *dbmode
 
 	WTabWidget *tabWidget = mainWidget->addNew<WTabWidget>();
 
-	tabWidget->addTab(cpp14::make_unique<WText>("Problems tab"),"Problems",ContentLoading::Lazy);
+	tabWidget->addTab(cpp14::make_unique<AdminProblemWidget>(viewModels->getProblemModel()),"Problems",ContentLoading::Lazy);
 	tabWidget->addTab(cpp14::make_unique<AdminCategoryWidget>(viewModels->getCategoryModel()),"Categories",ContentLoading::Lazy);
 	tabWidget->addTab(cpp14::make_unique<WText>("Contests tab"),"Contests",ContentLoading::Lazy);
 	tabWidget->addTab(cpp14::make_unique<WText>("Users tab"),"Users",ContentLoading::Lazy);

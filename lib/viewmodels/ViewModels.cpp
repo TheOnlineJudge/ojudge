@@ -12,9 +12,14 @@
 ViewModels::ViewModels(DBModel *dbmodel) : dbmodel_(dbmodel) {
 
 	categoryModel_ = std::make_shared<CategoryModel>(dbmodel_) ;
+	problemModel_ = std::make_shared<ProblemModel>(dbmodel_) ;
 
 }
 
 const std::shared_ptr<CategoryModel> ViewModels::getCategoryModel() {
 	return categoryModel_ ;
+}
+
+const std::shared_ptr<ProblemModel> ViewModels::getProblemModel() {
+	return problemModel_ ;
 }

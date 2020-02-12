@@ -4,10 +4,12 @@ authmodel/User.cpp
 authmodel/UserDetailsModel.cpp
 dbmodel/DBModel.cpp
 viewmodels/CategoryModel.cpp
+viewmodels/ProblemModel.cpp
 viewmodels/ViewModels.cpp
 AboutWidget.cpp
 AdminWidget.cpp
 AdminCategoryWidget.cpp
+AdminProblemWidget.cpp
 AdminSettingsWidget.cpp
 AuthWidget.cpp
 ContactWidget.cpp

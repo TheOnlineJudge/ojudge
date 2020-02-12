@@ -149,6 +149,8 @@ public:
 	dbo::ptr<Category> addCategory(std::string title, int parent);
 	Categories getCategories();
 
+	Problems getProblems();
+
 	Settings getSettings();
 	std::string getSetting(std::string settingName);
 	
