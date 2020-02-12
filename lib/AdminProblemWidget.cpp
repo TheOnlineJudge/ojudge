@@ -11,20 +11,23 @@
 #include <Wt/WLineEdit.h>
 #include <Wt/WTemplate.h>
 #include <Wt/WPushButton.h>
-#include "AdminCategoryWidget.h"
+#include "AdminProblemWidget.h"
 
 using namespace Wt;
 
-AdminCategoryWidget::AdminCategoryWidget(const std::shared_ptr<CategoryModel> catmodel) {
+AdminProblemWidget::AdminProblemWidget(const std::shared_ptr<ProblemModel> probmodel) {
 
 	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
         mainLayout_->setContentsMargins(0,0,0,0);
 
-	treeWidget_ = mainLayout_->addWidget(cpp14::make_unique<WTreeView>()) ;
+	tableWidget_ = mainLayout_->addWidget(cpp14::make_unique<WTableView>()) ;
 
-	treeWidget_->setModel(catmodel);
+	proxyModel_ = std::make_shared<WSortFilterProxyModel>();
+	proxyModel_->setSourceModel(probmodel);
 
-	treeWidget_->setRowHeight(26) ;
-	treeWidget_->setHeaderHeight(26) ;
-	treeWidget_->setSortingEnabled(false) ;
+	tableWidget_->setModel(proxyModel_);
+
+	tableWidget_->setRowHeight(26) ;
+	tableWidget_->setHeaderHeight(26) ;
+	tableWidget_->setSortingEnabled(false) ;
 }

@@ -7,12 +7,12 @@
  * Read the LICENSE file for information on license terms
  *********************************************************************/
 
-#include <sstream>
 #include <Wt/WText.h>
 #include <Wt/WVBoxLayout.h>
 #include <Wt/WHBoxLayout.h>
 #include <Wt/WTreeView.h>
 #include <Wt/WAnimation.h>
+#include <Wt/WTableView.h>
 #include "ProblemsWidget.h"
 #include "viewmodels/ViewModels.h"
 
@@ -39,6 +39,13 @@ ProblemsWidget::ProblemsWidget(ViewModels *viewModels) : viewModels_(viewModels)
 	menuWidget->setColumnHidden(2,true);
 	menuWidget->setColumnHidden(3,true);
 
-	auto problemsWidget = menuLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
-	problemsWidget->addStyleClass("tmpproblems");
+	auto problemsWidget = menuLayout->addWidget(cpp14::make_unique<WTableView>(),1);
+	proxyModel_ = std::make_shared<WSortFilterProxyModel>();
+	proxyModel_->setSourceModel(viewModels_->getProblemModel());
+
+	problemsWidget->setModel(proxyModel_);
+	problemsWidget->setRowHeight(26);
+	problemsWidget->setHeaderHeight(26);
+	problemsWidget->addStyleClass("myProblemsProblems");
+	
 }

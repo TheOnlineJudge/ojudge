@@ -11,6 +11,7 @@
 #define VIEWMODELS_H
 
 #include "CategoryModel.h"
+#include "ProblemModel.h"
 
 class DBModel;
 
@@ -18,10 +19,12 @@ class ViewModels {
 public:
 	ViewModels(DBModel *dbmodel);
 	const std::shared_ptr<CategoryModel> getCategoryModel();
+	const std::shared_ptr<ProblemModel> getProblemModel();
 
 private:
 	DBModel *dbmodel_ ;
 	std::shared_ptr<CategoryModel> categoryModel_;
+	std::shared_ptr<ProblemModel> problemModel_;
 } ;
 
 #endif // VIEWMODELS_H

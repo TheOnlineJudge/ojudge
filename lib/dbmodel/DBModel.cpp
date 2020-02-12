@@ -78,6 +78,12 @@ Categories DBModel::getCategories() {
 	return session.find<Category>().orderBy("parent_id,\"order\"");
 }
 
+Problems DBModel::getProblems() {
+
+	dbo::Transaction transaction(session);
+	return session.find<Problem>().orderBy("id");
+}
+
 Settings DBModel::getSettings() {
 
 	dbo::Transaction transaction(session);
