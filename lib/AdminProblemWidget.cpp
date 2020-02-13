@@ -15,6 +15,8 @@
 #include <Wt/WHBoxLayout.h>
 #include <Wt/WTemplate.h>
 #include <Wt/WIntValidator.h>
+#include <Wt/WImage.h>
+#include <Wt/WCssDecorationStyle.h>
 #include "AdminProblemWidget.h"
 
 using namespace Wt;
@@ -24,11 +26,15 @@ AdminProblemWidget::AdminProblemWidget(ViewModels *viewModels) : viewModels_(vie
 	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
         mainLayout_->setContentsMargins(0,0,0,0);
 
-	auto filterWidget = mainLayout_->addWidget(cpp14::make_unique<WContainerWidget>());
-	auto filterLayout = filterWidget->setLayout(cpp14::make_unique<WHBoxLayout>());
+	auto toolbarWidget = mainLayout_->addWidget(cpp14::make_unique<WContainerWidget>());
+	auto toolbarLayout = toolbarWidget->setLayout(cpp14::make_unique<WHBoxLayout>());
 
-	filterLayout->addStretch(1);
-	auto categoryComboWidget = filterLayout->addWidget(cpp14::make_unique<WTemplate>(WString::tr("comboBox-template"))) ;
+	auto addButton = toolbarLayout->addWidget(cpp14::make_unique<WImage>("images/add-button.svg"));
+	addButton->setHeight(WLength(32));
+	addButton->decorationStyle().setCursor(Cursor::PointingHand);
+	addButton->setToolTip(WString("Add new problem"));
+	toolbarLayout->addStretch(1);
+	auto categoryComboWidget = toolbarLayout->addWidget(cpp14::make_unique<WTemplate>(WString::tr("comboBox-template"))) ;
 	categoryComboWidget->addFunction("id",&WTemplate::Functions::id);
 	auto categoryCombo = cpp14::make_unique<WComboBox>() ;
 	categoryCombo->setModel(viewModels_->getCategoryModel()) ;
@@ -36,7 +42,7 @@ AdminProblemWidget::AdminProblemWidget(ViewModels *viewModels) : viewModels_(vie
 	categoryComboWidget->bindString("label","Category") ;
 	categoryComboWidget->bindWidget("combo",std::move(categoryCombo)) ;
 
-	auto problemSelectorWidget = filterLayout->addWidget(cpp14::make_unique<WTemplate>(WString::tr("lineEdit-template"))) ;
+	auto problemSelectorWidget = toolbarLayout->addWidget(cpp14::make_unique<WTemplate>(WString::tr("lineEdit-template"))) ;
 	problemSelectorWidget->addFunction("id",&WTemplate::Functions::id);
 	auto problemSelector = cpp14::make_unique<WLineEdit>() ;
 	problemSelector_ = problemSelector.get();
