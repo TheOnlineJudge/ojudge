@@ -7,18 +7,14 @@
  * Read the LICENSE file for information on license terms
  *********************************************************************/
 
-#include <Wt/WText.h>
-#include <Wt/WLineEdit.h>
-#include <Wt/WTemplate.h>
-#include <Wt/WPushButton.h>
 #include <Wt/WHBoxLayout.h>
 #include <Wt/WImage.h>
 #include <Wt/WCssDecorationStyle.h>
-#include "AdminCategoryWidget.h"
+#include "AdminLanguageWidget.h"
 
 using namespace Wt;
 
-AdminCategoryWidget::AdminCategoryWidget(const std::shared_ptr<CategoryModel> catmodel) {
+AdminLanguageWidget::AdminLanguageWidget() {
 
 	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
         mainLayout_->setContentsMargins(0,0,0,0);
@@ -29,14 +25,6 @@ AdminCategoryWidget::AdminCategoryWidget(const std::shared_ptr<CategoryModel> ca
 	auto addButton = toolbarLayout->addWidget(cpp14::make_unique<WImage>("images/add-button.svg"));
         addButton->setHeight(WLength(32));
         addButton->decorationStyle().setCursor(Cursor::PointingHand);
-        addButton->setToolTip(WString("Add new category"));
+        addButton->setToolTip(WString("Add new language"));
         toolbarLayout->addStretch(1);
-
-	treeWidget_ = mainLayout_->addWidget(cpp14::make_unique<WTreeView>()) ;
-
-	treeWidget_->setModel(catmodel);
-
-	treeWidget_->setRowHeight(26) ;
-	treeWidget_->setHeaderHeight(26) ;
-	treeWidget_->setSortingEnabled(false) ;
 }

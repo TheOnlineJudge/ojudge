@@ -9,6 +9,8 @@ viewmodels/ViewModels.cpp
 AboutWidget.cpp
 AdminWidget.cpp
 AdminCategoryWidget.cpp
+AdminContestWidget.cpp
+AdminLanguageWidget.cpp
 AdminProblemWidget.cpp
 AdminSettingsWidget.cpp
 AuthWidget.cpp

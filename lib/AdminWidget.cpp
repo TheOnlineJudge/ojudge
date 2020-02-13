@@ -15,6 +15,8 @@
 #include "dbmodel/DBModel.h"
 #include "viewmodels/ViewModels.h"
 #include "AdminCategoryWidget.h"
+#include "AdminContestWidget.h"
+#include "AdminLanguageWidget.h"
 #include "AdminProblemWidget.h"
 #include "AdminSettingsWidget.h"
 #include "AdminWidget.h"
@@ -35,9 +37,9 @@ AdminWidget::AdminWidget(Session *session,ViewModels *viewModels,DBModel *dbmode
 
 	tabWidget->addTab(cpp14::make_unique<AdminProblemWidget>(viewModels_),"Problems",ContentLoading::Lazy);
 	tabWidget->addTab(cpp14::make_unique<AdminCategoryWidget>(viewModels_->getCategoryModel()),"Categories",ContentLoading::Lazy);
-	tabWidget->addTab(cpp14::make_unique<WText>("Contests tab"),"Contests",ContentLoading::Lazy);
+	tabWidget->addTab(cpp14::make_unique<AdminContestWidget>(),"Contests",ContentLoading::Lazy);
 	tabWidget->addTab(cpp14::make_unique<WText>("Users tab"),"Users",ContentLoading::Lazy);
-	tabWidget->addTab(cpp14::make_unique<WText>("Languages tab"),"Languages",ContentLoading::Lazy);
+	tabWidget->addTab(cpp14::make_unique<AdminLanguageWidget>(),"Languages",ContentLoading::Lazy);
 	tabWidget->addTab(cpp14::make_unique<AdminSettingsWidget>(dbmodel_),"Settings",ContentLoading::Lazy);
 
 }
