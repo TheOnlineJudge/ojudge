@@ -10,9 +10,7 @@
 #include <Wt/WText.h>
 #include <Wt/WVBoxLayout.h>
 #include <Wt/WHBoxLayout.h>
-#include <Wt/WTreeView.h>
-#include <Wt/WAnimation.h>
-#include <Wt/WTableView.h>
+#include <Wt/WCssDecorationStyle.h>
 #include "ProblemsWidget.h"
 #include "viewmodels/ViewModels.h"
 
@@ -31,21 +29,31 @@ ProblemsWidget::ProblemsWidget(ViewModels *viewModels) : viewModels_(viewModels)
 	auto menuLayout = mainWidget->setLayout(cpp14::make_unique<WHBoxLayout>());
 	menuLayout->setContentsMargins(0,0,0,0);
 
-	auto menuWidget = menuLayout->addWidget(cpp14::make_unique<WTreeView>(),0);
-	menuWidget->addStyleClass("myProblemsCategories");
-	menuWidget->setModel(viewModels_->getCategoryModel());
-	menuWidget->setWidth(WLength(300)) ;
-	menuWidget->setColumnHidden(1,true);
-	menuWidget->setColumnHidden(2,true);
-	menuWidget->setColumnHidden(3,true);
+	auto categoriesWidget = menuLayout->addWidget(cpp14::make_unique<WTreeView>(),0);
+	categoriesWidget->addStyleClass("myProblemsCategories");
+	categoriesWidget->decorationStyle().setCursor(Cursor::PointingHand);
+	categoriesWidget->setModel(viewModels_->getCategoryModel());
+	categoriesWidget->setWidth(WLength(300)) ;
+	categoriesWidget->setColumnHidden(1,true);
+	categoriesWidget->setColumnHidden(2,true);
+	categoriesWidget->setColumnHidden(3,true);
+	categoriesWidget->clicked().connect(this,&ProblemsWidget::categoryClicked) ;
 
 	auto problemsWidget = menuLayout->addWidget(cpp14::make_unique<WTableView>(),1);
 	proxyModel_ = std::make_shared<WSortFilterProxyModel>();
 	proxyModel_->setSourceModel(viewModels_->getProblemModel());
+	proxyModel_->setFilterKeyColumn(3);
 
 	problemsWidget->setModel(proxyModel_);
 	problemsWidget->setRowHeight(26);
 	problemsWidget->setHeaderHeight(26);
 	problemsWidget->addStyleClass("myProblemsProblems");
+	problemsWidget->setColumnHidden(3,true);
 	
+}
+
+void ProblemsWidget::categoryClicked(WModelIndex modelIndex, WMouseEvent mouseEvent) {
+
+	proxyModel_->setFilterRegExp(std::make_unique<std::regex>(asString(modelIndex.data(CategoryModel::CategoryIdRole),WString(".*#%d#.*")).toUTF8())) ;
+
 }

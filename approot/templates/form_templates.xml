@@ -63,4 +63,12 @@
       </div>
     </div>
   </message>
+  <message id="comboBox-template">
+    <div class="form-inline">
+      <div class="form-group">
+        <label for="${id:combo}">${label}</label>
+        ${combo}
+      </div>
+    </div>
+  </message>
 </messages>

@@ -16,6 +16,9 @@ class DBModel ;
 
 class CategoryModel : public Wt::WAbstractItemModel {
 public:
+
+	static constexpr Wt::ItemDataRole CategoryIdRole = Wt::ItemDataRole::User + 1;
+
 	CategoryModel(DBModel *dbmodel) ;
 	virtual int columnCount(const Wt::WModelIndex& parent = Wt::WModelIndex()) const override;
 	virtual int rowCount(const Wt::WModelIndex& parent = Wt::WModelIndex()) const override;
@@ -85,5 +88,7 @@ private:
 
 	int getTreeId(int parentId, int childIndex, int categoryId=0, int rowCount=0) const;
 };
+
+constexpr Wt::ItemDataRole CategoryModel::CategoryIdRole ;
 
 #endif // CATEGORYMODEL_H
