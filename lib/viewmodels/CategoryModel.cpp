@@ -134,6 +134,8 @@ cpp17::any CategoryModel::data(const WModelIndex& index, ItemDataRole role) cons
 		if(index.column()==0) {
 			return std::string("myTree");
 		}
+	} else if(role == CategoryIdRole) {
+		return category ;
 	}
 
 	return cpp17::any();

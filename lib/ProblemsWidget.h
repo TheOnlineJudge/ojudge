@@ -12,6 +12,8 @@
 
 #include <Wt/WContainerWidget.h>
 #include <Wt/WSortFilterProxyModel.h>
+#include <Wt/WTreeView.h>
+#include <Wt/WTableView.h>
 
 class ViewModels;
 
@@ -22,6 +24,7 @@ public:
 private:
 	std::shared_ptr<Wt::WSortFilterProxyModel> proxyModel_;
 	ViewModels *viewModels_;
+	void categoryClicked(Wt::WModelIndex modelIndex, Wt::WMouseEvent mouseEvent) ;
 
 };
 

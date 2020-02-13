@@ -14,16 +14,20 @@
 #include <Wt/WVBoxLayout.h>
 #include <Wt/WTableView.h>
 #include <Wt/WSortFilterProxyModel.h>
-#include "viewmodels/ProblemModel.h"
+#include <Wt/WLineEdit.h>
+#include "viewmodels/ViewModels.h"
 
 class AdminProblemWidget : public Wt::WContainerWidget {
 public:
-	AdminProblemWidget(const std::shared_ptr<ProblemModel> probmodel) ;
+	AdminProblemWidget(ViewModels *viewModels) ;
 
 private:
 	Wt::WVBoxLayout *mainLayout_;
 	Wt::WTableView *tableWidget_;
 	std::shared_ptr<Wt::WSortFilterProxyModel> proxyModel_;
+	ViewModels *viewModels_;
+	Wt::WLineEdit *problemSelector_;
+	void problemSelectorSlot() ;
 };
 
 #endif // ADMINPROBLEMWIDGET_H
