@@ -161,6 +161,13 @@ cpp17::any CategoryModel::headerData(int section, Orientation orientation, ItemD
 	return cpp17::any();
 }
 
+void CategoryModel::addCategory(std::string title, int parent) {
+
+	dbmodel_->addCategory(title,parent);
+	refresh();
+
+}
+
 CategoryModel::Tree::Tree(int parentId, int index, int categoryId, int rowCount) : index_(parentId,index), categoryId_(categoryId), rowCount_(rowCount) {
 
 }
