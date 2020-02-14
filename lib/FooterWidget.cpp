@@ -1,11 +1,11 @@
 /*********************************************************************
- * Copyright (C) 2020 Miguel Revilla Rodríguez
- *                    and the OJudge Platform project contributors
- *
- * This file is part of the OJudge Platform
- *
- * Read the LICENSE file for information on license terms
- *********************************************************************/
+* Copyright (C) 2020 Miguel Revilla Rodríguez
+*                    and the OJudge Platform project contributors
+*
+* This file is part of the OJudge Platform
+*
+* Read the LICENSE file for information on license terms
+*********************************************************************/
 
 #include <Wt/WText.h>
 #include <Wt/WCssDecorationStyle.h>
@@ -75,9 +75,9 @@ FooterWidget::FooterWidget(DBModel *dbmodel) : dbmodel_(dbmodel) {
 
 	std::stringstream footerMsg;
 	footerMsg << "Using OJudge version " << OJUDGE_VERSION_MAJOR <<
-						"." << OJUDGE_VERSION_MINOR <<
-						"." << OJUDGE_VERSION_RELEASE <<
-						" - Compile: " << OJUDGE_VERSION_COMPILE;
+	        "." << OJUDGE_VERSION_MINOR <<
+	        "." << OJUDGE_VERSION_RELEASE <<
+	        " - Compile: " << OJUDGE_VERSION_COMPILE;
 
 	auto bottomWrap = addWidget(cpp14::make_unique<WContainerWidget>());
 	bottomWrap->setMargin(WLength(0));

@@ -1,11 +1,11 @@
 /*********************************************************************
- * Copyright (C) 2020 Miguel Revilla Rodríguez
- *                    and the OJudge Platform project contributors
- *
- * This file is part of the OJudge Platform
- *
- * Read the LICENSE file for information on license terms
- *********************************************************************/
+* Copyright (C) 2020 Miguel Revilla Rodríguez
+*                    and the OJudge Platform project contributors
+*
+* This file is part of the OJudge Platform
+*
+* Read the LICENSE file for information on license terms
+*********************************************************************/
 
 #ifndef PROFILEWIDGET_H
 #define PROFILEWIDGET_H
@@ -15,35 +15,35 @@
 
 class ProfileWidget : public Wt::WContainerWidget {
 public:
-	ProfileWidget(Session *session);
+ProfileWidget(Session *session);
 
 private:
-	Session *session_;
+Session *session_;
 
 };
 
 class AccountWidget : public Wt::WContainerWidget {
 public:
-        AccountWidget(Session *session);
+AccountWidget(Session *session);
 
 private:
-        Session *session_;
+Session *session_;
 };
 
 class SecurityWidget : public Wt::WContainerWidget {
 public:
-        SecurityWidget(Session *session);
+SecurityWidget(Session *session);
 
 private:
-        Session *session_;
+Session *session_;
 };
 
 class NotificationsWidget : public Wt::WContainerWidget {
 public:
-        NotificationsWidget(Session *session);
+NotificationsWidget(Session *session);
 
 private:
-        Session *session_;
+Session *session_;
 };
 
 #endif // PROFILEWIDGET_H

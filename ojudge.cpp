@@ -1,11 +1,11 @@
 /*********************************************************************
- * Copyright (C) 2020 Miguel Revilla Rodríguez
- *                    and the OJudge Platform project contributors
- *
- * This file is part of the OJudge Platform
- *
- * Read the LICENSE file for information on license terms
- *********************************************************************/
+* Copyright (C) 2020 Miguel Revilla Rodríguez
+*                    and the OJudge Platform project contributors
+*
+* This file is part of the OJudge Platform
+*
+* Read the LICENSE file for information on license terms
+*********************************************************************/
 
 #include <unistd.h>
 #include <pwd.h>
@@ -30,16 +30,16 @@ po::variables_map vm;
 std::unique_ptr<WApplication> createApplication(const WEnvironment &env) {
 
 	std::stringstream dbConnect;
-        dbConnect << "host=" << vm["database.host"].as<std::string>() << " " ;
-        dbConnect << "dbname=" << vm["database.dbname"].as<std::string>() << " ";
-        dbConnect << "user=" << vm["database.user"].as<std::string>() << " ";
-        dbConnect << "password=" << vm["database.password"].as<std::string>();
+	dbConnect << "host=" << vm["database.host"].as<std::string>() << " ";
+	dbConnect << "dbname=" << vm["database.dbname"].as<std::string>() << " ";
+	dbConnect << "user=" << vm["database.user"].as<std::string>() << " ";
+	dbConnect << "password=" << vm["database.password"].as<std::string>();
 
 	Session *session = new Session(dbConnect.str().c_str());
-        DBModel *dbmodel = new DBModel(dbConnect.str().c_str());
+	DBModel *dbmodel = new DBModel(dbConnect.str().c_str());
 	ViewModels *viewModels = new ViewModels(dbmodel);
 
-	return cpp14::make_unique<ojudgeApp>(env,session,viewModels,dbmodel) ;
+	return cpp14::make_unique<ojudgeApp>(env,session,viewModels,dbmodel);
 }
 
 int main(int argc, char **argv) {
@@ -71,25 +71,25 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-        po::options_description desc;
-        desc.add_options()
-                ("database.host",po::value<std::string>(),"Hostname of the database")
-                ("database.dbname",po::value<std::string>(),"Database name")
-                ("database.user",po::value<std::string>(),"Database username")
-                ("database.password",po::value<std::string>(),"Database password")
-        ;
-        po::store(po::parse_config_file(configFilePath.c_str(),desc),vm);
+	po::options_description desc;
+	desc.add_options()
+	        ("database.host",po::value<std::string>(),"Hostname of the database")
+	        ("database.dbname",po::value<std::string>(),"Database name")
+	        ("database.user",po::value<std::string>(),"Database username")
+	        ("database.password",po::value<std::string>(),"Database password")
+	;
+	po::store(po::parse_config_file(configFilePath.c_str(),desc),vm);
 
-        try {
-                WServer server(argc, argv, WTHTTP_CONFIGURATION);
-                server.addEntryPoint(EntryPointType::Application, createApplication);
+	try {
+		WServer server(argc, argv, WTHTTP_CONFIGURATION);
+		server.addEntryPoint(EntryPointType::Application, createApplication);
 
-                Session::configureAuth();
+		Session::configureAuth();
 
-                server.run();
+		server.run();
 	} catch (WServer::Exception &e) {
-                std::cerr << e.what() << std::endl;
-        } catch (std::exception &e) {
-                std::cerr << "exception: " << e.what() << std::endl;
-        }
+		std::cerr << e.what() << std::endl;
+	} catch (std::exception &e) {
+		std::cerr << "exception: " << e.what() << std::endl;
+	}
 }

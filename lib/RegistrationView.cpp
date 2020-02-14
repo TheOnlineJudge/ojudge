@@ -1,11 +1,11 @@
 /*********************************************************************
- * Copyright (C) 2020 Miguel Revilla Rodríguez
- *                    and the OJudge Platform project contributors
- *
- * This file is part of the OJudge Platform
- *
- * Read the LICENSE file for information on license terms
- *********************************************************************/
+* Copyright (C) 2020 Miguel Revilla Rodríguez
+*                    and the OJudge Platform project contributors
+*
+* This file is part of the OJudge Platform
+*
+* Read the LICENSE file for information on license terms
+*********************************************************************/
 
 #include "RegistrationView.h"
 #include "authmodel/UserDetailsModel.h"
@@ -25,7 +25,7 @@ std::unique_ptr<WWidget> RegistrationView::createFormWidget(WFormModel::Field fi
 //	if(field == UserDetailsModel::FavouritePetField) {
 //		return cpp14::make_unique<WLineEdit>();
 //	} else {
-		return Auth::RegistrationWidget::createFormWidget(field);
+	return Auth::RegistrationWidget::createFormWidget(field);
 //	}
 }
 
