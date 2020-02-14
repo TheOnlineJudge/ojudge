@@ -33,9 +33,12 @@ AdminProblemWidget::AdminProblemWidget(ViewModels *viewModels) : viewModels_(vie
 	addButton->setHeight(WLength(32));
 	addButton->decorationStyle().setCursor(Cursor::PointingHand);
 	addButton->setToolTip(WString("Add new problem"));
+	addButton->clicked().connect(this,&AdminProblemWidget::showAddDialog);
 	toolbarLayout->addStretch(1);
+
 	auto categoryComboWidget = toolbarLayout->addWidget(cpp14::make_unique<WTemplate>(WString::tr("comboBox-template")));
 	categoryComboWidget->addFunction("id",&WTemplate::Functions::id);
+
 	auto categoryCombo = cpp14::make_unique<WComboBox>();
 	categoryCombo->setModel(viewModels_->getCategoryModel());
 
@@ -74,4 +77,52 @@ void AdminProblemWidget::problemSelectorSlot() {
 	} else {
 		proxyModel_->setFilterRegExp(std::make_unique<std::regex>(problemSelector_->text().toUTF8()));
 	}
+}
+
+void AdminProblemWidget::showAddDialog() {
+
+	addDialog_ = addChild(cpp14::make_unique<WDialog>("Add new problem"));
+
+	auto result = addDialog_->contents()->addWidget(cpp14::make_unique<WTemplate>(WString::tr("addProblem-template")));
+        result->addFunction("id",&WTemplate::Functions::id);
+
+	auto newId = cpp14::make_unique<WLineEdit>();
+	newId_ = newId.get();
+
+	auto newTitle = cpp14::make_unique<WLineEdit>();
+	newTitle_ = newTitle.get();
+
+	auto newDescription = cpp14::make_unique<WFileUpload>();
+	newDescription_ = newDescription.get();
+
+	auto newCategories = cpp14::make_unique<WTreeView>();
+	newCategories->setModel(viewModels_->getCategoryModel()) ;
+	newCategories->setColumnHidden(1,true);
+	newCategories->setColumnHidden(2,true);
+	newCategories->setColumnHidden(3,true);
+	newCategories->setSelectionMode(SelectionMode::Extended);
+	newCategories_ = newCategories.get();
+
+	result->bindString("idlabel",WString("ID"));
+	result->bindString("titlelabel",WString("Title"));
+	result->bindString("descriptionlabel",WString("Problem description"));
+	result->bindString("categorieslabel",WString("Categories"));
+	result->bindWidget("id",std::move(newId));
+	result->bindWidget("title",std::move(newTitle));
+	result->bindWidget("description",std::move(newDescription));
+	result->bindWidget("categories",std::move(newCategories));
+
+	WPushButton *ok = addDialog_->footer()->addWidget(cpp14::make_unique<WPushButton>("Ok"));
+        WPushButton *cancel = addDialog_->footer()->addWidget(cpp14::make_unique<WPushButton>("Cancel"));
+
+	ok->clicked().connect(addDialog_, &WDialog::accept);
+        cancel->clicked().connect(addDialog_, &WDialog::reject);
+
+        addDialog_->finished().connect(this,&AdminProblemWidget::addDialogDone);
+        addDialog_->show();
+
+}
+
+void AdminProblemWidget::addDialogDone(DialogCode code) {
+	removeChild(addDialog_);
 }
