@@ -27,6 +27,8 @@ virtual Wt::WModelIndex index(int row, int column, const Wt::WModelIndex& parent
 virtual Wt::cpp17::any data(const Wt::WModelIndex& index, Wt::ItemDataRole role = Wt::ItemDataRole::Display) const override;
 virtual Wt::cpp17::any headerData(int section, Wt::Orientation orientation = Wt::Orientation::Horizontal, Wt::ItemDataRole role = Wt::ItemDataRole::Display) const override;
 
+void addCategory(std::string title, int parent) ;
+
 private:
 void refresh();
 void populateData();

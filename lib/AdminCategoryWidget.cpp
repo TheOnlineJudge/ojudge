@@ -15,6 +15,7 @@
 #include <Wt/WImage.h>
 #include <Wt/WCssDecorationStyle.h>
 #include <Wt/WTemplate.h>
+#include <Wt/WMessageBox.h>
 #include "AdminCategoryWidget.h"
 
 using namespace Wt;
@@ -83,5 +84,20 @@ void AdminCategoryWidget::showAddDialog() {
 }
 
 void AdminCategoryWidget::addDialogDone(DialogCode code) {
+	int parentId = 0;
+	if(code == DialogCode::Accepted) {
+		if(rootCheckBox_->isChecked()) {
+			parentId = 1;
+		} else if(selectParent_->selectedIndexes().size()) {
+			WModelIndexSet::const_iterator tmpIterator = selectParent_->selectedIndexes().begin();
+			WModelIndex tmpIndex = *tmpIterator;
+			parentId = cpp17::any_cast<int>(tmpIterator->data(CategoryModel::CategoryIdRole));
+		} else {
+			WMessageBox::show("Error","You have to select one parent.",StandardButton::Ok);
+			addDialog_->show();
+			return;
+		}
+		catmodel_->addCategory(newTitle_->text().toUTF8(),parentId);
+	}
 	removeChild(addDialog_);
 }
