@@ -1,11 +1,11 @@
 /*********************************************************************
- * Copyright (C) 2020 Miguel Revilla Rodríguez
- *                    and the OJudge Platform project contributors
- *
- * This file is part of the OJudge Platform
- *
- * Read the LICENSE file for information on license terms
- *********************************************************************/
+* Copyright (C) 2020 Miguel Revilla Rodríguez
+*                    and the OJudge Platform project contributors
+*
+* This file is part of the OJudge Platform
+*
+* Read the LICENSE file for information on license terms
+*********************************************************************/
 
 #include <memory>
 #include <string>
@@ -59,7 +59,7 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	if(dbmodel_->getSetting("googleAnalytics") != "")
 		require(std::string("https://www.googletagmanager.com/gtag/js?id=") + dbmodel_->getSetting("googleAnalytics"));
 
-	setTitle(WString(dbmodel_->getSetting("siteTitle"))) ;
+	setTitle(WString(dbmodel_->getSetting("siteTitle")));
 	instance()->styleSheet().addRule(":root", std::string("--ojcolor: ") + dbmodel_->getSetting("siteColor"));
 	useStyleSheet("css/ojudge.css");
 	setLoadingIndicator(cpp14::make_unique<WOverlayLoadingIndicator>());
@@ -94,35 +94,35 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	floatNavBar_->addStyleClass("floatbar");
 	floatNavBar_->hide();
 
-        mainStack_ = root()->addWidget(std::move(cpp14::make_unique<WStackedWidget>()));
-        mainStack_->addStyleClass("center");
-        mainStack_->addStyleClass("stdwidth");
-        mainStack_->addStyleClass("maincontent");
+	mainStack_ = root()->addWidget(std::move(cpp14::make_unique<WStackedWidget>()));
+	mainStack_->addStyleClass("center");
+	mainStack_->addStyleClass("stdwidth");
+	mainStack_->addStyleClass("maincontent");
 
-        auto footerWidget = root()->addWidget(std::move(cpp14::make_unique<FooterWidget>(dbmodel_)));
-        footerWidget->addStyleClass("center");
-        footerWidget->addStyleClass("stdwidth");
-        footerWidget->addStyleClass("footer");
+	auto footerWidget = root()->addWidget(std::move(cpp14::make_unique<FooterWidget>(dbmodel_)));
+	footerWidget->addStyleClass("center");
+	footerWidget->addStyleClass("stdwidth");
+	footerWidget->addStyleClass("footer");
 
 	auto logo = cpp14::make_unique<WImage>(dbmodel_->getSetting("siteLogo"));
 	logo->setHeight(WLength(90));
 	navigationBar->addWidget(std::move(logo));
 
 	auto title = cpp14::make_unique<WText>(dbmodel_->getSetting("siteTitle"));
-        title->addStyleClass("ojtitle");
-        navigationBar->addWidget(std::move(title));
+	title->addStyleClass("ojtitle");
+	navigationBar->addWidget(std::move(title));
 
 	auto floattitle = cpp14::make_unique<WText>(dbmodel_->getSetting("siteTitle"));
 	floattitle->addStyleClass("ojfloattitle");
 	floattitle->setHeight(WLength(50));
 	floatNavBar_->addWidget(std::move(floattitle));
 
-        mainMenu_ = navigationBar->addMenu(cpp14::make_unique<WMenu>(mainStack_),AlignmentFlag::Right);
+	mainMenu_ = navigationBar->addMenu(cpp14::make_unique<WMenu>(mainStack_),AlignmentFlag::Right);
 	mainFloatMenu_ = floatNavBar_->addMenu(cpp14::make_unique<WMenu>(mainStack_),AlignmentFlag::Right);
 
-        mainMenu_->setInternalPathEnabled("/");
+	mainMenu_->setInternalPathEnabled("/");
 	mainFloatMenu_->setInternalPathEnabled("/");
-        auto homeMenu = mainMenu_->addItem(WString("Home"),std::move(cpp14::make_unique<HomeWidget>())) ;
+	auto homeMenu = mainMenu_->addItem(WString("Home"),std::move(cpp14::make_unique<HomeWidget>()));
 	auto homeFloatMenu = mainFloatMenu_->addItem(WString("Home"));
 	WLink homeFloatMenuLink(LinkType::InternalPath,"/home");
 	homeFloatMenu->setLink(homeFloatMenuLink);
@@ -147,12 +147,12 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	WLink contestsFloatMenuLink(LinkType::InternalPath,"/contests");
 	contestsFloatMenu->setLink(contestsFloatMenuLink);
 
-        dashboardMenu_ = mainMenu_->addItem(WString("Dashboard"),std::move(cpp14::make_unique<DashboardWidget>()));
+	dashboardMenu_ = mainMenu_->addItem(WString("Dashboard"),std::move(cpp14::make_unique<DashboardWidget>()));
 	dashboardFloatMenu_ = mainFloatMenu_->addItem(WString("Dashboard"));
 
 	loginWidget_ = cpp14::make_unique<LoginWidget>(session_);
 
-        loginMenu_ = mainMenu_->addItem(WString("Login"),std::move(loginWidget_));
+	loginMenu_ = mainMenu_->addItem(WString("Login"),std::move(loginWidget_));
 	loginFloatMenu_ = mainFloatMenu_->addItem(WString("Login"));
 
 	auto profilePopup = cpp14::make_unique<WPopupMenu>();
@@ -164,12 +164,12 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	profilePopupAdmin->setLink(profilePopupAdminLink);
 	profilePopup->addSeparator();
 	auto logoutItem = profilePopup->addItem(WString("Logout"));
-        logoutItem->decorationStyle().setCursor(Cursor::PointingHand);
-        logoutItem->clicked().connect(this,&ojudgeApp::logout);
+	logoutItem->decorationStyle().setCursor(Cursor::PointingHand);
+	logoutItem->clicked().connect(this,&ojudgeApp::logout);
 	auto item = cpp14::make_unique<WMenuItem>("Profile");
-        item->setInternalPathEnabled(false);
-        item->setMenu(std::move(profilePopup));
-        profileMenu_ = mainMenu_->addItem(std::move(item)) ;
+	item->setInternalPathEnabled(false);
+	item->setMenu(std::move(profilePopup));
+	profileMenu_ = mainMenu_->addItem(std::move(item));
 
 	profilePopup = cpp14::make_unique<WPopupMenu>();
 	profilePopupProfile = profilePopup->addItem(WString("Profile"));
@@ -191,61 +191,61 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	contributeWidget_ = mainStack_->addWidget(cpp14::make_unique<ContributeWidget>());
 	factsWidget_ = mainStack_->addWidget(cpp14::make_unique<FactsWidget>());
 	languagesWidget_ = mainStack_->addWidget(cpp14::make_unique<LanguagesWidget>());
-        profileWidget_ = mainStack_->addWidget(cpp14::make_unique<ProfileWidget>(session_));
+	profileWidget_ = mainStack_->addWidget(cpp14::make_unique<ProfileWidget>(session_));
 	sponsorsWidget_ = mainStack_->addWidget(cpp14::make_unique<SponsorsWidget>());
 	teamWidget_ = mainStack_->addWidget(cpp14::make_unique<TeamWidget>());
 	tutorialWidget_ = mainStack_->addWidget(cpp14::make_unique<TutorialWidget>());
 
 	authEvent();
-        session_->login().changed().connect(this, &ojudgeApp::authEvent);
+	session_->login().changed().connect(this, &ojudgeApp::authEvent);
 
-        pathChanged(internalPath());
-        internalPathChanged().connect(this,&ojudgeApp::pathChanged);
+	pathChanged(internalPath());
+	internalPathChanged().connect(this,&ojudgeApp::pathChanged);
 
 	navigationBar->setScrollVisibilityEnabled(true);
 	navigationBar->scrollVisibilityChanged().connect(this,&ojudgeApp::switchNavbar);
 }
 
 void ojudgeApp::authEvent() {
-        if(session_->login().loggedIn()) {
+	if(session_->login().loggedIn()) {
 //              log("notice") << "User " << session_.login().user().id() << " logged in.";
 //              Dbo::Transaction t(*session_);
 //              dbo::ptr<User> user = session_->user();
 //              log("notice") << "(Favourite pet: " << user->favouritePet << ")";
 		dashboardMenu_->show();
 		dashboardFloatMenu_->show();
-                loginMenu_->hide();
+		loginMenu_->hide();
 		loginFloatMenu_->hide();
-                profileMenu_->setText(session_->login().user().identity("loginname"));
+		profileMenu_->setText(session_->login().user().identity("loginname"));
 		profileFloatMenu_->setText(session_->login().user().identity("loginname"));
-                profileMenu_->show();
+		profileMenu_->show();
 		profileFloatMenu_->show();
-        } else {
+	} else {
 		dashboardMenu_->hide();
 		dashboardFloatMenu_->hide();
-                profileMenu_->hide();
+		profileMenu_->hide();
 		profileFloatMenu_->hide();
-                loginMenu_->show();
+		loginMenu_->show();
 		loginFloatMenu_->show();
 //              log("notice") << "User logged out.";
-        }
+	}
 }
 
 void ojudgeApp::pathChanged(std::string newPath) {
 
 	if(newPath == "/profile" || newPath == "/dashboard") {
 		if(!session_->login().loggedIn()) {
-			setInternalPath("/login",true) ;
-			return ;
+			setInternalPath("/login",true);
+			return;
 		}
 	}
 
 	doJavaScript(   "window.dataLayer = window.dataLayer || [];"
-                        "function gtag(){dataLayer.push(arguments);}"
-			"gtag('js', new Date());"
-			"gtag('config', 'UA-143237893-1', {"
-			"'page_path': '" + newPath + "'"
-			"});");
+	                "function gtag(){dataLayer.push(arguments);}"
+	                "gtag('js', new Date());"
+	                "gtag('config', 'UA-143237893-1', {"
+	                "'page_path': '" + newPath + "'"
+	                "});");
 
 	if(mainMenu_->currentItem() != NULL)
 		mainMenu_->currentItem()->renderSelected(false);
@@ -256,7 +256,7 @@ void ojudgeApp::pathChanged(std::string newPath) {
 	if(newPath=="/about") {
 		mainStack_->setCurrentWidget(aboutWidget_);
 	} else if (newPath=="/profile") {
-                mainStack_->setCurrentWidget(profileWidget_);
+		mainStack_->setCurrentWidget(profileWidget_);
 	} else if (newPath=="/admin") {
 		mainStack_->setCurrentWidget(adminWidget_);
 	} else if (newPath=="/team") {
@@ -273,7 +273,7 @@ void ojudgeApp::pathChanged(std::string newPath) {
 		mainStack_->setCurrentWidget(contactWidget_);
 	} else if (newPath=="/contribute") {
 		mainStack_->setCurrentWidget(contributeWidget_);
-        } else {
+	} else {
 		if(mainMenu_->currentItem() != NULL)
 			mainMenu_->currentItem()->renderSelected(true);
 
@@ -295,6 +295,6 @@ void ojudgeApp::switchNavbar(bool visible) {
 }
 
 void ojudgeApp::logout() {
-        session_->login().logout();
+	session_->login().logout();
 	setInternalPath("/home",true);
 }

@@ -1,18 +1,18 @@
 /*********************************************************************
- * Copyright (C) 2020 Miguel Revilla Rodríguez
- *                    and the OJudge Platform project contributors
- *
- * This file is part of the OJudge Platform
- *
- * Read the LICENSE file for information on license terms
- *********************************************************************/
+* Copyright (C) 2020 Miguel Revilla Rodríguez
+*                    and the OJudge Platform project contributors
+*
+* This file is part of the OJudge Platform
+*
+* Read the LICENSE file for information on license terms
+*********************************************************************/
 
 #include <Wt/WText.h>
 #include <Wt/WHBoxLayout.h>
 #include <Wt/WAnimation.h>
 #include "HomeWidget.h"
 
-using namespace Wt ;
+using namespace Wt;
 
 HomeWidget::HomeWidget() {
 
@@ -30,18 +30,18 @@ HomeWidget::HomeWidget() {
 
 	boxesLayout->addStretch(1);
 
-	auto box1 = boxesLayout->addWidget(cpp14::make_unique<WContainerWidget>(),0) ;
+	auto box1 = boxesLayout->addWidget(cpp14::make_unique<WContainerWidget>(),0);
 	box1->addStyleClass("box box1");
 	box1->hide();
 
 	boxesLayout->addStretch(1);
 
-	auto box2 = boxesLayout->addWidget(cpp14::make_unique<WContainerWidget>(),0) ;
+	auto box2 = boxesLayout->addWidget(cpp14::make_unique<WContainerWidget>(),0);
 	box2->addStyleClass("box box2");
 
 	boxesLayout->addStretch(1);
 
-	auto box3 = boxesLayout->addWidget(cpp14::make_unique<WContainerWidget>(),0) ;
+	auto box3 = boxesLayout->addWidget(cpp14::make_unique<WContainerWidget>(),0);
 	box3->addStyleClass("box box3");
 
 	boxesLayout->addStretch(1);

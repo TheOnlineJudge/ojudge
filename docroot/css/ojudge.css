@@ -127,25 +127,25 @@ body {
 }
 
 .myTree .icon {
-	height:18px;
+  height:18px;
 }
 
 .myAdminProblemTable .icon {
-	height:18px;
+  height:18px;
 }
 
 .myProblemsCategories,
 .myProblemsCategories .Wt-treeview .Wt-tv-br, .Wt-treeview ul .Wt-tv-c {
-	border:0px;
+  border:0px;
 }
 
 .myProblemsCategories .Wt-header {
-	display:none;
+  display:none;
 }
 
 .myProblemsCategories,
 .myProblemsProblems {
-	height:100%;
+  height:100%;
 }
 
 @media (min-width: 768px) {

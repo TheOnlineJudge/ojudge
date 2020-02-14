@@ -1,11 +1,11 @@
 /*********************************************************************
- * Copyright (C) 2020 Miguel Revilla Rodríguez
- *                    and the OJudge Platform project contributors
- *
- * This file is part of the OJudge Platform
- *
- * Read the LICENSE file for information on license terms
- *********************************************************************/
+* Copyright (C) 2020 Miguel Revilla Rodríguez
+*                    and the OJudge Platform project contributors
+*
+* This file is part of the OJudge Platform
+*
+* Read the LICENSE file for information on license terms
+*********************************************************************/
 
 #include <Wt/WText.h>
 #include <Wt/WVBoxLayout.h>
@@ -33,11 +33,11 @@ ProblemsWidget::ProblemsWidget(ViewModels *viewModels) : viewModels_(viewModels)
 	categoriesWidget->addStyleClass("myProblemsCategories");
 	categoriesWidget->decorationStyle().setCursor(Cursor::PointingHand);
 	categoriesWidget->setModel(viewModels_->getCategoryModel());
-	categoriesWidget->setWidth(WLength(300)) ;
+	categoriesWidget->setWidth(WLength(300));
 	categoriesWidget->setColumnHidden(1,true);
 	categoriesWidget->setColumnHidden(2,true);
 	categoriesWidget->setColumnHidden(3,true);
-	categoriesWidget->clicked().connect(this,&ProblemsWidget::categoryClicked) ;
+	categoriesWidget->clicked().connect(this,&ProblemsWidget::categoryClicked);
 
 	auto problemsWidget = menuLayout->addWidget(cpp14::make_unique<WTableView>(),1);
 	proxyModel_ = std::make_shared<WSortFilterProxyModel>();
@@ -49,11 +49,11 @@ ProblemsWidget::ProblemsWidget(ViewModels *viewModels) : viewModels_(viewModels)
 	problemsWidget->setHeaderHeight(26);
 	problemsWidget->addStyleClass("myProblemsProblems");
 	problemsWidget->setColumnHidden(3,true);
-	
+
 }
 
 void ProblemsWidget::categoryClicked(WModelIndex modelIndex, WMouseEvent mouseEvent) {
 
-	proxyModel_->setFilterRegExp(std::make_unique<std::regex>(asString(modelIndex.data(CategoryModel::CategoryIdRole),WString(".*#%d#.*")).toUTF8())) ;
+	proxyModel_->setFilterRegExp(std::make_unique<std::regex>(asString(modelIndex.data(CategoryModel::CategoryIdRole),WString(".*#%d#.*")).toUTF8()));
 
 }

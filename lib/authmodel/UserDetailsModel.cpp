@@ -1,11 +1,11 @@
 /*********************************************************************
- * Copyright (C) 2020 Miguel Revilla Rodríguez
- *                    and the OJudge Platform project contributors
- *
- * This file is part of the OJudge Platform
- *
- * Read the LICENSE file for information on license terms
- *********************************************************************/
+* Copyright (C) 2020 Miguel Revilla Rodríguez
+*                    and the OJudge Platform project contributors
+*
+* This file is part of the OJudge Platform
+*
+* Read the LICENSE file for information on license terms
+*********************************************************************/
 
 #include "UserDetailsModel.h"
 #include "User.h"
@@ -18,6 +18,6 @@ UserDetailsModel::UserDetailsModel(Session &session) : WFormModel(), session_(se
 }
 
 void UserDetailsModel::save(const Auth::User &authUser) {
-	Dbo::ptr<User> user = session_.user(authUser) ;
+	Dbo::ptr<User> user = session_.user(authUser);
 	// uset.modify()->favouritePet = valueText(FavouritePetField).toUTF8();
 }

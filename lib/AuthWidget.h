@@ -1,11 +1,11 @@
 /*********************************************************************
- * Copyright (C) 2020 Miguel Revilla Rodríguez
- *                    and the OJudge Platform project contributors
- *
- * This file is part of the OJudge Platform
- *
- * Read the LICENSE file for information on license terms
- *********************************************************************/
+* Copyright (C) 2020 Miguel Revilla Rodríguez
+*                    and the OJudge Platform project contributors
+*
+* This file is part of the OJudge Platform
+*
+* Read the LICENSE file for information on license terms
+*********************************************************************/
 
 #ifndef AUTHWIDGET_H
 #define AUTHWIDGET_H
@@ -18,12 +18,12 @@ class Session;
 
 class AuthWidget : public Auth::AuthWidget {
 public:
-	AuthWidget(Session &session);
+AuthWidget(Session &session);
 //	virtual std::unique_ptr<WWidget> createRegistrationView(const Auth::Identity& id) override;
-	void resetForm();
+void resetForm();
 
 private:
-	Session &session_;
+Session &session_;
 };
 
 #endif // AUTHWIDGET_H

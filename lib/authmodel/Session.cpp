@@ -1,11 +1,11 @@
 /*********************************************************************
- * Copyright (C) 2020 Miguel Revilla Rodríguez
- *                    and the OJudge Platform project contributors
- *
- * This file is part of the OJudge Platform
- *
- * Read the LICENSE file for information on license terms
- *********************************************************************/
+* Copyright (C) 2020 Miguel Revilla Rodríguez
+*                    and the OJudge Platform project contributors
+*
+* This file is part of the OJudge Platform
+*
+* Read the LICENSE file for information on license terms
+*********************************************************************/
 
 #include <Wt/Auth/AuthService.h>
 #include <Wt/Auth/HashFunction.h>
@@ -22,9 +22,9 @@
 #include "Session.h"
 
 namespace {
-	Auth::AuthService myAuthService;
-	Auth::PasswordService myPasswordService(myAuthService);
-	std::vector<std::unique_ptr<Auth::OAuthService>> myOAuthServices;
+Auth::AuthService myAuthService;
+Auth::PasswordService myPasswordService(myAuthService);
+std::vector<std::unique_ptr<Auth::OAuthService> > myOAuthServices;
 }
 
 void Session::configureAuth() {
@@ -48,7 +48,7 @@ void Session::configureAuth() {
 
 Session::Session(const std::string &postgresDb) {
 	auto connection = cpp14::make_unique<Dbo::backend::Postgres>(postgresDb);
-	
+
 	connection->setProperty("show-queries", "true");
 
 	setConnection(std::move(connection));

@@ -1,11 +1,11 @@
 /*********************************************************************
- * Copyright (C) 2020 Miguel Revilla Rodríguez
- *                    and the OJudge Platform project contributors
- *
- * This file is part of the OJudge Platform
- *
- * Read the LICENSE file for information on license terms
- *********************************************************************/
+* Copyright (C) 2020 Miguel Revilla Rodríguez
+*                    and the OJudge Platform project contributors
+*
+* This file is part of the OJudge Platform
+*
+* Read the LICENSE file for information on license terms
+*********************************************************************/
 
 #include <Wt/WText.h>
 #include <Wt/WVBoxLayout.h>
@@ -36,9 +36,9 @@ ProfileWidget::ProfileWidget(Session *session) : session_(session) {
 	auto menuWidget = menuLayout->insertWidget(0,cpp14::make_unique<WMenu>(mainStack),0);
 
 /*
-	auto accountItem = menuWidget->addItem("Account",cpp14::make_unique<AccountWidget>(session_));
-	auto settingsItem = menuWidget->addItem("Security",cpp14::make_unique<SecurityWidget>(session_));
-	auto notificationsItem = menuWidget->addItem("Notifications",cpp14::make_unique<NotificationsWidget>(session_));*/
+        auto accountItem = menuWidget->addItem("Account",cpp14::make_unique<AccountWidget>(session_));
+        auto settingsItem = menuWidget->addItem("Security",cpp14::make_unique<SecurityWidget>(session_));
+        auto notificationsItem = menuWidget->addItem("Notifications",cpp14::make_unique<NotificationsWidget>(session_));*/
 
 }
 
