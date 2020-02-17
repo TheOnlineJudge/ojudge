@@ -62,7 +62,6 @@ void CategoryModel::populateData() {
 	treeData_.push_back(Tree(-1,-1,1,rowCount.at(1)));
 	dbToInternal[1] = 0;
 
-
 	for(tmpCategories::const_iterator i = tmpcategories.begin(); i != tmpcategories.end(); i++) {
 		dbo::ptr<Category> category = *i;
 		if(category.id()!=1) {
