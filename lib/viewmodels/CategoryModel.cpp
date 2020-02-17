@@ -58,7 +58,10 @@ void CategoryModel::populateData() {
 	categoryData_[1].categories = rowCount.at(1);
 	categoryData_[1].problems = 0;
 
+	std::map<int,int> dbToInternal;
 	treeData_.push_back(Tree(-1,-1,1,rowCount.at(1)));
+	dbToInternal[1] = 0;
+
 
 	for(tmpCategories::const_iterator i = tmpcategories.begin(); i != tmpcategories.end(); i++) {
 		dbo::ptr<Category> category = *i;
@@ -68,7 +71,7 @@ void CategoryModel::populateData() {
 			categoryData_[category.id()].categories = rowCount.at(category.id());
 			categoryData_[category.id()].problems = category->problems.size();
 
-			getTreeId(category->parent.id()-1,childIndex[category->parent.id()]++,category.id(),rowCount.at(category.id()));
+			dbToInternal[category.id()] = getTreeId(dbToInternal.at(category->parent.id()),childIndex[category->parent.id()]++,category.id(),rowCount.at(category.id()));
 		}
 	}
 }
@@ -111,6 +114,9 @@ WModelIndex CategoryModel::index(int row, int column, const WModelIndex& parent)
 }
 
 cpp17::any CategoryModel::data(const WModelIndex& index, ItemDataRole role) const {
+
+	if (!index.isValid())
+		return cpp17::any();
 
 	const Tree& item = treeData_[getTreeId(index.internalId(),index.row())];
 	int category = item.categoryId();
@@ -195,7 +201,6 @@ int CategoryModel::getTreeId(int parentId, int childIndex, int categoryId, int r
 	ChildPointerMap::const_iterator i = childPointer_.find(index);
 	if(i == childPointer_.end()) {
 		const Tree& parentItem = treeData_[parentId];
-
 		treeData_.push_back(Tree(parentId, childIndex, categoryId, rowCount));
 		int result = treeData_.size() - 1;
 		childPointer_[index] = result;
