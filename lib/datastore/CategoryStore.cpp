@@ -9,11 +9,14 @@
 
 #include <Wt/WServer.h>
 #include <Wt/WApplication.h>
+#include <mutex>
 #include "../ojudgeApp.h"
 
 #include "../dbmodel/DBModel.h"
 
 #include "CategoryStore.h"
+
+std::mutex addCategory_mutex;
 
 using namespace Wt;
 
@@ -61,6 +64,8 @@ const CategoryData& CategoryStore::getCategory(int id) {
 }
 
 void CategoryStore::addCategory(std::string title, Wt::WModelIndex& parent, int row) {
+
+	std::lock_guard<std::mutex> guard(addCategory_mutex);
 
 	int parentId = (parent.isValid()?cpp17::any_cast<int>(parent.data(CategoryModel::CategoryIdRole)):1);
 	dbo::ptr<Category> category = dbModel_->addCategory(title,parentId);
