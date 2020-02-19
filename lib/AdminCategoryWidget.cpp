@@ -86,18 +86,18 @@ void AdminCategoryWidget::showAddDialog() {
 void AdminCategoryWidget::addDialogDone(DialogCode code) {
 	int parentId = 0;
 	if(code == DialogCode::Accepted) {
+		WModelIndex tmpIndex ;
 		if(rootCheckBox_->isChecked()) {
-			parentId = 1;
+			tmpIndex = selectParent_->rootIndex();
 		} else if(selectParent_->selectedIndexes().size()) {
 			WModelIndexSet::const_iterator tmpIterator = selectParent_->selectedIndexes().begin();
-			WModelIndex tmpIndex = *tmpIterator;
-			parentId = cpp17::any_cast<int>(tmpIterator->data(CategoryModel::CategoryIdRole));
+			tmpIndex = *tmpIterator;
 		} else {
 			WMessageBox::show("Error","You have to select one parent.",StandardButton::Ok);
 			addDialog_->show();
 			return;
 		}
-		catmodel_->addCategory(newTitle_->text().toUTF8(),parentId);
+		catmodel_->addCategory(newTitle_->text().toUTF8(),tmpIndex);
 	}
 	removeChild(addDialog_);
 }

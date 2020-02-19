@@ -12,27 +12,26 @@
 
 #include <Wt/WAbstractItemModel.h>
 
-class DBModel;
+class CategoryStore;
 
 class CategoryModel : public Wt::WAbstractItemModel {
 public:
 
 static constexpr Wt::ItemDataRole CategoryIdRole = Wt::ItemDataRole::User + 1;
 
-CategoryModel(DBModel *dbmodel);
+CategoryModel(CategoryStore *categoryStore_);
 virtual int columnCount(const Wt::WModelIndex& parent = Wt::WModelIndex()) const override;
 virtual int rowCount(const Wt::WModelIndex& parent = Wt::WModelIndex()) const override;
 virtual Wt::WModelIndex parent(const Wt::WModelIndex& index) const override;
 virtual Wt::WModelIndex index(int row, int column, const Wt::WModelIndex& parent = Wt::WModelIndex()) const override;
 virtual Wt::cpp17::any data(const Wt::WModelIndex& index, Wt::ItemDataRole role = Wt::ItemDataRole::Display) const override;
 virtual Wt::cpp17::any headerData(int section, Wt::Orientation orientation = Wt::Orientation::Horizontal, Wt::ItemDataRole role = Wt::ItemDataRole::Display) const override;
+void insertCategory(int row, const Wt::WModelIndex& parent, int categoryId);
 
-void addCategory(std::string title, int parent) ;
+void addCategory(std::string title, Wt::WModelIndex& parent) ;
 
 private:
-void refresh();
-void populateData();
-DBModel *dbmodel_;
+CategoryStore *categoryStore_;
 
 struct ChildIndex {
 	int parentId;
@@ -60,14 +59,8 @@ struct ChildIndex {
 	}
 };
 
-struct CategoryData {
-	std::string title;
-	int parent;
-	int categories;
-	int problems;
-};
-
-std::map<int,CategoryData> categoryData_;
+std::map<int,int> childIndex_;
+std::map<int,int> dbToInternal_;
 
 class Tree {
 public:
@@ -77,6 +70,7 @@ int parentId() const;
 int index() const;
 int categoryId() const;
 int rowCount() const;
+void addRow();
 
 private:
 ChildIndex index_;

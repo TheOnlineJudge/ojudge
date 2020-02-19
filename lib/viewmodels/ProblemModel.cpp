@@ -7,46 +7,14 @@
 * Read the LICENSE file for information on license terms
 *********************************************************************/
 
-#include "../dbmodel/DBModel.h"
+#include "../datastore/ProblemStore.h"
+
 #include "ProblemModel.h"
 
 using namespace Wt;
 
-ProblemModel::ProblemModel(DBModel *dbmodel) : WAbstractTableModel(), dbmodel_(dbmodel) {
+ProblemModel::ProblemModel(ProblemStore *problemStore) : WAbstractTableModel(), problemStore_(problemStore) {
 
-	refresh();
-}
-
-void ProblemModel::refresh() {
-
-	layoutAboutToBeChanged().emit();
-
-	problemData_.clear();
-
-	populateData();
-
-	layoutChanged().emit();
-
-}
-
-void ProblemModel::populateData() {
-
-	Problems problems = dbmodel_->getProblems();
-	Dbo::Transaction transaction = dbmodel_->startTransaction();
-
-	int row = 0;
-
-	for(Problems::const_iterator i = problems.begin(); i != problems.end(); i++) {
-		dbo::ptr<Problem> problem = *i;
-		problemData_[row].id = problem.id();
-		problemData_[row].title = problem->title;
-		for(Categories::const_iterator j = problem->categories.begin(); j != problem->categories.end(); j++) {
-			dbo::ptr<Category> category = *j;
-			problemData_[row].categories += std::string("#" + std::to_string(category.id()));
-		}
-		problemData_[row].categories += std::string("#");
-		row++;
-	}
 }
 
 int ProblemModel::columnCount(const WModelIndex& parent) const {
@@ -54,7 +22,7 @@ int ProblemModel::columnCount(const WModelIndex& parent) const {
 }
 
 int ProblemModel::rowCount(const WModelIndex& parent) const {
-	return problemData_.size();
+	return problemStore_->getProblems().size();
 }
 
 cpp17::any ProblemModel::data(const WModelIndex& index, ItemDataRole role) const {
@@ -62,13 +30,13 @@ cpp17::any ProblemModel::data(const WModelIndex& index, ItemDataRole role) const
 	if(role == ItemDataRole::Display) {
 		switch(index.column()) {
 		case 0:
-			return problemData_.at(index.row()).id;
+			return problemStore_->getProblem(index.row()).id;
 		case 1:
-			return problemData_.at(index.row()).title;
+			return problemStore_->getProblem(index.row()).title;
 		case 2:
 			return std::string("Who am I: " + std::to_string(index.row()));
 		case 3:
-			return problemData_.at(index.row()).categories;
+			return problemStore_->getProblem(index.row()).categories;
 		}
 	} else if(role == ItemDataRole::Decoration) {
 		if(index.column()==0) {

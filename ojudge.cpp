@@ -20,25 +20,21 @@
 #include "lib/authmodel/Session.h"
 #include "lib/dbmodel/DBModel.h"
 #include "lib/viewmodels/ViewModels.h"
+#include "lib/datastore/DataStore.h"
 
 using namespace Wt;
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
 po::variables_map vm;
+std::stringstream dbConnect;
+DBModel *dbmodel;
+DataStore *dataStore;
 
 std::unique_ptr<WApplication> createApplication(const WEnvironment &env) {
 
-	std::stringstream dbConnect;
-	dbConnect << "host=" << vm["database.host"].as<std::string>() << " ";
-	dbConnect << "dbname=" << vm["database.dbname"].as<std::string>() << " ";
-	dbConnect << "user=" << vm["database.user"].as<std::string>() << " ";
-	dbConnect << "password=" << vm["database.password"].as<std::string>();
-
 	Session *session = new Session(dbConnect.str().c_str());
-	DBModel *dbmodel = new DBModel(dbConnect.str().c_str());
-	ViewModels *viewModels = new ViewModels(dbmodel);
-
+	ViewModels *viewModels = new ViewModels(dataStore);
 	return cpp14::make_unique<ojudgeApp>(env,session,viewModels,dbmodel);
 }
 
@@ -79,6 +75,14 @@ int main(int argc, char **argv) {
 	        ("database.password",po::value<std::string>(),"Database password")
 	;
 	po::store(po::parse_config_file(configFilePath.c_str(),desc),vm);
+
+	dbConnect << "host=" << vm["database.host"].as<std::string>() << " ";
+	dbConnect << "dbname=" << vm["database.dbname"].as<std::string>() << " ";
+	dbConnect << "user=" << vm["database.user"].as<std::string>() << " ";
+	dbConnect << "password=" << vm["database.password"].as<std::string>();
+
+	dbmodel = new DBModel(dbConnect.str().c_str());
+	dataStore = new DataStore(dbmodel);
 
 	try {
 		WServer server(argc, argv, WTHTTP_CONFIGURATION);

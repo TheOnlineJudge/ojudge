@@ -13,16 +13,16 @@
 #include "CategoryModel.h"
 #include "ProblemModel.h"
 
-class DBModel;
+class DataStore;
 
 class ViewModels {
 public:
-ViewModels(DBModel *dbmodel);
+ViewModels(DataStore *dataStore);
 const std::shared_ptr<CategoryModel> getCategoryModel();
 const std::shared_ptr<ProblemModel> getProblemModel();
 
 private:
-DBModel *dbmodel_;
+DataStore *dataStore_;
 std::shared_ptr<CategoryModel> categoryModel_;
 std::shared_ptr<ProblemModel> problemModel_;
 };

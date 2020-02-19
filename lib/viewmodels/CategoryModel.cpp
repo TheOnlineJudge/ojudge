@@ -7,72 +7,45 @@
 * Read the LICENSE file for information on license terms
 *********************************************************************/
 
-#include "../dbmodel/DBModel.h"
+#include <Wt/WServer.h>
+#include "../ojudgeApp.h"
+#include "../datastore/CategoryStore.h"
 #include "CategoryModel.h"
 
 using namespace Wt;
 
-CategoryModel::CategoryModel(DBModel *dbmodel) : WAbstractItemModel(), dbmodel_(dbmodel) {
+CategoryModel::CategoryModel(CategoryStore *categoryStore) : WAbstractItemModel(), categoryStore_(categoryStore) {
 
-	refresh();
-}
+	std::map<int,CategoryData> categories = categoryStore_->getCategories();
 
-void CategoryModel::refresh() {
+	childIndex_[1] = 0;
+	dbToInternal_[1] = getTreeId(-1,-1,1,categories[1].categories);
 
-	layoutAboutToBeChanged().emit();
-
-	treeData_.clear();
-	childPointer_.clear();
-	categoryData_.clear();
-
-	populateData();
-
-	layoutChanged().emit();
-
-}
-
-void CategoryModel::populateData() {
-
-	Categories categories = dbmodel_->getCategories();
-	Dbo::Transaction transaction = dbmodel_->startTransaction();
-
-	typedef std::vector< Dbo::ptr<Category> > tmpCategories;
-	tmpCategories tmpcategories(categories.begin(), categories.end());
-
-	std::map<int,int> childIndex;
-	std::map<int,int> rowCount;
-
-	for(tmpCategories::const_iterator i = tmpcategories.begin(); i != tmpcategories.end(); i++) {
-		dbo::ptr<Category> category = *i;
-		childIndex[category.id()] = 0;
-		rowCount[category.id()] = 0;
-	}
-
-	for(tmpCategories::const_iterator i = tmpcategories.begin(); i != tmpcategories.end(); i++) {
-		dbo::ptr<Category> category = *i;
-		rowCount[category->parent.id()]++;
-	}
-
-	categoryData_[1].title = std::string("Root category");
-	categoryData_[1].parent = 0;
-	categoryData_[1].categories = rowCount.at(1);
-	categoryData_[1].problems = 0;
-
-	std::map<int,int> dbToInternal;
-	treeData_.push_back(Tree(-1,-1,1,rowCount.at(1)));
-	dbToInternal[1] = 0;
-
-	for(tmpCategories::const_iterator i = tmpcategories.begin(); i != tmpcategories.end(); i++) {
-		dbo::ptr<Category> category = *i;
-		if(category.id()!=1) {
-			categoryData_[category.id()].title = category->title;
-			categoryData_[category.id()].parent = category->parent.id();
-			categoryData_[category.id()].categories = rowCount.at(category.id());
-			categoryData_[category.id()].problems = category->problems.size();
-
-			dbToInternal[category.id()] = getTreeId(dbToInternal.at(category->parent.id()),childIndex[category->parent.id()]++,category.id(),rowCount.at(category.id()));
+	for(auto& item : categories) {
+		if(item.first>1) {
+			childIndex_[item.first] = 0;
+			dbToInternal_[item.first] = getTreeId(dbToInternal_.at(item.second.parent),childIndex_[item.second.parent]++,item.first,item.second.categories);
 		}
 	}
+}
+
+void CategoryModel::addCategory(std::string title, WModelIndex& parent) {
+
+	int parentId = (parent.isValid()?cpp17::any_cast<int>(parent.data(CategoryModel::CategoryIdRole)):1);
+	categoryStore_->addCategory(title,parent,childIndex_.at(parentId));
+}
+
+void CategoryModel::insertCategory(int row, const WModelIndex& parent, int categoryId) {
+
+	int parentId = (parent.isValid()?cpp17::any_cast<int>(parent.data(CategoryModel::CategoryIdRole)):1);
+
+	childIndex_[categoryId] = 0;
+	dbToInternal_[categoryId] = getTreeId(dbToInternal_.at(parentId),childIndex_[parentId]++,categoryId,0);
+	Tree& item = (parent.isValid()?treeData_[getTreeId(parent.internalId(),parent.row())]:treeData_[0]);
+
+	beginInsertRows(parent,row,row);
+	item.addRow();
+	endInsertRows();
 }
 
 int CategoryModel::columnCount(const WModelIndex& parent) const {
@@ -123,11 +96,11 @@ cpp17::any CategoryModel::data(const WModelIndex& index, ItemDataRole role) cons
 	if(role == ItemDataRole::Display) {
 		switch(index.column()) {
 		case 0:
-			return categoryData_.at(category).title;
+			return categoryStore_->getCategory(category).title;
 		case 1:
-			return categoryData_.at(category).problems;
+			return categoryStore_->getCategory(category).problems;
 		case 2:
-			return categoryData_.at(category).categories;
+			return categoryStore_->getCategory(category).categories;
 		case 3:
 			return std::string("Who am I: " + std::to_string(category));
 		}
@@ -166,13 +139,6 @@ cpp17::any CategoryModel::headerData(int section, Orientation orientation, ItemD
 	return cpp17::any();
 }
 
-void CategoryModel::addCategory(std::string title, int parent) {
-
-	dbmodel_->addCategory(title,parent);
-	refresh();
-
-}
-
 CategoryModel::Tree::Tree(int parentId, int index, int categoryId, int rowCount) : index_(parentId,index), categoryId_(categoryId), rowCount_(rowCount) {
 
 }
@@ -193,13 +159,16 @@ int CategoryModel::Tree::rowCount() const {
 	return rowCount_;
 }
 
+void CategoryModel::Tree::addRow() {
+	rowCount_++;
+}
+
 int CategoryModel::getTreeId(int parentId, int childIndex, int categoryId, int rowCount) const {
 
 	ChildIndex index(parentId, childIndex);
 
 	ChildPointerMap::const_iterator i = childPointer_.find(index);
 	if(i == childPointer_.end()) {
-		const Tree& parentItem = treeData_[parentId];
 		treeData_.push_back(Tree(parentId, childIndex, categoryId, rowCount));
 		int result = treeData_.size() - 1;
 		childPointer_[index] = result;
