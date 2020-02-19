@@ -46,6 +46,8 @@ void CategoryModel::insertCategory(int row, const WModelIndex& parent, int categ
 	beginInsertRows(parent,row,row);
 	item.addRow();
 	endInsertRows();
+
+	dataChanged().emit(index(parent.row(),2,parent.parent()),index(parent.row(),2,parent.parent()));
 }
 
 int CategoryModel::columnCount(const WModelIndex& parent) const {
