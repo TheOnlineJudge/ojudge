@@ -19,10 +19,10 @@
 #include <Wt/Auth/AuthModel.h>
 #include <Wt/WAbstractItemModel.h>
 #include <boost/program_options.hpp>
+#include "viewmodels/ViewModels.h"
 #include "LoginWidget.h"
 
 class Session;
-class ViewModels;
 class DBModel;
 
 class ojudgeApp : public Wt::WApplication {
@@ -30,6 +30,7 @@ class ojudgeApp : public Wt::WApplication {
 public:
 ojudgeApp(const Wt::WEnvironment& env, Session *session, ViewModels *viewModels, DBModel *dbmodel);
 void authEvent();
+ViewModels *getViewModels();
 
 private:
 Wt::WMenu *mainMenu_;

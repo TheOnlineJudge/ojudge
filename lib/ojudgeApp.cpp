@@ -29,7 +29,6 @@
 #include <Wt/Auth/PasswordService.h>
 #include <Wt/WAbstractItemModel.h>
 #include "../version.h"
-#include "viewmodels/ViewModels.h"
 #include "dbmodel/DBModel.h"
 #include "AboutWidget.h"
 #include "AdminWidget.h"
@@ -55,6 +54,8 @@ using namespace Wt;
 namespace po = boost::program_options;
 
 ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *viewModels, DBModel *dbmodel) : WApplication(env), session_(session), viewModels_(viewModels), dbmodel_(dbmodel) {
+
+	enableUpdates(true);
 
 	if(dbmodel_->getSetting("googleAnalytics") != "")
 		require(std::string("https://www.googletagmanager.com/gtag/js?id=") + dbmodel_->getSetting("googleAnalytics"));
@@ -204,6 +205,10 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 
 	navigationBar->setScrollVisibilityEnabled(true);
 	navigationBar->scrollVisibilityChanged().connect(this,&ojudgeApp::switchNavbar);
+}
+
+ViewModels *ojudgeApp::getViewModels() {
+	return viewModels_;
 }
 
 void ojudgeApp::authEvent() {

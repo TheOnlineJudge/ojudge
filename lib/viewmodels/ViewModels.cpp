@@ -7,12 +7,13 @@
 * Read the LICENSE file for information on license terms
 *********************************************************************/
 
+#include "../datastore/DataStore.h"
 #include "ViewModels.h"
 
-ViewModels::ViewModels(DBModel *dbmodel) : dbmodel_(dbmodel) {
+ViewModels::ViewModels(DataStore *dataStore) : dataStore_(dataStore) {
 
-	categoryModel_ = std::make_shared<CategoryModel>(dbmodel_);
-	problemModel_ = std::make_shared<ProblemModel>(dbmodel_);
+	categoryModel_ = std::make_shared<CategoryModel>(dataStore_->getCategoryStore());
+	problemModel_ = std::make_shared<ProblemModel>(dataStore_->getProblemStore());
 
 }
 
