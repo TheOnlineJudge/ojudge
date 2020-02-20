@@ -148,6 +148,10 @@ body {
   height:100%;
 }
 
+.actions .disabled {
+  visibility:hidden;
+}
+
 @media (min-width: 768px) {
   .mynavbar {
     border-color: transparent !important;

@@ -104,7 +104,7 @@ cpp17::any CategoryModel::data(const WModelIndex& index, ItemDataRole role) cons
 		case 2:
 			return categoryStore_->getCategory(category).categories;
 		case 3:
-			return std::string("Who am I: " + std::to_string(category));
+			return category;
 		}
 	} else if(role == ItemDataRole::Decoration) {
 		if(index.column()==0) {
