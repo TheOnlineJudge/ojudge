@@ -46,3 +46,10 @@ set_target_properties (
         VERSION ${OJUDGE_VERSION_MAJOR}.${OJUDGE_VERSION_MINOR}.${OJUDGE_VERSION_RELEASE}
 )
 
+TARGET_LINK_LIBRARIES (ojudge
+        ${Boost_LIBRARIES}
+        Wt::Wt
+        Wt::HTTP
+        Wt::Dbo
+        Wt::DboPostgres
+)
