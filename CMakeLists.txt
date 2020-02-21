@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED (VERSION 3.1)
 PROJECT (ojudge)
 set(Boost_NO_BOOST_CMAKE ON)
-FIND_PACKAGE (Wt REQUIRED)
+FIND_PACKAGE (Wt REQUIRED Wt HTTP )
 FIND_PACKAGE (Boost COMPONENTS filesystem program_options REQUIRED)
 
 SET (CMAKE_CXX_FLAGS "-O2 -std=c++17 -g")
@@ -12,7 +12,7 @@ SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 SET (OJUDGE_VERSION_MAJOR 0)
 SET (OJUDGE_VERSION_MINOR 1)
-SET (OJUDGE_VERSION_RELEASE 0)
+SET (OJUDGE_VERSION_RELEASE 1)
 
 add_custom_command (
 	OUTPUT version.h
@@ -33,9 +33,9 @@ add_dependencies (ojudgeapp do_generateversion)
 
 TARGET_LINK_LIBRARIES (ojudgeapp
 	${Boost_LIBRARIES}
-	wt
-	wthttp
-        wtdbo
-        wtdbopostgres
+	Wt::Wt
+	Wt::HTTP
+        Wt::Dbo
+        Wt::DboPostgres
 	ojudge
 )

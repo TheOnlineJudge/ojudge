@@ -20,6 +20,7 @@ namespace dbo = Wt::Dbo;
 
 class Category;
 class Problem;
+class Description;
 class Setting;
 class Submission;
 class Testcase;
@@ -27,10 +28,29 @@ class Verdict;
 
 typedef dbo::collection< dbo::ptr<Category> > Categories;
 typedef dbo::collection< dbo::ptr<Problem> > Problems;
+typedef dbo::collection< dbo::ptr<Description> > Descriptions;
 typedef dbo::collection< dbo::ptr<Testcase> > Testcases;
 typedef dbo::collection< dbo::ptr<Submission> > Submissions;
 typedef dbo::collection< dbo::ptr<Verdict> > Verdicts;
 typedef dbo::collection< dbo::ptr<Setting> > Settings;
+
+namespace Wt {
+namespace Dbo {
+	template<>
+	struct dbo_traits<Problem> : public dbo_default_traits {
+		static const char *surrogateIdField() { return 0; }
+	};
+
+
+	template<>
+	struct dbo_traits<Description> : public dbo_default_traits {
+		typedef ptr<Problem> IdType;
+
+		static IdType invalidId() { return ptr<Problem>{}; }
+		static const char *surrogateIdField() { return 0; }
+	};
+}
+}
 
 class Category {
 public:
@@ -59,32 +79,35 @@ std::string title;
 dbo::collection< dbo::ptr<Category> > categories;
 dbo::collection< dbo::ptr<Testcase> > testcases;
 dbo::collection< dbo::ptr<Submission> > submissions;
+dbo::weak_ptr<Description> description;
 
 template<class Action>
 void persist(Action& a) {
 	dbo::id(a, id, "id");
 	dbo::field(a, title, "title");
+	dbo::hasOne(a, description);
 	dbo::hasMany(a, categories, dbo::ManyToMany, "probs_cats");
 	dbo::hasMany(a, testcases, dbo::ManyToOne, "problem");
 	dbo::hasMany(a, submissions, dbo::ManyToOne, "problem");
 }
 };
 
-namespace Wt {
-namespace Dbo {
-template<>
-struct dbo_traits<Problem> : public dbo_default_traits {
-	static const char *surrogateIdField() {
-		return 0;
-	}
+class Description {
+public:
+std::vector<unsigned char> pdfdata;
+dbo::ptr<Problem> problem;
+
+template<class Action>
+void persist(Action& a) {
+	dbo::id(a, problem, "problem", dbo::OnDeleteCascade);
+	dbo::field(a, pdfdata, "pdfdata");
+}
 };
-}
-}
 
 class Testcase {
 public:
-dbo::ptr<Problem> problem;
 std::string title;
+dbo::ptr<Problem> problem;
 
 template<class Action>
 void persist(Action& a) {
