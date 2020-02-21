@@ -130,6 +130,25 @@ body {
   height:18px;
 }
 
+.myAdminCategoryTree {
+  border:0px;
+}
+
+.myAdminCategoryTree .Wt-item {
+  background-color:none;
+  transition:1s;
+}
+
+.myAdminCategoryTree .Wt-item:hover {
+  background-color:#e7e7e7;
+  border-radius:5px;
+  transition:0s;
+}
+
+.myAdminCategoryTreeItem .icon {
+  height:18px;
+}
+
 .myAdminProblemTable .icon {
   height:18px;
 }
