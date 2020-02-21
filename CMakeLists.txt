@@ -32,10 +32,5 @@ add_executable (ojudgeapp ojudge.cpp)
 add_dependencies (ojudgeapp do_generateversion)
 
 TARGET_LINK_LIBRARIES (ojudgeapp
-	${Boost_LIBRARIES}
-	Wt::Wt
-	Wt::HTTP
-        Wt::Dbo
-        Wt::DboPostgres
 	ojudge
 )
