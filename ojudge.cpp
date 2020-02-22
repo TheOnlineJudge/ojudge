@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
 	        ("database.user",po::value<std::string>(),"Database username")
 	        ("database.password",po::value<std::string>(),"Database password")
 	;
-	po::store(po::parse_config_file(configFilePath.c_str(),desc),vm);
+	po::store(po::parse_config_file<char>(configFilePath.c_str(),desc),vm);
 
 	dbConnect << "host=" << vm["database.host"].as<std::string>() << " ";
 	dbConnect << "dbname=" << vm["database.dbname"].as<std::string>() << " ";
