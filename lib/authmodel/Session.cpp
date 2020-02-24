@@ -61,6 +61,14 @@ Session::Session(const std::string &postgresDb) {
 	try {
 		createTables();
 		std::cerr << "Created database." << std::endl;
+
+		// Add username admin with password admin
+		std::unique_ptr<UserDatabase> tmpUsers = cpp14::make_unique<UserDatabase>(*this);
+		std::cerr << "Creating user 'admin' with password 'admin' on first run" << std::endl;
+		std::unique_ptr<Auth::AbstractUserDatabase::Transaction> t(tmpUsers->startTransaction());
+		Auth::User user = tmpUsers->registerNew();
+		user.addIdentity(Auth::Identity::LoginName, "admin");
+		passwordAuth().updatePassword(user,"admin");
 	} catch (std::exception &e) {
 		std::cerr << e.what() << std::endl;
 		std::cerr << "Using existing database." << std::endl;
