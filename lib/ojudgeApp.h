@@ -22,6 +22,14 @@
 #include "viewmodels/ViewModels.h"
 #include "LoginWidget.h"
 
+namespace xmlResources {
+// Common
+extern const char *form_templates_xml1;
+
+// English
+extern const char *messages_xml1;
+}
+
 class Session;
 class DBModel;
 

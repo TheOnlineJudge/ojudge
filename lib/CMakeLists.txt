@@ -1,4 +1,21 @@
+MACRO (FILE_TO_STRING infile outfile var)
+ADD_CUSTOM_COMMAND(OUTPUT ${outfile}
+                   COMMAND ${CMAKE_COMMAND}
+                   ARGS -Dinfile:FILEPATH=xml/${infile}
+                        -Doutfile:FILEPATH=${outfile}
+                        -Dvar:STRING=${var}
+                        -P filetostring.cmake
+                   MAIN_DEPENDENCY
+                        xml/${infile}
+)
+ENDMACRO (FILE_TO_STRING)
+
+FILE_TO_STRING(form_templates.xml form_templates_xml.cpp form_templates_xml)
+FILE_TO_STRING(messages.xml messages_xml.cpp messages_xml)
+
 SET (ojudge_lib
+form_templates_xml.cpp
+messages_xml.cpp
 authmodel/Session.cpp
 authmodel/User.cpp
 authmodel/UserDetailsModel.cpp
