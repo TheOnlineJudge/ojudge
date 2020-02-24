@@ -1,7 +1,7 @@
 # OJudge Platform
 
 ## What is OJudge?
-OJudge Platform is a software for the creation of an *Online Judge* site, such as the famous https://onlinejudge.org. At this moment it is under heavy development, which means that it is mostly unusuable, and the source code is provided here mostly for developers willing to contribute to it.
+OJudge Platform is a software for the creation of an *Online Judge* site, such as the famous https://onlinejudge.org. At this moment it is under heavy development, which means that it is mostly unuseable, and the source code is provided here mostly for developers willing to contribute to it.
 
 ## License
 The code is released under the terms of the GPL-3 license, a copy of which is available in the file LICENSE. According to the license, it comes with ABSOLUTELY NO WARRANTY, and you are free to reuse and distrubute it, in compliance with the terms of the mentioned license.
