@@ -29,12 +29,15 @@ AdminProblemWidget::AdminProblemWidget(ViewModels *viewModels) : viewModels_(vie
 	auto toolbarWidget = mainLayout_->addWidget(cpp14::make_unique<WContainerWidget>());
 	auto toolbarLayout = toolbarWidget->setLayout(cpp14::make_unique<WHBoxLayout>());
 
-	auto addButton = toolbarLayout->addWidget(cpp14::make_unique<WImage>("images/add-button.svg"));
-	addButton->setHeight(WLength(32));
-	addButton->decorationStyle().setCursor(Cursor::PointingHand);
-	addButton->setToolTip(WString("Add new problem"));
-	addButton->clicked().connect(this,&AdminProblemWidget::showAddDialog);
-	toolbarLayout->addStretch(1);
+	auto problemSelectorWidget = toolbarLayout->addWidget(cpp14::make_unique<WTemplate>(WString::tr("lineEdit-template")));
+	problemSelectorWidget->addFunction("id",&WTemplate::Functions::id);
+	auto problemSelector = cpp14::make_unique<WLineEdit>();
+	problemSelector_ = problemSelector.get();
+	problemSelectorWidget->bindString("label","Problem");
+	problemSelectorWidget->bindWidget("edit",std::move(problemSelector));
+
+	problemSelector_->setValidator(std::make_shared<Wt::WIntValidator>());
+	problemSelector_->textInput().connect(this,&AdminProblemWidget::problemSelectorSlot);
 
 	auto categoryComboWidget = toolbarLayout->addWidget(cpp14::make_unique<WTemplate>(WString::tr("comboBox-template")));
 	categoryComboWidget->addFunction("id",&WTemplate::Functions::id);
@@ -45,15 +48,13 @@ AdminProblemWidget::AdminProblemWidget(ViewModels *viewModels) : viewModels_(vie
 	categoryComboWidget->bindString("label","Category");
 	categoryComboWidget->bindWidget("combo",std::move(categoryCombo));
 
-	auto problemSelectorWidget = toolbarLayout->addWidget(cpp14::make_unique<WTemplate>(WString::tr("lineEdit-template")));
-	problemSelectorWidget->addFunction("id",&WTemplate::Functions::id);
-	auto problemSelector = cpp14::make_unique<WLineEdit>();
-	problemSelector_ = problemSelector.get();
-	problemSelectorWidget->bindString("label","Problem");
-	problemSelectorWidget->bindWidget("edit",std::move(problemSelector));
+	toolbarLayout->addStretch(1);
 
-	problemSelector_->setValidator(std::make_shared<Wt::WIntValidator>());
-	problemSelector_->textInput().connect(this,&AdminProblemWidget::problemSelectorSlot);
+	auto addButton = toolbarLayout->addWidget(cpp14::make_unique<WImage>("images/add-button.svg"));
+	addButton->setHeight(WLength(32));
+	addButton->decorationStyle().setCursor(Cursor::PointingHand);
+	addButton->setToolTip(WString("Add new problem"));
+	addButton->clicked().connect(this,&AdminProblemWidget::showAddDialog);
 
 	tableWidget_ = mainLayout_->addWidget(cpp14::make_unique<WTableView>());
 
@@ -87,6 +88,7 @@ void AdminProblemWidget::showAddDialog() {
         result->addFunction("id",&WTemplate::Functions::id);
 
 	auto newId = cpp14::make_unique<WLineEdit>();
+	newId->setValidator(std::make_shared<Wt::WIntValidator>());
 	newId_ = newId.get();
 
 	auto newTitle = cpp14::make_unique<WLineEdit>();
@@ -112,7 +114,7 @@ void AdminProblemWidget::showAddDialog() {
 	result->bindWidget("description",std::move(newDescription));
 	result->bindWidget("categories",std::move(newCategories));
 
-	WPushButton *ok = addDialog_->footer()->addWidget(cpp14::make_unique<WPushButton>("Ok"));
+	WPushButton *ok = addDialog_->footer()->addWidget(cpp14::make_unique<WPushButton>("Save"));
         WPushButton *cancel = addDialog_->footer()->addWidget(cpp14::make_unique<WPushButton>("Cancel"));
 
 	ok->clicked().connect(addDialog_, &WDialog::accept);

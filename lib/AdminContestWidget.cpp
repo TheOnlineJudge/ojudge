@@ -22,9 +22,10 @@ AdminContestWidget::AdminContestWidget() {
 	auto toolbarWidget = mainLayout_->addWidget(cpp14::make_unique<WContainerWidget>());
 	auto toolbarLayout = toolbarWidget->setLayout(cpp14::make_unique<WHBoxLayout>());
 
+	toolbarLayout->addStretch(1);
+
 	auto addButton = toolbarLayout->addWidget(cpp14::make_unique<WImage>("images/add-button.svg"));
 	addButton->setHeight(WLength(32));
 	addButton->decorationStyle().setCursor(Cursor::PointingHand);
 	addButton->setToolTip(WString("Add new contest"));
-	toolbarLayout->addStretch(1);
 }
