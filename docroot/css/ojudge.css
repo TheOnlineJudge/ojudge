@@ -171,6 +171,14 @@ body {
   visibility:hidden;
 }
 
+.flex-column.nav > li.active > a {
+  border-top-left-radius:5px;
+  border-bottom-left-radius:5px;
+  background:linear-gradient(to right, var(--ojcolor) 0%, var(--ojcolor) 70%, white 100%);
+  background-color:var(--ojcolor);
+  color:white;
+}
+
 @media (min-width: 768px) {
   .mynavbar {
     border-color: transparent !important;
