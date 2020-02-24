@@ -15,7 +15,7 @@ To build and run this software you need Wt (http://webtoolkit.eu) and its depend
 You will also need PostgreSQL installed and running in your system.
 
 ### Building
-Clone this repository, or a fork of it, and for its root directory run:
+Clone this repository, or a fork of it, and from its root directory run:
 
 ```
 $ cmake .
