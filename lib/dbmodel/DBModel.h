@@ -171,10 +171,12 @@ DBModel(const std::string &postgresDb);
 
 dbo::Transaction startTransaction();
 
-dbo::ptr<Category> addCategory(std::string title, int parent);
 Categories getCategories();
+dbo::ptr<Category> addCategory(std::string title, int parent);
 
 Problems getProblems();
+dbo::ptr<Problem> addProblem(long long id, std::string title);
+void updateDescription(long long problemId, std::vector<unsigned char>& descData);
 
 Settings getSettings();
 std::string getSetting(std::string settingName);

@@ -72,6 +72,26 @@ dbo::ptr<Category> DBModel::addCategory(std::string title, int parent) {
 	return session.add(std::move(category));
 }
 
+dbo::ptr<Problem> DBModel::addProblem(long long id, std::string title) {
+
+	dbo::Transaction transaction(session);
+	std::unique_ptr<Problem> problem(new Problem());
+	problem->id = id;
+	problem->title = title;
+
+	return session.add(std::move(problem));
+}
+
+void DBModel::updateDescription(long long problemId, std::vector<unsigned char>& descData) {
+
+	dbo::Transaction transaction(session);
+	dbo::ptr<Problem> problem = session.find<Problem>().where("id = ?").bind(problemId);
+
+	dbo::ptr<Description> description = session.add(std::unique_ptr<Description>(new Description()));
+	description.modify()->pdfdata = descData;
+	problem.modify()->description = description;
+}
+
 Categories DBModel::getCategories() {
 
 	dbo::Transaction transaction(session);
@@ -93,6 +113,6 @@ Settings DBModel::getSettings() {
 std::string DBModel::getSetting(std::string settingName) {
 
 	dbo::Transaction transaction(session);
-	Dbo::ptr<Setting> setting = session.find<Setting>().where("settingname = ?").bind(settingName);
+	dbo::ptr<Setting> setting = session.find<Setting>().where("settingname = ?").bind(settingName);
 	return setting->settingValue;
 }

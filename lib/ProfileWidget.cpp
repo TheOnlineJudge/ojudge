@@ -34,9 +34,11 @@ ProfileWidget::ProfileWidget(Session *session) : session_(session) {
 
 	auto mainStack = menuLayout->addWidget(cpp14::make_unique<WStackedWidget>(),1);
 	auto menuWidget = menuLayout->insertWidget(0,cpp14::make_unique<WMenu>(mainStack),0);
+	menuWidget->addStyleClass("flex-column");
+	menuWidget->setWidth(200);
 
-/*
-        auto accountItem = menuWidget->addItem("Account",cpp14::make_unique<AccountWidget>(session_));
+
+/*        auto accountItem = menuWidget->addItem("Account",cpp14::make_unique<AccountWidget>(session_));
         auto settingsItem = menuWidget->addItem("Security",cpp14::make_unique<SecurityWidget>(session_));
         auto notificationsItem = menuWidget->addItem("Notifications",cpp14::make_unique<NotificationsWidget>(session_));*/
 
