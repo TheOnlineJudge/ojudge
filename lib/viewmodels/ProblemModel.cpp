@@ -17,6 +17,17 @@ ProblemModel::ProblemModel(ProblemStore *problemStore) : WAbstractTableModel(), 
 
 }
 
+void ProblemModel::addProblem(long long id, std::string title, const WModelIndex& parent) {
+	problemStore_->addProblem(id,title,parent);
+}
+
+void ProblemModel::insertProblem(int row, const WModelIndex& parent) {
+
+	beginInsertRows(parent,row,row);
+	endInsertRows();
+
+}
+
 int ProblemModel::columnCount(const WModelIndex& parent) const {
 	return 4;
 }
@@ -34,7 +45,7 @@ cpp17::any ProblemModel::data(const WModelIndex& index, ItemDataRole role) const
 		case 1:
 			return problemStore_->getProblem(index.row()).title;
 		case 2:
-			return std::string("Who am I: " + std::to_string(index.row()));
+			return std::string("Who am I: " + std::to_string(problemStore_->getProblem(index.row()).id));
 		case 3:
 			return problemStore_->getProblem(index.row()).categories;
 		}
@@ -46,6 +57,8 @@ cpp17::any ProblemModel::data(const WModelIndex& index, ItemDataRole role) const
 		if(index.column()==0) {
 			return std::string("myAdminProblemTable");
 		}
+	} else if(role == ProblemRowRole) {
+		return index.row();
 	}
 
 	return cpp17::any();

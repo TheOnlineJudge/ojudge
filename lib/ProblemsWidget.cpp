@@ -42,6 +42,7 @@ ProblemsWidget::ProblemsWidget(ViewModels *viewModels) : viewModels_(viewModels)
 	auto problemsWidget = menuLayout->addWidget(cpp14::make_unique<WTableView>(),1);
 	proxyModel_ = std::make_shared<WSortFilterProxyModel>();
 	proxyModel_->setSourceModel(viewModels_->getProblemModel());
+	proxyModel_->setDynamicSortFilter(true);
 	proxyModel_->setFilterKeyColumn(3);
 
 	problemsWidget->setModel(proxyModel_);

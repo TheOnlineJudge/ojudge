@@ -29,7 +29,7 @@ CategoryModel::CategoryModel(CategoryStore *categoryStore) : WAbstractItemModel(
 	}
 }
 
-void CategoryModel::addCategory(std::string title, WModelIndex& parent) {
+void CategoryModel::addCategory(std::string title, const WModelIndex& parent) {
 
 	int parentId = (parent.isValid()?cpp17::any_cast<int>(parent.data(CategoryModel::CategoryIdRole)):1);
 	categoryStore_->addCategory(title,parent,childIndex_.at(parentId));

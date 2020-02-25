@@ -19,25 +19,27 @@
 #include <Wt/WTreeView.h>
 #include <Wt/WFileUpload.h>
 #include "viewmodels/ViewModels.h"
+#include "dbmodel/DBModel.h"
 
 class AdminProblemWidget : public Wt::WContainerWidget {
 public:
-AdminProblemWidget(ViewModels *viewModels);
+AdminProblemWidget(ViewModels *viewModels, DBModel *dbmodel);
 
 private:
 Wt::WVBoxLayout *mainLayout_;
 Wt::WTableView *tableWidget_;
 std::shared_ptr<Wt::WSortFilterProxyModel> proxyModel_;
 ViewModels *viewModels_;
+DBModel *dbmodel_;
 Wt::WLineEdit *problemSelector_;
 Wt::WDialog *addDialog_;
-Wt::WLineEdit *newId_;
-Wt::WLineEdit *newTitle_;
-Wt::WFileUpload *newDescription_;
-Wt::WTreeView *newCategories_;
+Wt::WLineEdit *id_;
+Wt::WLineEdit *title_;
+Wt::WFileUpload *description_;
+Wt::WTreeView *categories_;
 
 void problemSelectorSlot();
-void showAddDialog();
+void showAddEditDialog(const Wt::WModelIndex& index = Wt::WModelIndex());
 void addDialogDone(Wt::DialogCode code);
 };
 

@@ -96,6 +96,9 @@
       ${description}
     </div>
     <div class="form-group">
+      ${progress}
+    </div>
+    <div class="form-group">
       <label for="${id:categories}">${categorieslabel}</label>
       ${categories}
     </div>

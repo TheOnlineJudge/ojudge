@@ -35,7 +35,7 @@ AdminWidget::AdminWidget(Session *session,ViewModels *viewModels,DBModel *dbmode
 
 	WTabWidget *tabWidget = mainWidget->addNew<WTabWidget>();
 
-	tabWidget->addTab(cpp14::make_unique<AdminProblemWidget>(viewModels_),"Problems",ContentLoading::Lazy);
+	tabWidget->addTab(cpp14::make_unique<AdminProblemWidget>(viewModels_,dbmodel_),"Problems",ContentLoading::Lazy);
 	tabWidget->addTab(cpp14::make_unique<AdminCategoryWidget>(viewModels_->getCategoryModel()),"Categories",ContentLoading::Lazy);
 	tabWidget->addTab(cpp14::make_unique<AdminContestWidget>(),"Contests",ContentLoading::Lazy);
 	tabWidget->addTab(cpp14::make_unique<WText>("Users tab"),"Users",ContentLoading::Lazy);

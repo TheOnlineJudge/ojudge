@@ -7,6 +7,8 @@
 * Read the LICENSE file for information on license terms
 *********************************************************************/
 
+#include <fstream>
+#include <iterator>
 #include <Wt/WText.h>
 #include <Wt/WLineEdit.h>
 #include <Wt/WTemplate.h>
@@ -17,11 +19,12 @@
 #include <Wt/WIntValidator.h>
 #include <Wt/WImage.h>
 #include <Wt/WCssDecorationStyle.h>
+#include <Wt/WProgressBar.h>
 #include "AdminProblemWidget.h"
 
 using namespace Wt;
 
-AdminProblemWidget::AdminProblemWidget(ViewModels *viewModels) : viewModels_(viewModels) {
+AdminProblemWidget::AdminProblemWidget(ViewModels *viewModels, DBModel *dbmodel) : viewModels_(viewModels), dbmodel_(dbmodel) {
 
 	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout_->setContentsMargins(0,0,0,0);
@@ -54,12 +57,13 @@ AdminProblemWidget::AdminProblemWidget(ViewModels *viewModels) : viewModels_(vie
 	addButton->setHeight(WLength(32));
 	addButton->decorationStyle().setCursor(Cursor::PointingHand);
 	addButton->setToolTip(WString("Add new problem"));
-	addButton->clicked().connect(this,&AdminProblemWidget::showAddDialog);
+	addButton->clicked().connect( [this] { showAddEditDialog(); });
 
 	tableWidget_ = mainLayout_->addWidget(cpp14::make_unique<WTableView>());
 
 	proxyModel_ = std::make_shared<WSortFilterProxyModel>();
 	proxyModel_->setSourceModel(viewModels_->getProblemModel());
+	proxyModel_->setDynamicSortFilter(true);
 
 	tableWidget_->setModel(proxyModel_);
 
@@ -80,39 +84,53 @@ void AdminProblemWidget::problemSelectorSlot() {
 	}
 }
 
-void AdminProblemWidget::showAddDialog() {
+void AdminProblemWidget::showAddEditDialog(const WModelIndex& index) {
 
-	addDialog_ = addChild(cpp14::make_unique<WDialog>("Add new problem"));
+	std::string dialogTitle;
+
+	if(!index.isValid()) {
+		dialogTitle = "Add new problem";
+	} else {
+		dialogTitle = "Edit problem";
+	}
+
+	addDialog_ = addChild(cpp14::make_unique<WDialog>(dialogTitle));
 
 	auto result = addDialog_->contents()->addWidget(cpp14::make_unique<WTemplate>(WString::tr("addProblem-template")));
         result->addFunction("id",&WTemplate::Functions::id);
 
-	auto newId = cpp14::make_unique<WLineEdit>();
-	newId->setValidator(std::make_shared<Wt::WIntValidator>());
-	newId_ = newId.get();
+	auto id = cpp14::make_unique<WLineEdit>();
+	id->setValidator(std::make_shared<Wt::WIntValidator>());
+	id_ = id.get();
 
-	auto newTitle = cpp14::make_unique<WLineEdit>();
-	newTitle_ = newTitle.get();
+	auto title = cpp14::make_unique<WLineEdit>();
+	title_ = title.get();
 
-	auto newDescription = cpp14::make_unique<WFileUpload>();
-	newDescription_ = newDescription.get();
+	auto description = cpp14::make_unique<WFileUpload>();
+	description_ = description.get();
+	description_->changed().connect(description_, &WFileUpload::upload);
 
-	auto newCategories = cpp14::make_unique<WTreeView>();
-	newCategories->setModel(viewModels_->getCategoryModel()) ;
-	newCategories->setColumnHidden(1,true);
-	newCategories->setColumnHidden(2,true);
-	newCategories->setColumnHidden(3,true);
-	newCategories->setSelectionMode(SelectionMode::Extended);
-	newCategories_ = newCategories.get();
+	auto progress = cpp14::make_unique<WProgressBar>();
+	WProgressBar *progress_ = progress.get() ;
+	description_->setProgressBar(progress_);
+
+	auto categories = cpp14::make_unique<WTreeView>();
+	categories->setModel(viewModels_->getCategoryModel()) ;
+	categories->setColumnHidden(1,true);
+	categories->setColumnHidden(2,true);
+	categories->setColumnHidden(3,true);
+	categories->setSelectionMode(SelectionMode::Extended);
+	categories_ = categories.get();
 
 	result->bindString("idlabel",WString("ID"));
 	result->bindString("titlelabel",WString("Title"));
 	result->bindString("descriptionlabel",WString("Problem description"));
 	result->bindString("categorieslabel",WString("Categories"));
-	result->bindWidget("id",std::move(newId));
-	result->bindWidget("title",std::move(newTitle));
-	result->bindWidget("description",std::move(newDescription));
-	result->bindWidget("categories",std::move(newCategories));
+	result->bindWidget("id",std::move(id));
+	result->bindWidget("title",std::move(title));
+	result->bindWidget("description",std::move(description));
+	result->bindWidget("progress",std::move(progress));
+	result->bindWidget("categories",std::move(categories));
 
 	WPushButton *ok = addDialog_->footer()->addWidget(cpp14::make_unique<WPushButton>("Save"));
         WPushButton *cancel = addDialog_->footer()->addWidget(cpp14::make_unique<WPushButton>("Cancel"));
@@ -120,11 +138,21 @@ void AdminProblemWidget::showAddDialog() {
 	ok->clicked().connect(addDialog_, &WDialog::accept);
         cancel->clicked().connect(addDialog_, &WDialog::reject);
 
+/*	ok->disable();
+	description_->uploaded().connect(ok, &WPushButton::enable);*/
+
         addDialog_->finished().connect(this,&AdminProblemWidget::addDialogDone);
         addDialog_->show();
 
 }
 
 void AdminProblemWidget::addDialogDone(DialogCode code) {
+	if(code == DialogCode::Accepted) {
+		viewModels_->getProblemModel()->addProblem(std::stoi(id_->text().toUTF8()),title_->text().toUTF8());
+		std::ifstream descFile(description_->spoolFileName(), std::ios::binary);
+		std::vector<unsigned char> descFileContents(std::istreambuf_iterator<char>{descFile},{});
+		dbmodel_->updateDescription(std::stoi(id_->text().toUTF8()),descFileContents);
+	}
+		
 	removeChild(addDialog_);
 }

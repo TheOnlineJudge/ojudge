@@ -26,7 +26,7 @@ public:
 CategoryStore(DBModel *dbModel);
 const std::map<int,CategoryData>& getCategories();
 const CategoryData& getCategory(int id);
-void addCategory(std::string title, Wt::WModelIndex& parent, int row);
+void addCategory(std::string title, const Wt::WModelIndex& parent, int row);
 
 private:
 DBModel *dbModel_;

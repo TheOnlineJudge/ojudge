@@ -63,7 +63,7 @@ const CategoryData& CategoryStore::getCategory(int id) {
 	return categoryData_.at(id);
 }
 
-void CategoryStore::addCategory(std::string title, Wt::WModelIndex& parent, int row) {
+void CategoryStore::addCategory(std::string title, const Wt::WModelIndex& parent, int row) {
 
 	std::lock_guard<std::mutex> guard(addCategory_mutex);
 

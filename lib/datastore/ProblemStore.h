@@ -12,6 +12,7 @@
 
 #include <string>
 #include <map>
+#include <Wt/WModelIndex.h>
 
 class DBModel;
 
@@ -25,12 +26,13 @@ struct ProblemData {
 class ProblemStore {
 public:
 ProblemStore(DBModel *dbModel);
-const std::map<int,ProblemData>& getProblems();
-const ProblemData& getProblem(int id);
+const std::map<long long,ProblemData>& getProblems();
+const ProblemData& getProblem(long long id);
+void addProblem(long long id, std::string title, const Wt::WModelIndex& parent);
 
 private:
 DBModel *dbModel_;
-std::map<int,ProblemData> problemData_;
+std::map<long long,ProblemData> problemData_;
 };
 
 #endif // PROBLEMSTORE_H
