@@ -11,6 +11,7 @@
 #include <Wt/WVBoxLayout.h>
 #include <Wt/WHBoxLayout.h>
 #include <Wt/WCssDecorationStyle.h>
+#include "ojudgeApp.h"
 #include "ProblemsWidget.h"
 #include "viewmodels/ViewModels.h"
 
@@ -50,11 +51,20 @@ ProblemsWidget::ProblemsWidget(ViewModels *viewModels) : viewModels_(viewModels)
 	problemsWidget->setHeaderHeight(26);
 	problemsWidget->addStyleClass("myProblemsProblems");
 	problemsWidget->setColumnHidden(3,true);
+	problemsWidget->decorationStyle().setCursor(Cursor::PointingHand);
+	problemsWidget->clicked().connect(this,&ProblemsWidget::problemClicked);
 
 }
 
 void ProblemsWidget::categoryClicked(WModelIndex modelIndex, WMouseEvent mouseEvent) {
 
 	proxyModel_->setFilterRegExp(std::make_unique<std::regex>(asString(modelIndex.data(CategoryModel::CategoryIdRole),WString(".*#%d#.*")).toUTF8()));
+
+}
+
+void ProblemsWidget::problemClicked(WModelIndex modelIndex, WMouseEvent mouseEvent) {
+
+	auto app = dynamic_cast<ojudgeApp*>(Wt::WApplication::instance());
+	app->setInternalPath("/problem/"+asString(modelIndex.data()).toUTF8(),true);
 
 }

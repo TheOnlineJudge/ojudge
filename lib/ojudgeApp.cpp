@@ -186,6 +186,7 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	item->setMenu(std::move(profilePopup));
 	profileFloatMenu_ = mainFloatMenu_->addItem(std::move(item));
 
+	problemWidget_ = mainStack_->addWidget(cpp14::make_unique<ProblemWidget>(dbmodel_,viewModels_));
 	aboutWidget_ = mainStack_->addWidget(cpp14::make_unique<AboutWidget>());
 	adminWidget_ = mainStack_->addWidget(cpp14::make_unique<AdminWidget>(session_,viewModels_,dbmodel_));
 	contactWidget_ = mainStack_->addWidget(cpp14::make_unique<ContactWidget>());
@@ -245,12 +246,14 @@ void ojudgeApp::pathChanged(std::string newPath) {
 		}
 	}
 
-	doJavaScript(   "window.dataLayer = window.dataLayer || [];"
-	                "function gtag(){dataLayer.push(arguments);}"
-	                "gtag('js', new Date());"
-	                "gtag('config', 'UA-143237893-1', {"
-	                "'page_path': '" + newPath + "'"
-	                "});");
+	if(dbmodel_->getSetting("googleAnalytics") != "") {
+		doJavaScript(   "window.dataLayer = window.dataLayer || [];"
+		                "function gtag(){dataLayer.push(arguments);}"
+	        	        "gtag('js', new Date());"
+		                "gtag('config', '" + dbmodel_->getSetting("googleAnalytics") + "', {"
+		                "'page_path': '" + newPath + "'"
+	        	        "});");
+	}
 
 	if(mainMenu_->currentItem() != NULL)
 		mainMenu_->currentItem()->renderSelected(false);
@@ -258,7 +261,10 @@ void ojudgeApp::pathChanged(std::string newPath) {
 	if(mainFloatMenu_->currentItem() != NULL)
 		mainFloatMenu_->currentItem()->renderSelected(false);
 
-	if(newPath=="/about") {
+	if(newPath.substr(0,9)=="/problem/") {
+		problemWidget_->setProblem(std::stoi(newPath.substr(9)));
+		mainStack_->setCurrentWidget(problemWidget_);
+	} else if(newPath=="/about") {
 		mainStack_->setCurrentWidget(aboutWidget_);
 	} else if (newPath=="/profile") {
 		mainStack_->setCurrentWidget(profileWidget_);

@@ -21,6 +21,7 @@
 #include <boost/program_options.hpp>
 #include "viewmodels/ViewModels.h"
 #include "LoginWidget.h"
+#include "ProblemWidget.h"
 
 namespace xmlResources {
 // Common
@@ -44,6 +45,7 @@ private:
 Wt::WMenu *mainMenu_;
 Wt::WMenu *mainFloatMenu_;
 Wt::WStackedWidget *mainStack_;
+ProblemWidget *problemWidget_;
 Wt::WContainerWidget *aboutWidget_;
 Wt::WContainerWidget *adminWidget_;
 Wt::WContainerWidget *contactWidget_;
