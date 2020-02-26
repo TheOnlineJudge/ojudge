@@ -175,6 +175,7 @@ Categories getCategories();
 dbo::ptr<Category> addCategory(std::string title, int parent);
 
 Problems getProblems();
+dbo::ptr<Problem> getProblem(long long id);
 dbo::ptr<Problem> addProblem(long long id, std::string title);
 void updateDescription(long long problemId, std::vector<unsigned char>& descData);
 

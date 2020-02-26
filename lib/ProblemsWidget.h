@@ -25,6 +25,7 @@ private:
 std::shared_ptr<Wt::WSortFilterProxyModel> proxyModel_;
 ViewModels *viewModels_;
 void categoryClicked(Wt::WModelIndex modelIndex, Wt::WMouseEvent mouseEvent);
+void problemClicked(Wt::WModelIndex modelIndex, Wt::WMouseEvent mouseEvent);
 
 };
 

@@ -104,6 +104,12 @@ Problems DBModel::getProblems() {
 	return session.find<Problem>().orderBy("id");
 }
 
+dbo::ptr<Problem> DBModel::getProblem(long long id) {
+
+	dbo::Transaction transaction(session);
+	return session.find<Problem>().where("id = ?").bind(id);
+}
+
 Settings DBModel::getSettings() {
 
 	dbo::Transaction transaction(session);
