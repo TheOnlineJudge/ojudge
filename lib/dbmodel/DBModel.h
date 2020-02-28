@@ -25,6 +25,7 @@ class Setting;
 class Submission;
 class Testcase;
 class Verdict;
+class Language;
 
 typedef dbo::collection< dbo::ptr<Category> > Categories;
 typedef dbo::collection< dbo::ptr<Problem> > Problems;
@@ -33,6 +34,7 @@ typedef dbo::collection< dbo::ptr<Testcase> > Testcases;
 typedef dbo::collection< dbo::ptr<Submission> > Submissions;
 typedef dbo::collection< dbo::ptr<Verdict> > Verdicts;
 typedef dbo::collection< dbo::ptr<Setting> > Settings;
+typedef dbo::collection< dbo::ptr<Language> > Languages;
 
 namespace Wt {
 namespace Dbo {
@@ -104,6 +106,26 @@ void persist(Action& a) {
 }
 };
 
+class Language {
+public:
+std::string name;
+std::string compilerVersion;
+std::vector<unsigned char> compileScript;
+std::vector<unsigned char> linkScript;
+std::vector<unsigned char> runScript;
+dbo::collection< dbo::ptr<Submission> > submissions;
+
+template<class Action>
+void persist(Action& a) {
+	dbo::field(a, name, "name");
+	dbo::field(a, compilerVersion, "compilerVersion");
+	dbo::field(a, compileScript, "compileScript");
+	dbo::field(a, linkScript, "linkScript");
+	dbo::field(a, runScript, "runScript");
+	dbo::hasMany(a, submissions, dbo::ManyToOne, "language");
+}
+};
+
 class Testcase {
 public:
 std::string title;
@@ -134,6 +156,7 @@ dbo::ptr<Problem> problem;
 //	dbo::ptr<User> user;
 dbo::ptr<Testcase> testcase;
 WDateTime datetime;
+dbo::ptr<Language> language;
 dbo::collection< dbo::ptr<Verdict> > verdicts;
 
 template<class Action>
@@ -142,6 +165,7 @@ void persist(Action& a) {
 //		dbo::belongsTo(a, user, "user", Dbo::NotNull);a
 	dbo::belongsTo(a, testcase, "testcase", Dbo::NotNull);
 	dbo::field(a, datetime, "datetime");
+	dbo::belongsTo(a, language, "language", Dbo::NotNull);
 	dbo::hasMany(a, verdicts, dbo::ManyToOne, "submission");
 }
 };

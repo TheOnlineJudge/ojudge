@@ -22,6 +22,7 @@ DBModel::DBModel(const std::string &postgresDb) {
 	session.mapClass<Setting>("setting");
 	session.mapClass<Submission>("submission");
 	session.mapClass<Verdict>("verdict");
+	session.mapClass<Language>("language");
 
 	try {
 		session.createTables();
