@@ -26,6 +26,7 @@ class Submission;
 class Testcase;
 class Verdict;
 class Language;
+class Contest;
 
 typedef dbo::collection< dbo::ptr<Category> > Categories;
 typedef dbo::collection< dbo::ptr<Problem> > Problems;
@@ -35,6 +36,7 @@ typedef dbo::collection< dbo::ptr<Submission> > Submissions;
 typedef dbo::collection< dbo::ptr<Verdict> > Verdicts;
 typedef dbo::collection< dbo::ptr<Setting> > Settings;
 typedef dbo::collection< dbo::ptr<Language> > Languages;
+typedef dbo::collection< dbo::ptr<Contest> > Contests;
 
 namespace Wt {
 namespace Dbo {
@@ -82,6 +84,7 @@ dbo::collection< dbo::ptr<Category> > categories;
 dbo::collection< dbo::ptr<Testcase> > testcases;
 dbo::collection< dbo::ptr<Submission> > submissions;
 dbo::weak_ptr<Description> description;
+dbo::collection< dbo::ptr<Contest> > contests;
 
 template<class Action>
 void persist(Action& a) {
@@ -91,6 +94,7 @@ void persist(Action& a) {
 	dbo::hasMany(a, categories, dbo::ManyToMany, "probs_cats");
 	dbo::hasMany(a, testcases, dbo::ManyToOne, "problem");
 	dbo::hasMany(a, submissions, dbo::ManyToOne, "problem");
+	dbo::hasMany(a, contests, dbo::ManyToMany, "probs_contests");
 }
 };
 
@@ -101,7 +105,7 @@ dbo::ptr<Problem> problem;
 
 template<class Action>
 void persist(Action& a) {
-	dbo::id(a, problem, "problem", dbo::OnDeleteCascade);
+	dbo::id(a, problem, "problem", dbo::NotNull|dbo::OnDeleteCascade);
 	dbo::field(a, pdfdata, "pdfdata");
 }
 };
@@ -114,6 +118,7 @@ std::vector<unsigned char> compileScript;
 std::vector<unsigned char> linkScript;
 std::vector<unsigned char> runScript;
 dbo::collection< dbo::ptr<Submission> > submissions;
+dbo::collection< dbo::ptr<Contest> > contests;
 
 template<class Action>
 void persist(Action& a) {
@@ -123,6 +128,29 @@ void persist(Action& a) {
 	dbo::field(a, linkScript, "linkScript");
 	dbo::field(a, runScript, "runScript");
 	dbo::hasMany(a, submissions, dbo::ManyToOne, "language");
+	dbo::hasMany(a, contests, dbo::ManyToMany, "langs_contests");
+}
+};
+
+class Contest {
+public:
+std::string title;
+std::string subTitle;
+std::vector<unsigned char> logo;
+WDateTime startTime;
+WDateTime endTime;
+dbo::collection< dbo::ptr<Problem> > problems;
+dbo::collection< dbo::ptr<Language> > languages;
+
+template<class Action>
+void persist(Action& a) {
+	dbo::field(a, title, "title");
+	dbo::field(a, subTitle, "subtitle");
+	dbo::field(a, logo, "logo");
+	dbo::field(a, startTime, "starttime");
+	dbo::field(a, endTime, "endtime");
+	dbo::hasMany(a, problems, dbo::ManyToMany, "probs_contests");
+	dbo::hasMany(a, languages, dbo::ManyToMany, "langs_contests");
 }
 };
 
