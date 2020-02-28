@@ -114,8 +114,8 @@ class Language {
 public:
 std::string name;
 std::string compilerVersion;
-std::vector<unsigned char> compileScript;
-std::vector<unsigned char> linkScript;
+std::optional< std::vector<unsigned char> > compileScript;
+std::optional< std::vector<unsigned char> > linkScript;
 std::vector<unsigned char> runScript;
 dbo::collection< dbo::ptr<Submission> > submissions;
 dbo::collection< dbo::ptr<Contest> > contests;
@@ -135,22 +135,28 @@ void persist(Action& a) {
 class Contest {
 public:
 std::string title;
-std::string subTitle;
-std::vector<unsigned char> logo;
+std::optional<std::string> subTitle;
+std::optional< std::vector<unsigned char> > description;
+std::optional< std::vector<unsigned char> > logo;
+bool isVirtual;
 WDateTime startTime;
 WDateTime endTime;
 dbo::collection< dbo::ptr<Problem> > problems;
 dbo::collection< dbo::ptr<Language> > languages;
+dbo::collection< dbo::ptr<Submission> > submissions;
 
 template<class Action>
 void persist(Action& a) {
 	dbo::field(a, title, "title");
 	dbo::field(a, subTitle, "subtitle");
+	dbo::field(a, description, "description");
 	dbo::field(a, logo, "logo");
+	dbo::field(a, isVirtual, "isvirtual");
 	dbo::field(a, startTime, "starttime");
 	dbo::field(a, endTime, "endtime");
 	dbo::hasMany(a, problems, dbo::ManyToMany, "probs_contests");
 	dbo::hasMany(a, languages, dbo::ManyToMany, "langs_contests");
+	dbo::hasMany(a, submissions, dbo::ManyToOne, "contest");
 }
 };
 
@@ -183,6 +189,7 @@ public:
 dbo::ptr<Problem> problem;
 //	dbo::ptr<User> user;
 dbo::ptr<Testcase> testcase;
+dbo::ptr<Contest> contest;
 WDateTime datetime;
 dbo::ptr<Language> language;
 dbo::collection< dbo::ptr<Verdict> > verdicts;
@@ -190,8 +197,9 @@ dbo::collection< dbo::ptr<Verdict> > verdicts;
 template<class Action>
 void persist(Action& a) {
 	dbo::belongsTo(a, problem, "problem", Dbo::NotNull);
-//		dbo::belongsTo(a, user, "user", Dbo::NotNull);a
+//		dbo::belongsTo(a, user, "user", Dbo::NotNull);
 	dbo::belongsTo(a, testcase, "testcase", Dbo::NotNull);
+	dbo::belongsTo(a, contest, "contest");
 	dbo::field(a, datetime, "datetime");
 	dbo::belongsTo(a, language, "language", Dbo::NotNull);
 	dbo::hasMany(a, verdicts, dbo::ManyToOne, "submission");
@@ -204,7 +212,7 @@ dbo::ptr<Submission> submission;
 WDateTime datetime;
 int cpuused;
 int memoryused;
-std::string reason;
+std::optional<std::string> reason;
 
 template<class Action>
 void persist(Action& a) {
