@@ -43,7 +43,7 @@ AdminCategoryWidget::AdminCategoryWidget(const std::shared_ptr<CategoryModel> ca
 	treeWidget_->setRowHeight(26);
 	treeWidget_->setHeaderHeight(26);
 	treeWidget_->setSortingEnabled(false);
-	auto adminActionsDelegate = std::make_shared<AdminActionsDelegate>();
+	auto adminActionsDelegate = std::make_shared<AdminCategoryWidget::AdminActionsDelegate>();
 	adminActionsDelegate->editCategory().connect(this,&AdminCategoryWidget::showAddEditDialog);
 	treeWidget_->setItemDelegateForColumn(3,adminActionsDelegate);
 	treeWidget_->addStyleClass("myAdminCategoryTree");
@@ -129,11 +129,11 @@ void AdminCategoryWidget::addEditDialogDone(DialogCode code) {
 	removeChild(addEditDialog_);
 }
 
-AdminActionsDelegate::AdminActionsDelegate() {
+AdminCategoryWidget::AdminActionsDelegate::AdminActionsDelegate() {
 
 }
 
-std::unique_ptr<WWidget> AdminActionsDelegate::update(WWidget *widget, const WModelIndex& index, WFlags<ViewItemRenderFlag> flags) {
+std::unique_ptr<WWidget> AdminCategoryWidget::AdminActionsDelegate::update(WWidget *widget, const WModelIndex& index, WFlags<ViewItemRenderFlag> flags) {
 
 	WidgetRef widgetRef(widget);
 

@@ -71,6 +71,11 @@ AdminProblemWidget::AdminProblemWidget(ViewModels *viewModels, DBModel *dbmodel)
 	tableWidget_->setHeaderHeight(26);
 	tableWidget_->setSortingEnabled(false);
 	tableWidget_->setColumnHidden(3,true);
+
+	auto adminActionsDelegate = std::make_shared<AdminProblemWidget::AdminActionsDelegate>();
+	adminActionsDelegate->editProblem().connect(this,&AdminProblemWidget::showAddEditDialog);
+	tableWidget_->setItemDelegateForColumn(2,adminActionsDelegate);
+	
 }
 
 void AdminProblemWidget::problemSelectorSlot() {
@@ -155,4 +160,44 @@ void AdminProblemWidget::addDialogDone(DialogCode code) {
 	}
 		
 	removeChild(addDialog_);
+}
+
+AdminProblemWidget::AdminActionsDelegate::AdminActionsDelegate() {
+
+}
+
+std::unique_ptr<WWidget> AdminProblemWidget::AdminActionsDelegate::update(WWidget *widget, const WModelIndex& index, WFlags<ViewItemRenderFlag> flags) {
+
+        WidgetRef widgetRef(widget);
+
+        bool isNew = false;
+
+        if(widgetRef.w) {
+                widgetRef.w = nullptr;
+        }
+
+        if(!widgetRef.w) {
+                isNew = true;
+                widgetRef.created = std::unique_ptr<WWidget>(new WContainerWidget());
+                WContainerWidget *t = static_cast<WContainerWidget*>(widgetRef.created.get());
+                t->addStyleClass("actions");
+                auto layout = t->setLayout(cpp14::make_unique<WHBoxLayout>());
+                layout->setContentsMargins(0,4,0,4);
+                auto edit = layout->addWidget(cpp14::make_unique<WImage>("images/edit.svg"));
+                edit->setHeight(18);
+                edit->decorationStyle().setCursor(Cursor::PointingHand);
+                edit->setToolTip("Edit problem");
+                edit->clicked().connect( [=] { editProblem_.emit(index.model()->index(index.row(),0,index.parent())); });
+                auto trash = layout->addWidget(cpp14::make_unique<WImage>("images/trash.svg"));
+                trash->setHeight(18);
+                trash->decorationStyle().setCursor(Cursor::PointingHand);
+                trash->setToolTip("Delete problem");
+        }
+
+        if(isNew) {
+                return std::move(widgetRef.created);
+        } else {
+                return nullptr;
+        }
+
 }
