@@ -34,6 +34,7 @@ AdminContestWidget.cpp
 AdminLanguageWidget.cpp
 AdminProblemWidget.cpp
 AdminSettingsWidget.cpp
+AdminUserWidget.cpp
 AuthWidget.cpp
 ContactWidget.cpp
 ContestsWidget.cpp

@@ -19,6 +19,7 @@
 #include "AdminLanguageWidget.h"
 #include "AdminProblemWidget.h"
 #include "AdminSettingsWidget.h"
+#include "AdminUserWidget.h"
 #include "AdminWidget.h"
 
 using namespace Wt;
@@ -38,7 +39,7 @@ AdminWidget::AdminWidget(Session *session,ViewModels *viewModels,DBModel *dbmode
 	tabWidget->addTab(cpp14::make_unique<AdminProblemWidget>(viewModels_,dbmodel_),"Problems",ContentLoading::Lazy);
 	tabWidget->addTab(cpp14::make_unique<AdminCategoryWidget>(viewModels_->getCategoryModel()),"Categories",ContentLoading::Lazy);
 	tabWidget->addTab(cpp14::make_unique<AdminContestWidget>(),"Contests",ContentLoading::Lazy);
-	tabWidget->addTab(cpp14::make_unique<WText>("Users tab"),"Users",ContentLoading::Lazy);
+	tabWidget->addTab(cpp14::make_unique<AdminUserWidget>(),"Users",ContentLoading::Lazy);
 	tabWidget->addTab(cpp14::make_unique<AdminLanguageWidget>(),"Languages",ContentLoading::Lazy);
 	tabWidget->addTab(cpp14::make_unique<AdminSettingsWidget>(dbmodel_),"Settings",ContentLoading::Lazy);
 
