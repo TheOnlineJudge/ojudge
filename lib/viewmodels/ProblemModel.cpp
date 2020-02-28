@@ -45,7 +45,7 @@ cpp17::any ProblemModel::data(const WModelIndex& index, ItemDataRole role) const
 		case 1:
 			return problemStore_->getProblem(index.row()).title;
 		case 2:
-			return std::string("Who am I: " + std::to_string(problemStore_->getProblem(index.row()).id));
+			return index.row();
 		case 3:
 			return problemStore_->getProblem(index.row()).categories;
 		}

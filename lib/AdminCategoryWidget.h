@@ -35,7 +35,6 @@ Wt::WTreeView *selectParent_;
 Wt::WLineEdit *title_;
 void showAddEditDialog(const Wt::WModelIndex& index = Wt::WModelIndex());
 void addEditDialogDone(Wt::DialogCode code);
-};
 
 class AdminActionsDelegate : public Wt::WAbstractItemDelegate {
 public:
@@ -55,6 +54,8 @@ struct WidgetRef {
 Wt::Signal<const Wt::WModelIndex&> editCategory_ ;
 Wt::Signal<const Wt::WModelIndex&> deleteCategory_ ;
 Wt::Signal<const Wt::WModelIndex&,bool> moveCategory_ ;
+
+};
 
 };
 

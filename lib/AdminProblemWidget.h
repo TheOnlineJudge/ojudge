@@ -21,6 +21,8 @@
 #include "viewmodels/ViewModels.h"
 #include "dbmodel/DBModel.h"
 
+#include <Wt/WAbstractItemDelegate.h>
+
 class AdminProblemWidget : public Wt::WContainerWidget {
 public:
 AdminProblemWidget(ViewModels *viewModels, DBModel *dbmodel);
@@ -41,6 +43,25 @@ Wt::WTreeView *categories_;
 void problemSelectorSlot();
 void showAddEditDialog(const Wt::WModelIndex& index = Wt::WModelIndex());
 void addDialogDone(Wt::DialogCode code);
+
+class AdminActionsDelegate : public Wt::WAbstractItemDelegate {
+public:
+AdminActionsDelegate();
+virtual std::unique_ptr<Wt::WWidget> update(Wt::WWidget *widget, const Wt::WModelIndex& index, Wt::WFlags<Wt::ViewItemRenderFlag> flags) override;
+Wt::Signal<const Wt::WModelIndex&>& editProblem() { return editProblem_; }
+Wt::Signal<const Wt::WModelIndex&>& deleteProblem() { return deleteProblem_; }
+
+private:
+struct WidgetRef {
+        std::unique_ptr<Wt::WWidget> created;
+        Wt::WWidget *w;
+        WidgetRef(Wt::WWidget *widget) : w(widget) { }
 };
 
+Wt::Signal<const Wt::WModelIndex&> editProblem_ ;
+Wt::Signal<const Wt::WModelIndex&> deleteProblem_ ;
+
+};
+
+};
 #endif // ADMINPROBLEMWIDGET_H
