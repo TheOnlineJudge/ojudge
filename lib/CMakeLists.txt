@@ -26,6 +26,7 @@ datastore/LanguageStore.cpp
 datastore/ProblemStore.cpp
 dbmodel/DBModel.cpp
 viewmodels/CategoryModel.cpp
+viewmodels/LanguageModel.cpp
 viewmodels/ProblemModel.cpp
 viewmodels/ViewModels.cpp
 AboutWidget.cpp

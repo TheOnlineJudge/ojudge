@@ -29,7 +29,7 @@ virtual Wt::cpp17::any headerData(int section, Wt::Orientation orientation = Wt:
 void insertProblem(int row, const Wt::WModelIndex& parent);*/
 
 private:
-LanguageStore *LanguageStore_;
+LanguageStore *languageStore_;
 };
 
 constexpr Wt::ItemDataRole LanguageModel::LanguageRowRole;
