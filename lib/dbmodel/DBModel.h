@@ -114,6 +114,7 @@ class Language {
 public:
 std::string name;
 std::string compilerVersion;
+std::optional< std::vector<unsigned char> > codeSkeleton;
 std::optional< std::vector<unsigned char> > compileScript;
 std::optional< std::vector<unsigned char> > linkScript;
 std::vector<unsigned char> runScript;
@@ -124,6 +125,7 @@ template<class Action>
 void persist(Action& a) {
 	dbo::field(a, name, "name");
 	dbo::field(a, compilerVersion, "compilerVersion");
+	dbo::field(a, codeSkeleton, "codeSkeleton");
 	dbo::field(a, compileScript, "compileScript");
 	dbo::field(a, linkScript, "linkScript");
 	dbo::field(a, runScript, "runScript");
@@ -242,6 +244,7 @@ void updateDescription(long long problemId, std::vector<unsigned char>& descData
 Settings getSettings();
 std::string getSetting(std::string settingName);
 
+Languages getLanguages();
 
 private:
 dbo::Session session;

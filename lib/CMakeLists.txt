@@ -22,6 +22,7 @@ authmodel/User.cpp
 authmodel/UserDetailsModel.cpp
 datastore/CategoryStore.cpp
 datastore/DataStore.cpp
+datastore/LanguageStore.cpp
 datastore/ProblemStore.cpp
 dbmodel/DBModel.cpp
 viewmodels/CategoryModel.cpp
