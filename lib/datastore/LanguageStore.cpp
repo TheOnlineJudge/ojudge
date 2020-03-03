@@ -31,6 +31,7 @@ LanguageStore::LanguageStore(DBModel *dbModel) : dbModel_(dbModel) {
                 dbo::ptr<Language> language = *i;
 		languageData_[row].id = language.id();
                 languageData_[row].name = language->name;
+		languageData_[row].compilerVersion = language->compilerVersion;
 		languageData_[row].codeSkeleton = language->codeSkeleton;
 		languageData_[row].compileScript = language->compileScript;
 		languageData_[row].linkScript = language->linkScript;
