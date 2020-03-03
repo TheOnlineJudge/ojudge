@@ -11,6 +11,9 @@
 #include <Wt/WVBoxLayout.h>
 #include "SubmissionsWidget.h"
 
+// FOR TESTING
+#include "widgets/WCodeEditorWidget.h"
+
 using namespace Wt;
 
 SubmissionsWidget::SubmissionsWidget() {
@@ -21,6 +24,11 @@ SubmissionsWidget::SubmissionsWidget() {
 	auto pageTitle = mainLayout->addWidget(cpp14::make_unique<WText>("Submissions"),0);
 	pageTitle->addStyleClass("pagetitle");
 
-	auto mainWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
+//	auto mainWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
+
+	auto mainWidget = mainLayout->addWidget(cpp14::make_unique<WCodeEditorWidget>(),1);
+
+	mainWidget->setWidth(WLength(1280));
+	mainWidget->setHeight(WLength(400));
 
 }

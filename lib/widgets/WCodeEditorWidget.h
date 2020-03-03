@@ -10,5 +10,23 @@
 #ifndef WCODEEDITORWIDGET_H
 #define WCODEEDITORWIDGET_H
 
+#include <Wt/WCompositeWidget.h>
+
+namespace Wt {
+
+class WCodeEditorWidget : public WCompositeWidget {
+public:
+	WCodeEditorWidget();
+	const std::vector<unsigned char>& code();
+	void setCode(const std::vector<unsigned char>& code);
+
+private:
+	virtual void render(WFlags<RenderFlag> flags) override;
+	void create();
+	WContainerWidget *impl_;
+	std::vector<unsigned char> code_;
+};
+
+}
 
 #endif // WCODEEDITORWIDGET_H
