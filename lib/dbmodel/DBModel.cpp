@@ -124,3 +124,9 @@ std::string DBModel::getSetting(std::string settingName) {
 	dbo::ptr<Setting> setting = session.find<Setting>().where("settingname = ?").bind(settingName);
 	return setting->settingValue;
 }
+
+Languages DBModel::getLanguages() {
+
+	dbo::Transaction transaction(session);
+	return session.find<Language>();
+}
