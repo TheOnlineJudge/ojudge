@@ -29,6 +29,7 @@ viewmodels/CategoryModel.cpp
 viewmodels/LanguageModel.cpp
 viewmodels/ProblemModel.cpp
 viewmodels/ViewModels.cpp
+widgets/WCodeEditorWidget.cpp
 AboutWidget.cpp
 AdminWidget.cpp
 AdminCategoryWidget.cpp
