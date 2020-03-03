@@ -21,6 +21,7 @@ struct LanguageData {
         std::string name;
         std::string compilerVersion;
 	std::optional< std::vector<unsigned char> > codeSkeleton;
+	std::optional<std::string> aceStyle;
 	std::optional< std::vector<unsigned char> > compileScript;
 	std::optional< std::vector<unsigned char> > linkScript;
 	std::vector<unsigned char> runScript;

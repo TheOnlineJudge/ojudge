@@ -27,17 +27,10 @@ void WCodeEditorWidget::render(WFlags<RenderFlag> flags) {
 		strm << "{";
 		strm << "var self = " << jsRef() << ";";
 		strm << "var editor = ace.edit(self);";
-		strm << "editor.setTheme('ace/theme/monokai');";
-		strm << "editor.session.setMode('ace/mode/javascript');";
-		setJavaScriptMember(WT_RESIZE_JS,
-			"function(self, w, h) {"
-                          """if (w >= 0) "
-                          ""  "self.style.width=w + 'px';"
-                          """if (h >= 0) "
-                          ""  "self.style.height=h + 'px';"
-                          """if (self.editor)"
-                          """ self.editor.resize();"
-                          "}");
+		strm << "editor.setTheme('ace/theme/textmate');";
+		strm << "editor.session.setMode('ace/mode/c_cpp');";
+		strm << "editor.setShowPrintMargin(false);";
+		strm << "self.style.fontSize='16px';";
 		strm << "}";
 
 		doJavaScript(strm.str());
