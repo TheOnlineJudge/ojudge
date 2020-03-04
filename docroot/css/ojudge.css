@@ -65,7 +65,7 @@ body {
 }
 
 .stdwidth {
-  max-width: 1280px;
+  max-width: 100%;
 }
 
 .header {
@@ -79,7 +79,7 @@ body {
 }
 
 .maincontent {
-  min-height: calc(100vh - 272px);
+  min-height: calc(100vh);
   margin-bottom: -1px;
 }
 
