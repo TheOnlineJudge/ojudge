@@ -79,7 +79,7 @@ body {
 }
 
 .maincontent {
-  min-height: calc(100vh);
+  min-height: calc(90vh);
   margin-bottom: -1px;
 }
 
