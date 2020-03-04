@@ -9,15 +9,15 @@
 
 #include <Wt/WApplication.h>
 #include <Wt/WContainerWidget.h>
-#include "WCodeEditorWidget.h"
+#include "OJCodeEditorWidget.h"
 
-namespace Wt {
+using namespace Wt;
 
-WCodeEditorWidget::WCodeEditorWidget() {
+OJCodeEditorWidget::OJCodeEditorWidget() {
 	create();
 }
 
-void WCodeEditorWidget::render(WFlags<RenderFlag> flags) {
+void OJCodeEditorWidget::render(WFlags<RenderFlag> flags) {
 
 	if(flags.test(RenderFlag::Full)) {
 		WApplication *app = WApplication::instance();
@@ -39,7 +39,7 @@ void WCodeEditorWidget::render(WFlags<RenderFlag> flags) {
 	WCompositeWidget::render(flags);
 }
 
-void WCodeEditorWidget::create() {
+void OJCodeEditorWidget::create() {
 
 	setImplementation(std::unique_ptr<WWidget>(impl_ = new WContainerWidget()));
 	setInline(false);
@@ -50,14 +50,12 @@ void WCodeEditorWidget::create() {
 
 }
 
-const std::vector<unsigned char>& WCodeEditorWidget::code() {
+const std::vector<unsigned char>& OJCodeEditorWidget::code() {
 
 	return code_;
 
 }
 
-void WCodeEditorWidget::setCode(const std::vector<unsigned char>& code) {
-
-}
+void OJCodeEditorWidget::setCode(const std::vector<unsigned char>& code) {
 
 }
