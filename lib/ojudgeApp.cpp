@@ -82,6 +82,7 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 
 	auto container = root()->addWidget(std::move(cpp14::make_unique<WContainerWidget>()));
 	container->addStyleClass("stdwidth");
+	container->addStyleClass("maxwidth");
 	container->addStyleClass("container");
 
 	auto vbox = container->setLayout(cpp14::make_unique<WVBoxLayout>());

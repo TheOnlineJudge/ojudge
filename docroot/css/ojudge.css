@@ -3,18 +3,18 @@
   src:local('Arial');
 }
 
-html, body {
+html {
   display: flex;
   justify-content: center;
   height:100%;
 }
 
-.root {
-  min-width: fit-content;
+body {
+  width: 100%;
 }
 
 .container {
-  padding-bottom: 0px !important;
+  padding: 0px !important;
 }
 
 .ojtitle {
@@ -74,7 +74,7 @@ html, body {
 }
 
 .stdwidth {
-  max-width: 100%;
+  max-width: 1280px;
 }
 
 .header {
