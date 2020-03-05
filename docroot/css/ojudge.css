@@ -89,7 +89,7 @@ body {
 }
 
 .maincontent {
-  min-height: calc(100vh - 284px);
+  min-height: calc(100vh - 285px);
 }
 
 .boxes {
