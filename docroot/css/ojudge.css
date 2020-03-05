@@ -3,9 +3,18 @@
   src:local('Arial');
 }
 
-html,
-body {
+html, body {
+  display: flex;
+  justify-content: center;
   height:100%;
+}
+
+.root {
+  min-width: fit-content;
+}
+
+.container {
+  padding-bottom: 0px !important;
 }
 
 .ojtitle {
@@ -76,11 +85,11 @@ body {
 .footer {
   background-color:var(--ojcolor);
   height: 170px;
+  margin: 0px !important;
 }
 
 .maincontent {
-  min-height: calc(90vh);
-  margin-bottom: -1px;
+  min-height: calc(100vh - 290px);
 }
 
 .boxes {
@@ -195,6 +204,7 @@ body {
     box-shadow: 0 6px 8px -8px rgba(0, 0, 0, 0.8), 0 16px 20px -20px rgba(0, 0, 0, 0.19) !important;
     border-bottom-left-radius: 5px !important;
     border-bottom-right-radius: 5px !important;
+    max-width: 1280px;
   }
 
   .mynavbar .navbar-collapse {
