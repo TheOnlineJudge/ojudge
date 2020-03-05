@@ -86,10 +86,11 @@ body {
   background-color:var(--ojcolor);
   height: 170px;
   margin: 0px !important;
+  border-radius: 5px 5px 0px 0px;
 }
 
 .maincontent {
-  min-height: calc(100vh - 285px);
+  min-height: calc(100vh - 284px);
 }
 
 .boxes {
