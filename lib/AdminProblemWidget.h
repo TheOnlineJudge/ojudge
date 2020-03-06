@@ -49,18 +49,23 @@ class AdminActionsDelegate : public Wt::WAbstractItemDelegate {
 public:
 AdminActionsDelegate();
 virtual std::unique_ptr<Wt::WWidget> update(Wt::WWidget *widget, const Wt::WModelIndex& index, Wt::WFlags<Wt::ViewItemRenderFlag> flags) override;
-Wt::Signal<const Wt::WModelIndex&>& editProblem() { return editProblem_; }
-Wt::Signal<const Wt::WModelIndex&>& deleteProblem() { return deleteProblem_; }
+Wt::Signal<const Wt::WModelIndex&>& editProblem() {
+	return editProblem_;
+}
+Wt::Signal<const Wt::WModelIndex&>& deleteProblem() {
+	return deleteProblem_;
+}
 
 private:
 struct WidgetRef {
-        std::unique_ptr<Wt::WWidget> created;
-        Wt::WWidget *w;
-        WidgetRef(Wt::WWidget *widget) : w(widget) { }
+	std::unique_ptr<Wt::WWidget> created;
+	Wt::WWidget *w;
+	WidgetRef(Wt::WWidget *widget) : w(widget) {
+	}
 };
 
-Wt::Signal<const Wt::WModelIndex&> editProblem_ ;
-Wt::Signal<const Wt::WModelIndex&> deleteProblem_ ;
+Wt::Signal<const Wt::WModelIndex&> editProblem_;
+Wt::Signal<const Wt::WModelIndex&> deleteProblem_;
 
 };
 

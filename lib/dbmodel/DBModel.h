@@ -40,19 +40,25 @@ typedef dbo::collection< dbo::ptr<Contest> > Contests;
 
 namespace Wt {
 namespace Dbo {
-	template<>
-	struct dbo_traits<Problem> : public dbo_default_traits {
-		static const char *surrogateIdField() { return 0; }
-	};
+template<>
+struct dbo_traits<Problem> : public dbo_default_traits {
+	static const char *surrogateIdField() {
+		return 0;
+	}
+};
 
 
-	template<>
-	struct dbo_traits<Description> : public dbo_default_traits {
-		typedef ptr<Problem> IdType;
+template<>
+struct dbo_traits<Description> : public dbo_default_traits {
+	typedef ptr<Problem> IdType;
 
-		static IdType invalidId() { return ptr<Problem>{}; }
-		static const char *surrogateIdField() { return 0; }
-	};
+	static IdType invalidId() {
+		return ptr<Problem>{};
+	}
+	static const char *surrogateIdField() {
+		return 0;
+	}
+};
 }
 }
 
@@ -243,7 +249,7 @@ dbo::ptr<Category> addCategory(std::string title, int parent);
 Problems getProblems();
 dbo::ptr<Problem> getProblem(long long id);
 dbo::ptr<Problem> addProblem(long long id, std::string title);
-void updateDescription(long long problemId, std::optional<std::string> htmlData, std::optional<std::vector<unsigned char>> pdfData);
+void updateDescription(long long problemId, std::optional<std::string> htmlData, std::optional<std::vector<unsigned char> > pdfData);
 
 Settings getSettings();
 std::string getSetting(std::string settingName);

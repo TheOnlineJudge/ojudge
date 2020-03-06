@@ -17,9 +17,9 @@
 class DBModel;
 
 struct ProblemData {
-        long long id;
-        std::string title;
-        std::string categories;
+	long long id;
+	std::string title;
+	std::string categories;
 };
 
 

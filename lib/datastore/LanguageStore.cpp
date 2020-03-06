@@ -22,15 +22,15 @@ using namespace Wt;
 
 LanguageStore::LanguageStore(DBModel *dbModel) : dbModel_(dbModel) {
 
-        Languages languages = dbModel_->getLanguages();
-        Dbo::Transaction transaction = dbModel_->startTransaction();
+	Languages languages = dbModel_->getLanguages();
+	Dbo::Transaction transaction = dbModel_->startTransaction();
 
 	int row = 0;
 
-        for(Languages::const_iterator i = languages.begin(); i != languages.end(); i++) {
-                dbo::ptr<Language> language = *i;
+	for(Languages::const_iterator i = languages.begin(); i != languages.end(); i++) {
+		dbo::ptr<Language> language = *i;
 		languageData_[row].id = language.id();
-                languageData_[row].name = language->name;
+		languageData_[row].name = language->name;
 		languageData_[row].compilerVersion = language->compilerVersion;
 		languageData_[row].codeSkeleton = language->codeSkeleton;
 		languageData_[row].aceStyle = language->aceStyle;
@@ -38,11 +38,11 @@ LanguageStore::LanguageStore(DBModel *dbModel) : dbModel_(dbModel) {
 		languageData_[row].linkScript = language->linkScript;
 		languageData_[row].runScript = language->runScript;
 		row++;
-        }
+	}
 }
 
 const std::map<long long,LanguageData>& LanguageStore::getLanguages() {
-        return languageData_;
+	return languageData_;
 }
 
 const LanguageData& LanguageStore::getLanguage(long long id) {
@@ -50,25 +50,25 @@ const LanguageData& LanguageStore::getLanguage(long long id) {
 }
 
 /*
-void LanguageStore::addLanguage(long long id, std::string title, const WModelIndex& parent) {
+   void LanguageStore::addLanguage(long long id, std::string title, const WModelIndex& parent) {
 
-	std::lock_guard<std::mutex> guard(addLanguage_mutex);
+        std::lock_guard<std::mutex> guard(addLanguage_mutex);
 
-	dbo::ptr<Problem> problem = dbModel_->addProblem(id,title);
+        dbo::ptr<Problem> problem = dbModel_->addProblem(id,title);
 
-	ProblemData tmpProblemData;
-	tmpProblemData.id = id;
-	tmpProblemData.title = title;
+        ProblemData tmpProblemData;
+        tmpProblemData.id = id;
+        tmpProblemData.title = title;
 
-	int row = problemData_.size();
-	problemData_[row] = tmpProblemData;
+        int row = problemData_.size();
+        problemData_[row] = tmpProblemData;
 
-	auto server = Wt::WServer::instance();
+        auto server = Wt::WServer::instance();
         server->postAll([=]{
                 auto app = dynamic_cast<ojudgeApp*>(Wt::WApplication::instance());
                 assert(app != nullptr);
                 app->getViewModels()->getProblemModel()->insertProblem(row,parent);
                 app->triggerUpdate();
         });
-}
-*/
+   }
+ */

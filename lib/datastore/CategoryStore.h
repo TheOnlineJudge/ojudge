@@ -15,10 +15,10 @@
 class DBModel;
 
 struct CategoryData {
-        std::string title;
-        int parent;
-        int categories;
-        int problems;
+	std::string title;
+	int parent;
+	int categories;
+	int problems;
 };
 
 class CategoryStore {

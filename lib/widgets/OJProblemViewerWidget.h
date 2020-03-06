@@ -15,14 +15,14 @@
 
 class OJProblemViewerWidget : public Wt::WCompositeWidget {
 public:
-	OJProblemViewerWidget();
-	void setContent(const std::string& content);
+OJProblemViewerWidget();
+void setContent(const std::string& content);
 
 private:
-	virtual void render(Wt::WFlags<Wt::RenderFlag> flags) override;
-	void create();
-	Wt::WContainerWidget *impl_;
-	Wt::WText *contentWidget_;
+virtual void render(Wt::WFlags<Wt::RenderFlag> flags) override;
+void create();
+Wt::WContainerWidget *impl_;
+Wt::WText *contentWidget_;
 };
 
 #endif // OJPROBLEMVIEWERWIDGET_H

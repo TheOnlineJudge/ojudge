@@ -18,17 +18,17 @@ LanguageModel::LanguageModel(LanguageStore *languageStore) : WAbstractTableModel
 }
 
 /*
-void ProblemModel::addProblem(long long id, std::string title, const WModelIndex& parent) {
-	problemStore_->addProblem(id,title,parent);
-}
+   void ProblemModel::addProblem(long long id, std::string title, const WModelIndex& parent) {
+        problemStore_->addProblem(id,title,parent);
+   }
 
-void ProblemModel::insertProblem(int row, const WModelIndex& parent) {
+   void ProblemModel::insertProblem(int row, const WModelIndex& parent) {
 
-	beginInsertRows(parent,row,row);
-	endInsertRows();
+        beginInsertRows(parent,row,row);
+        endInsertRows();
 
-}
-*/
+   }
+ */
 
 int LanguageModel::columnCount(const WModelIndex& parent) const {
 	return 4;

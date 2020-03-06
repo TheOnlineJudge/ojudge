@@ -31,17 +31,17 @@ CategoryModel::CategoryModel(CategoryStore *categoryStore) : WAbstractItemModel(
 
 void CategoryModel::addCategory(std::string title, const WModelIndex& parent) {
 
-	int parentId = (parent.isValid()?cpp17::any_cast<int>(parent.data(CategoryModel::CategoryIdRole)):1);
+	int parentId = (parent.isValid() ? cpp17::any_cast<int>(parent.data(CategoryModel::CategoryIdRole)) : 1);
 	categoryStore_->addCategory(title,parent,childIndex_.at(parentId));
 }
 
 void CategoryModel::insertCategory(int row, const WModelIndex& parent, int categoryId) {
 
-	int parentId = (parent.isValid()?cpp17::any_cast<int>(parent.data(CategoryModel::CategoryIdRole)):1);
+	int parentId = (parent.isValid() ? cpp17::any_cast<int>(parent.data(CategoryModel::CategoryIdRole)) : 1);
 
 	childIndex_[categoryId] = 0;
 	dbToInternal_[categoryId] = getTreeId(dbToInternal_.at(parentId),childIndex_[parentId]++,categoryId,0);
-	Tree& item = (parent.isValid()?treeData_[getTreeId(parent.internalId(),parent.row())]:treeData_[0]);
+	Tree& item = (parent.isValid() ? treeData_[getTreeId(parent.internalId(),parent.row())] : treeData_[0]);
 
 	beginInsertRows(parent,row,row);
 	item.addRow();

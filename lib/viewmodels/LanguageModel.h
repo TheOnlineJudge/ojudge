@@ -26,7 +26,7 @@ virtual Wt::cpp17::any data(const Wt::WModelIndex& index, Wt::ItemDataRole role 
 virtual Wt::cpp17::any headerData(int section, Wt::Orientation orientation = Wt::Orientation::Horizontal, Wt::ItemDataRole role = Wt::ItemDataRole::Display) const override;
 
 /*void addProblem(long long id, std::string title, const Wt::WModelIndex& parent = Wt::WModelIndex());
-void insertProblem(int row, const Wt::WModelIndex& parent);*/
+   void insertProblem(int row, const Wt::WModelIndex& parent);*/
 
 private:
 LanguageStore *languageStore_;

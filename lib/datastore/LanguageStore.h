@@ -17,9 +17,9 @@
 class DBModel;
 
 struct LanguageData {
-        long long id;
-        std::string name;
-        std::string compilerVersion;
+	long long id;
+	std::string name;
+	std::string compilerVersion;
 	std::optional< std::vector<unsigned char> > codeSkeleton;
 	std::optional<std::string> aceStyle;
 	std::optional< std::vector<unsigned char> > compileScript;

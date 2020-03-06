@@ -14,15 +14,15 @@
 
 class OJCodeEditorWidget : public Wt::WCompositeWidget {
 public:
-	OJCodeEditorWidget();
-	const std::vector<unsigned char>& code();
-	void setCode(const std::vector<unsigned char>& code);
+OJCodeEditorWidget();
+const std::vector<unsigned char>& code();
+void setCode(const std::vector<unsigned char>& code);
 
 private:
-	virtual void render(Wt::WFlags<Wt::RenderFlag> flags) override;
-	void create();
-	Wt::WContainerWidget *impl_;
-	std::vector<unsigned char> code_;
+virtual void render(Wt::WFlags<Wt::RenderFlag> flags) override;
+void create();
+Wt::WContainerWidget *impl_;
+std::vector<unsigned char> code_;
 };
 
 #endif // OJCODEEDITORWIDGET_H

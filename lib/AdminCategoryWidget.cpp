@@ -34,7 +34,9 @@ AdminCategoryWidget::AdminCategoryWidget(const std::shared_ptr<CategoryModel> ca
 	addButton->setHeight(WLength(32));
 	addButton->decorationStyle().setCursor(Cursor::PointingHand);
 	addButton->setToolTip(WString("Add new category"));
-	addButton->clicked().connect( [this] { showAddEditDialog(); });
+	addButton->clicked().connect( [this] {
+		showAddEditDialog();
+	});
 
 	treeWidget_ = mainLayout_->addWidget(cpp14::make_unique<WTreeView>());
 
@@ -73,12 +75,16 @@ void AdminCategoryWidget::showAddEditDialog(const WModelIndex& index) {
 	selectParent->setHeight(300);
 	selectParent_ = selectParent.get();
 	auto rootCheckBox = cpp14::make_unique<WCheckBox>("Root category");
-	rootCheckBox->checked().connect( [=] { selectParent_->setHidden(true); } );
-	rootCheckBox->unChecked().connect( [=] { selectParent_->setHidden(false); } );
+	rootCheckBox->checked().connect( [=] {
+		selectParent_->setHidden(true);
+	} );
+	rootCheckBox->unChecked().connect( [=] {
+		selectParent_->setHidden(false);
+	} );
 	rootCheckBox_ = rootCheckBox.get();
 	auto title = cpp14::make_unique<WLineEdit>();
 	title_ = title.get();
-	
+
 	result->bindString("treelabel",WString("Select category parent"));
 	result->bindString("titlelabel",WString("Title"));
 	result->bindWidget("rootcheckbox",std::move(rootCheckBox));
@@ -113,7 +119,7 @@ void AdminCategoryWidget::showAddEditDialog(const WModelIndex& index) {
 void AdminCategoryWidget::addEditDialogDone(DialogCode code) {
 	int parentId = 0;
 	if(code == DialogCode::Accepted) {
-		WModelIndex tmpIndex ;
+		WModelIndex tmpIndex;
 		if(rootCheckBox_->isChecked()) {
 			tmpIndex = selectParent_->rootIndex();
 		} else if(selectParent_->selectedIndexes().size()) {
@@ -154,7 +160,9 @@ std::unique_ptr<WWidget> AdminCategoryWidget::AdminActionsDelegate::update(WWidg
 		edit->setHeight(18);
 		edit->decorationStyle().setCursor(Cursor::PointingHand);
 		edit->setToolTip("Edit category");
-		edit->clicked().connect( [=] { editCategory_.emit(index.model()->index(index.row(),0,index.parent())); });
+		edit->clicked().connect( [=] {
+			editCategory_.emit(index.model()->index(index.row(),0,index.parent()));
+		});
 		auto down = layout->addWidget(cpp14::make_unique<WImage>("images/arrow_down.svg"));
 		down->setHeight(18);
 		down->decorationStyle().setCursor(Cursor::PointingHand);
@@ -176,5 +184,5 @@ std::unique_ptr<WWidget> AdminCategoryWidget::AdminActionsDelegate::update(WWidg
 	} else {
 		return nullptr;
 	}
-		
+
 }

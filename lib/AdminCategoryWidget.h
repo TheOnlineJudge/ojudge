@@ -40,20 +40,27 @@ class AdminActionsDelegate : public Wt::WAbstractItemDelegate {
 public:
 AdminActionsDelegate();
 virtual std::unique_ptr<Wt::WWidget> update(Wt::WWidget *widget, const Wt::WModelIndex& index, Wt::WFlags<Wt::ViewItemRenderFlag> flags) override;
-Wt::Signal<const Wt::WModelIndex&>& editCategory() { return editCategory_; }
-Wt::Signal<const Wt::WModelIndex&>& deleteCategory() { return deleteCategory_; }
-Wt::Signal<const Wt::WModelIndex&,bool>& moveCategory() { return moveCategory_; }
+Wt::Signal<const Wt::WModelIndex&>& editCategory() {
+	return editCategory_;
+}
+Wt::Signal<const Wt::WModelIndex&>& deleteCategory() {
+	return deleteCategory_;
+}
+Wt::Signal<const Wt::WModelIndex&,bool>& moveCategory() {
+	return moveCategory_;
+}
 
 private:
 struct WidgetRef {
 	std::unique_ptr<Wt::WWidget> created;
 	Wt::WWidget *w;
-	WidgetRef(Wt::WWidget *widget) : w(widget) { }
+	WidgetRef(Wt::WWidget *widget) : w(widget) {
+	}
 };
 
-Wt::Signal<const Wt::WModelIndex&> editCategory_ ;
-Wt::Signal<const Wt::WModelIndex&> deleteCategory_ ;
-Wt::Signal<const Wt::WModelIndex&,bool> moveCategory_ ;
+Wt::Signal<const Wt::WModelIndex&> editCategory_;
+Wt::Signal<const Wt::WModelIndex&> deleteCategory_;
+Wt::Signal<const Wt::WModelIndex&,bool> moveCategory_;
 
 };
 

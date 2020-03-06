@@ -250,10 +250,10 @@ void ojudgeApp::pathChanged(std::string newPath) {
 	if(dbmodel_->getSetting("googleAnalytics") != "") {
 		doJavaScript(   "window.dataLayer = window.dataLayer || [];"
 		                "function gtag(){dataLayer.push(arguments);}"
-	        	        "gtag('js', new Date());"
+		                "gtag('js', new Date());"
 		                "gtag('config', '" + dbmodel_->getSetting("googleAnalytics") + "', {"
 		                "'page_path': '" + newPath + "'"
-	        	        "});");
+		                "});");
 	}
 
 	if(mainMenu_->currentItem() != NULL)
