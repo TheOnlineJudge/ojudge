@@ -1,0 +1,1183 @@
+@charset "UTF-8";
+/*
+  CSS stylesheet for the LaTeX lwarp package
+  Copyright 2016-2019 Brian Dunn — BD Tech Concepts LLC
+
+  Modified to only apply to OJProblemViewer class and children
+  for ojudge
+*/
+.OJProblemViewer {
+  /*font-family: "DejaVu Serif", "Bitstream Vera Serif", "Lucida Bright", Georgia, serif;*/
+  color: black;
+  margin: 0em;
+  padding: 0em;
+  font-size: 100%;
+  line-height: 1.2;
+  text-align: justify;
+}
+
+  .OJProblemViewer header, .OJProblemViewer section, .OJProblemViewer footer, .OJProblemViewer aside, .OJProblemViewer nav, .OJProblemViewer main,
+  .OJProblemViewer article, .OJProblemViewer figure {
+    display: block; }
+  .OJProblemViewer h4 {
+	display:none;
+  }
+  .OJProblemViewer A:link {
+    color: #000080;
+    text-decoration: none; }
+  .OJProblemViewer A:visited {
+    color: #800000; }
+  .OJProblemViewer A:hover {
+    color: #000080;
+    text-decoration: underline; }
+  .OJProblemViewer A:active {
+    color: #800000; }
+  .OJProblemViewer a.tocbook {
+    display: inline-block;
+    margin-left: 0em;
+    font-weight: bold;
+    margin-top: 1ex;
+    margin-bottom: 1ex; }
+  .OJProblemViewer a.tocpart {
+    display: inline-block;
+    margin-left: 0em;
+    font-weight: bold; }
+  .OJProblemViewer a.tocchapter {
+    display: inline-block;
+    margin-left: 0em;
+    font-weight: bold; }
+  .OJProblemViewer a.tocsection {
+    display: inline-block;
+    margin-left: 1em;
+    text-indent: -.5em;
+    font-weight: bold; }
+  .OJProblemViewer a.tocsubsection {
+    display: inline-block;
+    margin-left: 2em;
+    text-indent: -.5em; }
+  .OJProblemViewer a.tocsubsubsection {
+    display: inline-block;
+    margin-left: 3em;
+    text-indent: -.5em; }
+  .OJProblemViewer a.tocparagraph {
+    display: inline-block;
+    margin-left: 4em;
+    text-indent: -.5em; }
+  .OJProblemViewer a.tocsubparagraph {
+    display: inline-block;
+    margin-left: 5em;
+    text-indent: -.5em; }
+  .OJProblemViewer a.tocfigure {
+    margin-left: 0em; }
+  .OJProblemViewer a.tocsubfigure {
+    margin-left: 2em; }
+  .OJProblemViewer a.toctable {
+    margin-left: 0em; }
+  .OJProblemViewer a.tocsubtable {
+    margin-left: 2em; }
+  .OJProblemViewer a.toctheorem {
+    margin-left: 0em; }
+  .OJProblemViewer a.toclstlisting {
+    margin-left: 0em; }
+  .OJProblemViewer p {
+    margin: 1.5ex 0em 1.5ex 0em; }
+  .OJProblemViewer table p {
+    margin: .5ex 0em .5ex 0em; }
+  .OJProblemViewer span.sectionnumber {
+    margin-right: 0em; }
+  .OJProblemViewer span.indexitem {
+    margin-left: 0em; }
+  .OJProblemViewer span.indexsubitem {
+    margin-left: 2em; }
+  .OJProblemViewer span.indexsubsubitem {
+    margin-left: 4em; }
+  .OJProblemViewer div.hidden, .OJProblemViewer span.hidden {
+    display: none; }
+  .OJProblemViewer kbd, .OJProblemViewer span.texttt {
+    font-family: "DejaVu Mono", "Bitstream Vera Mono", "Lucida Console", "Nimbus Mono L", "Liberation Mono", "FreeMono", "Andale Mono", "Courier New", monospace;
+    font-size: 100%; }
+  .OJProblemViewer pre {
+    padding: 3pt; }
+  .OJProblemViewer span.strong, .OJProblemViewer span.textbf, .OJProblemViewer div.strong, .OJProblemViewer div.textbf {
+    font-weight: bold; }
+  .OJProblemViewer span.textit, .OJProblemViewer div.textit {
+    font-style: italic; }
+  .OJProblemViewer span.textmd, .OJProblemViewer div.textmd {
+    font-weight: normal; }
+  .OJProblemViewer span.texteb {
+    font-weight: bolder; }
+  .OJProblemViewer span.textlg {
+    font-weight: lighter; }
+  .OJProblemViewer span.textup, .OJProblemViewer div.textup {
+    font-style: normal;
+    font-variant: normal;
+    font-variant-numeric: normal; }
+  .OJProblemViewer span.textsc, .OJProblemViewer div.textsc {
+    font-variant: small-caps;
+    font-variant-numeric: oldstyle-nums; }
+  .OJProblemViewer span.textulc, .OJProblemViewer div.textulc {
+    font-variant: normal;
+    font-variant-numeric: normal; }
+  .OJProblemViewer span.textsl, .OJProblemViewer div.textsl {
+    font-style: oblique; }
+  .OJProblemViewer span.textrm, .OJProblemViewer div.textrm {
+    font-family: "DejaVu Serif", "Bitstream Vera Serif", "Lucida Bright", Georgia, serif; }
+  .OJProblemViewer span.textsf, .OJProblemViewer div.textsf {
+    font-family: "DejaVu Sans", "Bitstream Vera Sans", Geneva, Verdana, sans-serif; }
+  .OJProblemViewer span.textcircled {
+    border: 1px solid black;
+    border-radius: 1ex; }
+  .OJProblemViewer span.underline {
+    text-decoration: underline;
+    text-decoration-skip: auto; }
+  .OJProblemViewer span.overline {
+    text-decoration: overline;
+    text-decoration-skip: auto; }
+  .OJProblemViewer div.verticalrl {
+    writing-mode: vertical-rl; }
+  .OJProblemViewer div.horizontaltb {
+    writing-mode: horizontal-tb; }
+  .OJProblemViewer div.diagboxtitleN {
+    border-bottom: 1px solid gray; }
+  .OJProblemViewer div.diagboxtitleS {
+    border-top: 1px solid gray; }
+  .OJProblemViewer div.diagboxE {
+    padding-left: 2em;
+    text-align: right; }
+  .OJProblemViewer div.diagboxW {
+    padding-right: 2em;
+    text-align: left; }
+  .OJProblemViewer .supsubscript {
+    display: inline-block;
+    text-align: left; }
+  .OJProblemViewer .supsubscript sup,
+  .OJProblemViewer .supsubscript sub {
+    position: relative;
+    display: block;
+    font-size: .5em;
+    line-height: 1; }
+  .OJProblemViewer .supsubscript sup {
+    top: .5em; }
+  .OJProblemViewer .supsubscript sub {
+    top: .5em; }
+  .OJProblemViewer div.attribution p {
+    text-align: right;
+    font-size: 80%; }
+  .OJProblemViewer span.poemtitle {
+    font-size: 120%;
+    font-weight: bold; }
+  .OJProblemViewer pre.tabbing {
+    font-family: "Linux Libertine Mono O", "Lucida Console", "Droid Sans Mono", "DejaVu Mono", "Bitstream Vera Mono", "Liberation Mono", "FreeMono", "Andale Mono", "Nimbus Mono L", "Courier New", monospace; }
+  .OJProblemViewer blockquote {
+    display: block;
+    margin-left: 2em;
+    margin-right: 2em; }
+  .OJProblemViewer div.quotchap {
+    display: block;
+    font-style: oblique;
+    overflow-x: auto;
+    margin-left: 2em;
+    margin-right: 2em; }
+  .OJProblemViewer blockquote p, .OJProblemViewer div.quotchap p {
+    line-height: 1.5;
+    text-align: left;
+    font-size: .85em; }
+  .OJProblemViewer div.qauthor {
+    display: block;
+    text-align: right;
+    margin-left: auto;
+    margin-right: 2em;
+    font-size: 80%;
+    font-variant: small-caps; }
+  .OJProblemViewer div.qauthor p {
+    text-align: right; }
+  .OJProblemViewer div.epigraph, .OJProblemViewer div.dictum {
+    line-height: 1.2;
+    text-align: left;
+    padding: 3ex 1em 0ex 1em;
+    margin: 3ex 1em 3ex auto;
+    font-size: .85em;
+    max-width: 27em; }
+  .OJProblemViewer div.epigraphsource, .OJProblemViewer div.dictumauthor {
+    text-align: right;
+    margin-left: auto;
+    border-top: 1px solid #A0A0A0;
+    padding-bottom: 3ex;
+    line-height: 1.2; }
+  .OJProblemViewer div.epigraph p, .OJProblemViewer div.dictum p {
+    padding: .5ex;
+    margin: 0ex; }
+  .OJProblemViewer div.epigraphsource p, .OJProblemViewer div.dictumauthor p {
+    padding: .5ex 0ex 0ex 0ex;
+    margin: 0ex; }
+  .OJProblemViewer div.dictumauthor {
+    font-style: italic; }
+  .OJProblemViewer div.copyrightbox {
+    margin: .5ex .5em; }
+  .OJProblemViewer div.copyrightbox p {
+    margin: 0px .5em;
+    padding: 0px; }
+  .OJProblemViewer div.copyrightboxnote {
+    text-align: left;
+    font-size: 60%; }
+  .OJProblemViewer span.lettrine {
+    font-size: 4ex;
+    float: left; }
+  .OJProblemViewer span.lettrinetext {
+    font-variant: small-caps; }
+  .OJProblemViewer span.uline {
+    text-decoration: underline;
+    text-decoration-skip: auto; }
+  .OJProblemViewer span.uuline {
+    text-decoration: underline;
+    text-decoration-skip: auto;
+    text-decoration-style: double; }
+  .OJProblemViewer span.uwave {
+    text-decoration: underline;
+    text-decoration-skip: auto;
+    text-decoration-style: wavy; }
+  .OJProblemViewer span.sout {
+    text-decoration: line-through; }
+  .OJProblemViewer span.oline {
+    text-decoration: overline;
+    text-decoration-skip: auto; }
+  .OJProblemViewer span.xout {
+    text-decoration: line-through; }
+  .OJProblemViewer span.dashuline {
+    text-decoration: underline;
+    text-decoration-skip: auto;
+    text-decoration-style: dashed; }
+  .OJProblemViewer span.dotuline {
+    text-decoration: underline;
+    text-decoration-skip: auto;
+    text-decoration-style: dotted; }
+  .OJProblemViewer span.letterspacing {
+    letter-spacing: .2ex; }
+  .OJProblemViewer span.capsspacing {
+    font-variant: small-caps;
+    letter-spacing: .1ex; }
+  .OJProblemViewer span.highlight {
+    background: #F8E800; }
+  .OJProblemViewer html body {
+    margin: 0;
+    line-height: 1.2; }
+  .OJProblemViewer body div {
+    margin: 0ex; }
+  .OJProblemViewer div.book, .OJProblemViewer h1, .OJProblemViewer h2, .OJProblemViewer h3, .OJProblemViewer h5, .OJProblemViewer h6, .OJProblemViewer span.paragraph, .OJProblemViewer span.subparagraph {
+/*    font-family: "Linux Libertine O", "Hoefler Text", "Garamond", "Bembo", "Janson", "TeX Gyre Pagella", "Palatino", "Liberation Serif", "Nimbus Roman No 9 L",  "FreeSerif", Times, "Times New Roman", serif;*/
+    font-style: normal;
+    font-weight: bold;
+    text-align: left; }
+  .OJProblemViewer h1 {
+    text-align: center;
+    font-size: 2.5em;
+    padding: .4ex 0em 0ex 0em; }
+  .OJProblemViewer div.book {
+    text-align: center;
+    font-size: 2.325em;
+    padding: .4ex 0em 0ex 0em; }
+  .OJProblemViewer h2 {
+    font-size: 2.25em; }
+  .OJProblemViewer h3 {
+    font-size: 2em; }
+  .OJProblemViewer h5 {
+    font-size: 1.5em; }
+  .OJProblemViewer h6 {
+    font-size: 1.25em; }
+  .OJProblemViewer span.paragraph {
+    font-size: 1em;
+    font-variant: normal;
+    margin-right: 1em; }
+  .OJProblemViewer span.subparagraph {
+    font-size: 1em;
+    font-variant: normal;
+    margin-right: 1em; }
+  .OJProblemViewer div.minisec {
+    font-family: "DejaVu Sans", "Bitstream Vera Sans", Geneva, Verdana, sans-serif;
+    font-style: normal;
+    font-weight: bold;
+    text-align: left; }
+  .OJProblemViewer h1 {
+    margin: 0ex 0em 0ex 0em;
+    line-height: 1.3;
+    text-align: center; }
+  .OJProblemViewer h2 {
+    margin: 1ex 0em 1ex 0em;
+    line-height: 1.3;
+    text-align: center; }
+  .OJProblemViewer h3 {
+    margin: 3ex 0em 1ex 0em;
+    line-height: 1.3; }
+  .OJProblemViewer h5 {
+    margin: 3ex 0em 1ex 0em;
+    line-height: 1.3; }
+  .OJProblemViewer h6 {
+    margin: 3ex 0em 1ex 0em;
+    line-height: 1.3; }
+  .OJProblemViewer div.titlepage {
+    text-align: center; }
+  .OJProblemViewer .footnotes {
+    text-align: left;
+    font-size: .85em;
+    margin: 3ex 2em 0ex 2em;
+    border-top: 1px solid silver; }
+  .OJProblemViewer .marginpar, .OJProblemViewer .marginparblock {
+    max-width: 50%;
+    float: right;
+    clear: both;
+    text-align: left;
+    margin: 1ex 0.5em 1ex 1em;
+    padding: 1ex 0.5em 1ex 0.5em;
+    font-size: 85%;
+    border-top: 1px solid silver;
+    border-bottom: 1px solid silver;
+    overflow-x: auto; }
+  .OJProblemViewer .marginpar br {
+    margin-bottom: 2ex; }
+  .OJProblemViewer div.marginblock, .OJProblemViewer div.marginparblock {
+    max-width: 50%;
+    min-width: 10em;
+    float: right;
+    text-align: left;
+    margin: 1ex 0.5em 1ex 1em;
+    padding: 1ex 0.5em 1ex 0.5em;
+    overflow-x: auto; }
+  .OJProblemViewer div.marginblock div.minipage,
+  .OJProblemViewer div.marginparblock div.minipage {
+    display: inline-block;
+    margin: 0pt auto 0pt auto; }
+  .OJProblemViewer div.marginblock div.minipage p,
+  .OJProblemViewer div.marginparblock div.minipage p {
+    font-size: 85%; }
+  .OJProblemViewer div.marginblock br,
+  .OJProblemViewer div.marginparblock br {
+    margin-bottom: 2ex; }
+  .OJProblemViewer div.bodycontainer {
+    float: left;
+    width: 80%; }
+  .OJProblemViewer div.bodywithoutsidetoc div.bodycontainer {
+    float: none;
+    width: 100%; }
+  .OJProblemViewer section.textbody div.footnotes {
+    margin: 3ex 2em 0ex 2em;
+    border-bottom: 2px solid silver; }
+  .OJProblemViewer .footnoteheader {
+    border-top: 2px solid silver;
+    margin-top: 3ex;
+    padding-top: 1ex;
+    font-weight: bold; }
+  .OJProblemViewer .mpfootnotes {
+    text-align: left;
+    font-size: .85em;
+    margin-left: 1em;
+    border-top: 1px solid silver; }
+  .OJProblemViewer div.titlepage div.mpfootnotes {
+    border-top: none; }
+  .OJProblemViewer ul, .OJProblemViewer ol {
+    margin: 1ex 1em 1ex 0em;
+    line-height: 1.2; }
+  .OJProblemViewer body dir, .OJProblemViewer body menu {
+    margin: 3ex 1em 3ex 0em;
+    line-height: 1.2; }
+  .OJProblemViewer li {
+    margin: 0ex 0em 1ex 0em; }
+  .OJProblemViewer html {
+    margin: 0;
+    padding: 0; }
+  .OJProblemViewer .programlisting {
+    font-family: "DejaVu Mono", "Bitstream Vera Mono", "Lucida Console", "Nimbus Mono L", "Liberation Mono", "FreeMono", "Andale Mono", "Courier New", monospace;
+    margin: 1ex 0ex 1ex 0ex;
+    padding: .5ex 0pt .5ex 0pt;
+    overflow-x: auto; }
+  .OJProblemViewer section.textbody > pre.programlisting {
+    border-top: 1px solid silver;
+    border-bottom: 1px solid silver; }
+  .OJProblemViewer div.displaymath {
+    text-align: center; }
+  .OJProblemViewer div.displaymathnumbered {
+    text-align: right;
+    margin-left: 5%;
+    margin-right: 5%;
+    min-width: 2.5in; }
+  @media all and (min-width: 400px) {
+    .OJProblemViewer div.displaymathnumbered {
+      margin-left: 10%;
+      margin-right: 10%; } }
+  @media all and (min-width: 800px) {
+    .OJProblemViewer div.displaymathnumbered {
+      margin-right: 20%; } }
+  @media all and (min-width: 1200px) {
+    .OJProblemViewer div.displaymathnumbered {
+      margin-right: 30%; } }
+  .OJProblemViewer .inlineprogramlisting {
+    font-family: "DejaVu Mono", "Bitstream Vera Mono", "Lucida Console", "Nimbus Mono L", "Liberation Mono", "FreeMono", "Andale Mono", "Courier New", monospace;
+    overflow-x: auto; }
+  .OJProblemViewer span.listinglabel {
+    display: inline-block;
+    font-size: 70%;
+    width: 4em;
+    text-align: right;
+    margin-right: 2em; }
+  .OJProblemViewer div.abstract {
+    margin: 2em 5% 2em 5%;
+    padding: 1ex 1em 1ex 1em;
+    font-size: 90%;
+    text-align: left; }
+  .OJProblemViewer div.abstract dl {
+    line-height: 1.5; }
+  .OJProblemViewer div.abstract dt {
+    color: #304070; }
+  .OJProblemViewer div.abstracttitle {
+    font-family: "URW Classico", Optima, "Linux Biolinum O", "Linux Libertine O", "Liberation Serif", "Nimbus Roman No 9 L", "FreeSerif", "Hoefler Text", Times, "Times New Roman", serif;
+    font-weight: bold;
+    font-size: 1.25em;
+    text-align: center; }
+  .OJProblemViewer span.abstractrunintitle {
+    font-family: "URW Classico", Optima, "Linux Biolinum O", "Linux Libertine O", "Liberation Serif", "Nimbus Roman No 9 L", "FreeSerif", "Hoefler Text", Times, "Times New Roman", serif;
+    font-weight: bold; }
+  .OJProblemViewer .verbatim {
+    overflow-x: auto; }
+  .OJProblemViewer .alltt {
+    overflow-x: auto; }
+  .OJProblemViewer .bverbatim {
+    margin: 1ex 0pt 1ex 0pt;
+    padding: .5ex 0pt .5ex 0pt;
+    overflow-x: auto; }
+  .OJProblemViewer .lverbatim {
+    margin: 1ex 0pt 1ex 0pt;
+    padding: .5ex 0pt .5ex 0pt;
+    overflow-x: auto; }
+  .OJProblemViewer .fancyvrb {
+    font-size: .85em;
+    margin: 3ex 0pt 3ex 0pt; }
+  .OJProblemViewer .fancyvrblabel {
+    font-size: .85em;
+    text-align: center;
+    font-weight: bold;
+    margin-top: 1ex;
+    margin-bottom: 1ex; }
+  .OJProblemViewer .verse {
+    font-family: "Linux Libertine Mono O", "Lucida Console", "Droid Sans Mono", "DejaVu Mono", "Bitstream Vera Mono", "Liberation Mono", "FreeMono", "Andale Mono", "Nimbus Mono L", "Courier New", monospace;
+    margin-left: 1em; }
+  .OJProblemViewer div.singlespace {
+    line-height: 1.2; }
+  .OJProblemViewer div.onehalfspace {
+    line-height: 1.5; }
+  .OJProblemViewer div.doublespace {
+    line-height: 2; }
+  .OJProblemViewer div.wpfigure {
+    border: 1px solid red;
+    margin: .5ex;
+    padding: .5ex; }
+  .OJProblemViewer div.wptable {
+    border: 1px solid blue;
+    margin: .5ex;
+    padding: .5ex; }
+  .OJProblemViewer div.wpminipage {
+    border: 1px solid green;
+    margin: .5ex;
+    padding: .5ex; }
+  .OJProblemViewer .minipage, .OJProblemViewer .fminipage, .OJProblemViewer .fcolorminipage {
+    margin: .25em .25em .25em .25em;
+    padding: .25em .25em .25em .25em;
+    display: inline-flex;
+    flex-direction: column;
+    overflow: auto; }
+  .OJProblemViewer .inlineminipage {
+    display: inline-block;
+    text-align: left; }
+  .OJProblemViewer .minipage p {
+    margin: .75ex 0em .75ex 0em; }
+  .OJProblemViewer .fboxBlock .minipage, .OJProblemViewer .colorbox .minipage, .OJProblemViewer .colorboxBlock .minipage,
+  .OJProblemViewer .fcolorbox .minipage, .OJProblemViewer .fcolorboxBlock .minipage {
+    border: none;
+    background: none; }
+  .OJProblemViewer .fbox, .OJProblemViewer .fboxBlock {
+    border: 1px solid black; }
+  .OJProblemViewer .fbox, .OJProblemViewer .fboxBlock, .OJProblemViewer .fcolorbox, .OJProblemViewer .fcolorboxBlock, .OJProblemViewer .colorbox, .OJProblemViewer .colorboxBlock,
+  .OJProblemViewer .fminipage, .OJProblemViewer .fcolorminipage {
+    display: inline-block; }
+  .OJProblemViewer .shadowbox, .OJProblemViewer .shabox {
+    border: 1px solid black;
+    box-shadow: 3px 3px 3px #808080;
+    border-radius: 0px;
+    padding: .4ex .3em .4ex .3em;
+    margin: 0pt .3ex 0pt .3ex;
+    display: inline-block; }
+  .OJProblemViewer .doublebox {
+    border: 3px double black;
+    border-radius: 0px;
+    padding: .4ex .3em .4ex .3em;
+    margin: 0pt .3ex 0pt .3ex;
+    display: inline-block; }
+  .OJProblemViewer .ovalbox, .OJProblemViewer .Ovalbox {
+    border: 1px solid black;
+    border-radius: 1ex;
+    padding: .4ex .3em .4ex .3em;
+    margin: 0pt .3ex 0pt .3ex;
+    display: inline-block; }
+  .OJProblemViewer .Ovalbox {
+    border-width: 2px; }
+  .OJProblemViewer .framebox {
+    border: 1px solid black;
+    border-radius: 0px;
+    padding: .3ex .2em 0ex .2em;
+    margin: 0pt .1ex 0pt .1ex;
+    display: inline-block; }
+  .OJProblemViewer .mdframed {
+    padding: 0ex;
+    margin: 2ex 0em 2ex 0em; }
+  .OJProblemViewer .mdframed p {
+    padding: 0ex .5em 0ex .5em; }
+  .OJProblemViewer .mdframed dl {
+    padding: 1ex .5em 0ex .5em; }
+  .OJProblemViewer .mdframedtitle {
+    padding: .5ex 0pt 0pt 0pt;
+    border-radius: 10pt 10pt 0pt 0pt;
+    display: block;
+    margin-bottom: 1ex; }
+  .OJProblemViewer .mdframedsubtitle {
+    display: block; }
+  .OJProblemViewer .mdframedsubsubtitle {
+    display: block; }
+  .OJProblemViewer .mdtheorem {
+    padding: 0ex .5em 0ex .5em;
+    margin: 3ex 5% 3ex 5%; }
+  .OJProblemViewer .framed, .OJProblemViewer pre.boxedverbatim, .OJProblemViewer fcolorbox {
+    margin: 3ex 0em 3ex 0em;
+    border: 1px solid black;
+    border-radius: 0px;
+    padding: .3ex 1em 0ex 1em;
+    display: block; }
+  .OJProblemViewer .shaded {
+    margin: 3ex 0em 3ex 0em;
+    padding: .3ex 1em .3ex 1em;
+    display: block; }
+  .OJProblemViewer .snugframed {
+    margin: 3ex 0em 3ex 0em;
+    border: 1px solid black;
+    border-radius: 0px;
+    display: block; }
+  .OJProblemViewer .framedleftbar {
+    margin: 3ex 0em 3ex 0em;
+    border-left: 3pt solid black;
+    border-radius: 0px;
+    padding: .3ex .2em .3ex 1em;
+    display: block; }
+  .OJProblemViewer .framedtitle {
+    margin: 0em;
+    padding: 0em;
+    font-size: 130%; }
+  .OJProblemViewer .framedtitle p {
+    padding: .3em; }
+  .OJProblemViewer div.niceframe, .OJProblemViewer div.curlyframe, .OJProblemViewer div.artdecoframe, .OJProblemViewer div.generalframe {
+    padding: 1ex;
+    margin: 2ex auto;
+    border-radius: 2ex; }
+  .OJProblemViewer div.niceframe {
+    border: 6px groove black; }
+  .OJProblemViewer div.curlyframe {
+    border-left: 3px dotted black;
+    border-right: 3px dotted black;
+    border-radius: 6ex; }
+  .OJProblemViewer div.artdecoframe {
+    border-left: 10px double black;
+    border-right: 10px double black;
+    border-radius: 6ex; }
+  .OJProblemViewer div.generalframe {
+    border: 6px groove black; }
+  .OJProblemViewer dl {
+    margin: 1ex 2em 1ex 0em;
+    line-height: 1.3; }
+  .OJProblemViewer dl dt {
+    display: block;
+    float: left;
+    font-weight: bold;
+    padding-right: 1em; }
+  .OJProblemViewer dl dd {
+    display: block; }
+  .OJProblemViewer dl dd:after {
+    content: "";
+    display: block;
+    clear: both; }
+  .OJProblemViewer dl dd p {
+    margin-top: 0em; }
+  .OJProblemViewer dd ul, .OJProblemViewer dd ol, .OJProblemViewer dd dl {
+    clear: both;
+    padding-top: 1ex; }
+  .OJProblemViewer nav {
+    font-family: "URW Classico", Optima, "Linux Biolinum O", "DejaVu Sans", "Bitstream Vera Sans", Geneva, Verdana, sans-serif;
+    margin-bottom: 4ex; }
+  .OJProblemViewer nav p {
+    line-height: 1.2;
+    margin-top: .5ex;
+    margin-bottom: .5ex;
+    font-size: .9em; }
+  .OJProblemViewer img, .OJProblemViewer img.hyperimage, .OJProblemViewer img.borderimage {
+    max-width: 600px;
+    border: 1px solid silver;
+    box-shadow: 3px 3px 3px #808080;
+    padding: .5%;
+    margin: .5%;
+    background: none; }
+  .OJProblemViewer img.inlineimage {
+    padding: 0px;
+    box-shadow: none;
+    border: none;
+    background: none;
+    margin: 0px;
+    display: inline-block;
+    border-radius: 0px; }
+  .OJProblemViewer img.logoimage {
+    max-width: 300px;
+    box-shadow: 3px 3px 3px #808080;
+    border: 1px solid black;
+    background: none;
+    padding: 0;
+    margin: .5ex;
+    border-radius: 10px; }
+  .OJProblemViewer .section {
+    margin: 0ex .5em 0ex .5em;
+    padding: 0; }
+  .OJProblemViewer figure {
+    margin: 5ex auto 5ex auto;
+    padding: 1ex 1em 1ex 1em;
+    overflow-x: auto; }
+  .OJProblemViewer figure figure {
+    margin: 0pt; }
+  .OJProblemViewer figure div.minipage p {
+    font-size: 85%; }
+  .OJProblemViewer figure.subfigure, .OJProblemViewer figure.subtable {
+    display: inline-block;
+    margin: 3ex 1em 3ex 1em; }
+  .OJProblemViewer div.figurecaption .minipage {
+    margin: 0;
+    padding: 0; }
+  .OJProblemViewer div.minipage figure {
+    border: none;
+    box-shadow: none; }
+  .OJProblemViewer div.minipage figure.table {
+    margin: 0ex; }
+  .OJProblemViewer div.minipage div.footnotes {
+    margin: 1ex 2em 0ex 2em; }
+  .OJProblemViewer div.floatrow {
+    text-align: center; }
+  .OJProblemViewer div.floatrow figure {
+    display: inline-block;
+    margin: 1ex 2%; }
+  .OJProblemViewer div.floatfoot {
+    font-size: .85em;
+    border-top: 1px solid silver;
+    line-height: 1.2; }
+  .OJProblemViewer div.figurecaption, .OJProblemViewer .lstlistingtitle {
+    font-size: .85em;
+    text-align: center;
+    font-weight: bold;
+    margin-top: 1ex;
+    margin-bottom: 1ex; }
+  .OJProblemViewer figure.subfigure div.figurecaption, .OJProblemViewer figure.subtable div.figurecaption {
+    border-bottom: none;
+    background: none; }
+  .OJProblemViewer div.nonfloatcaption {
+    margin: 1ex auto 1ex auto;
+    font-size: .85em;
+    text-align: center;
+    font-weight: bold; }
+  .OJProblemViewer figure div.floatrow div.minipage div.figurecaption {
+    border: none;
+    background: none; }
+  .OJProblemViewer figure.boxed, .OJProblemViewer figure.boxruled {
+    border: 1px solid black; }
+  .OJProblemViewer figure.ruled {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    border-left: 0px;
+    border-right: 0px;
+    border-radius: 0px;
+    background: none;
+    box-shadow: none; }
+  .OJProblemViewer figure.ruled div.figurecaption, .OJProblemViewer figure.boxruled div.figurecaption {
+    border-top: 1px solid silver;
+    border-bottom: 1px solid silver; }
+  .OJProblemViewer table {
+    margin: 1ex auto 1ex auto;
+    border-collapse: separate;
+    border-spacing: 0px;
+    line-height: 1.3; }
+  .OJProblemViewer tr.hline td {
+    border-top: 1px solid #808080;
+    margin-top: 0ex;
+    margin-bottom: 0ex; }
+  .OJProblemViewer tr.tbrule td {
+    border-top: 1px solid black;
+    margin-top: 0ex;
+    margin-bottom: 0ex; }
+  .OJProblemViewer td {
+    padding: .5ex .5em .5ex .5em; }
+  .OJProblemViewer table td.tdl {
+    text-align: left;
+    vertical-align: middle; }
+  .OJProblemViewer table td.tdc {
+    text-align: center;
+    vertical-align: middle; }
+  .OJProblemViewer table td.tdat {
+    text-align: center;
+    vertical-align: middle;
+    padding: 0px;
+    margin: 0px; }
+  .OJProblemViewer table td.tdbang {
+    text-align: center;
+    vertical-align: middle; }
+  .OJProblemViewer table td.tdr {
+    text-align: right;
+    vertical-align: middle; }
+  .OJProblemViewer table td.tdp {
+    text-align: left;
+    vertical-align: bottom; }
+  .OJProblemViewer table td.tdm {
+    text-align: left;
+    vertical-align: middle; }
+  .OJProblemViewer table td.tdb {
+    text-align: left;
+    vertical-align: top; }
+  .OJProblemViewer table td.tdP {
+    text-align: center;
+    vertical-align: bottom; }
+  .OJProblemViewer table td.tdM {
+    text-align: center;
+    vertical-align: middle; }
+  .OJProblemViewer table td.tdB {
+    text-align: center;
+    vertical-align: top; }
+  .OJProblemViewer table td.tvertbarl {
+    border-left: 1px solid black; }
+  .OJProblemViewer table td.tvertbarldouble {
+    border-left: 4px double black; }
+  .OJProblemViewer table td.tvertbarr {
+    border-right: 1px solid black; }
+  .OJProblemViewer table td.tvertbarrdouble {
+    border-right: 4px double black; }
+  .OJProblemViewer table td.tvertbarldash {
+    border-left: 1px dashed black; }
+  .OJProblemViewer table td.tvertbarldoubledash {
+    border-left: 2px dashed black; }
+  .OJProblemViewer table td.tvertbarrdash {
+    border-right: 1px dashed black; }
+  .OJProblemViewer table td.tvertbarrdoubledash {
+    border-right: 2px dashed black; }
+  .OJProblemViewer table td.tdrule {
+    border-top: 1px solid #A0A0A0; }
+  .OJProblemViewer table td.tdrulel {
+    border-top-left-radius: .5em;
+    border-top: 1px solid #A0A0A0; }
+  .OJProblemViewer table td.tdruler {
+    border-top-right-radius: .5em;
+    border-top: 1px solid #A0A0A0; }
+  .OJProblemViewer table td.tdrulelr {
+    border-top-left-radius: .5em;
+    border-top-right-radius: .5em;
+    border-top: 1px solid #A0A0A0; }
+  .OJProblemViewer td.tdp p, .OJProblemViewer td.tdprule p, .OJProblemViewer td.tdP p, .OJProblemViewer td.tdPrule p {
+    padding-top: 1ex;
+    padding-bottom: 1ex;
+    margin: 0ex; }
+  .OJProblemViewer td.tdm p, .OJProblemViewer td.tmbrule p, .OJProblemViewer td.tdM p, .OJProblemViewer td.tdMrule p {
+    padding-top: 1ex;
+    padding-bottom: 1ex;
+    margin: 0ex; }
+  .OJProblemViewer td.tdb p, .OJProblemViewer td.tdbrule p, .OJProblemViewer td.tdB p, .OJProblemViewer td.tdBrule p {
+    padding-top: 1ex;
+    padding-bottom: 1ex;
+    margin: 0ex; }
+  .OJProblemViewer td.tdp, .OJProblemViewer td.tdprule, .OJProblemViewer td.tdP, .OJProblemViewer td.tdPrule {
+    padding: 0ex .5em 0ex .5em; }
+  .OJProblemViewer td.tdm, .OJProblemViewer td.tdmrule, .OJProblemViewer td.tdM, .OJProblemViewer td.tdMrule {
+    padding: 0ex .5em 0ex .5em; }
+  .OJProblemViewer td.tdb, .OJProblemViewer td.tdbrule, .OJProblemViewer td.tdB, .OJProblemViewer td.tdBrule {
+    padding: 0ex .5em 0ex .5em; }
+  .OJProblemViewer .tnotes {
+    margin: 0ex 5% 1ex 5%;
+    padding: 0.5ex 1em 0.5ex 1em;
+    font-size: .80em;
+    text-align: left; }
+  .OJProblemViewer .minipage .tnotes {
+    margin: 0pt;
+    padding: 0pt; }
+  .OJProblemViewer .tnotes dl dt p {
+    margin-bottom: 0px; }
+  .OJProblemViewer .tnoteitemheader {
+    margin-right: 1em; }
+  .OJProblemViewer div.cellcolor {
+    width: 100%;
+    padding: .5ex .5em .5ex .5em;
+    margin: -.5ex -.5em -.5ex -.5em; }
+  .OJProblemViewer span.lyluatex {
+    display: inline-block; }
+  .OJProblemViewer div.lyluatex p span.lateximagesource img {
+    display: block;
+    margin-top: 3ex;
+    margin-bottom: 3ex; }
+  .OJProblemViewer .ldelim, .OJProblemViewer .rdelim {
+    font-size: 200%; }
+  .OJProblemViewer div.center {
+    text-align: center; }
+  .OJProblemViewer div.center table {
+    margin-left: auto;
+    margin-right: auto; }
+  .OJProblemViewer div.flushleft {
+    text-align: left; }
+  .OJProblemViewer div.flushleft table {
+    margin-left: 0em;
+    margin-right: auto; }
+  .OJProblemViewer div.flushright {
+    text-align: right; }
+  .OJProblemViewer div.flushright table {
+    margin-left: auto;
+    margin-right: 0em; }
+  .OJProblemViewer div.Btrivlist table tr td {
+    padding: .2ex 0em; }
+  .OJProblemViewer span.callout {
+    font-family: "DejaVu Sans", "Bitstream Vera Sans", Geneva, Verdana, sans-serif;
+    border-radius: .5em;
+    background-color: black;
+    color: white;
+    padding: 0px .25em 0px .25em;
+    margin: 0;
+    font-weight: bold;
+    font-size: .72em; }
+  .OJProblemViewer div.programlisting pre.verbatim span.callout {
+    font-size: .85em; }
+  .OJProblemViewer span.verbatim {
+    font-family: "DejaVu Mono", "Bitstream Vera Mono", "Lucida Console", "Nimbus Mono L", "Liberation Mono", "FreeMono", "Andale Mono", "Courier New", monospace; }
+  .OJProblemViewer div.published {
+    text-align: center;
+    font-variant: normal;
+    font-style: italic;
+    font-size: 1em;
+    margin: 1ex 0em 1ex 0em; }
+  .OJProblemViewer div.subtitle {
+    text-align: center;
+    font-variant: normal;
+    font-style: italic;
+    font-size: 1.25em;
+    margin: 1ex 0em 1ex 0em; }
+  .OJProblemViewer div.subtitle p {
+    margin: 1ex; }
+  .OJProblemViewer div.author {
+    font-variant: normal;
+    font-style: normal;
+    font-size: 1em;
+    margin: 1ex 0em 1ex 0em; }
+  .OJProblemViewer div.oneauthor {
+    display: inline-block;
+    margin: 0ex 1em 0ex 1em; }
+  .OJProblemViewer span.affiliation {
+    font-size: .85em;
+    font-variant: small-caps; }
+  .OJProblemViewer div.titledate {
+    text-align: center;
+    font-size: .85em;
+    font-style: italic;
+    margin: 1ex 0em 1ex 0em; }
+  .OJProblemViewer nav.topnavigation {
+    text-align: left;
+    padding: 0.5ex 1em 0.5ex 1em;
+    margin: 0;
+    border-bottom: 1px solid silver;
+    border-top: 1px solid silver;
+    clear: both; }
+  .OJProblemViewer nav.botnavigation {
+    text-align: left;
+    padding: 0.5ex 1em 0.5ex 1em;
+    margin: 0;
+    border-top: 1px solid silver;
+    border-bottom: 1px solid silver;
+    clear: both; }
+  .OJProblemViewer header {
+    line-height: 1.2;
+    font-size: 1em;
+    border-bottom: 1px solid silver;
+    margin: 0px;
+    padding: 2ex 1em 2ex 1em;
+    text-align: left; }
+  .OJProblemViewer footer {
+    font-size: .85em;
+    line-height: 1.2;
+    margin-top: 1ex;
+    border-top: 1px solid silver;
+    padding: 2ex 1em 2ex 1em;
+    clear: both;
+    text-align: left; }
+  .OJProblemViewer a.linkhome {
+    font-weight: bold;
+    font-size: 1em; }
+  .OJProblemViewer div.lateximagesource {
+    padding: 0px;
+    margin: 0px;
+    display: none; }
+  .OJProblemViewer img.lateximage {
+    padding: 0pt;
+    margin: 0pt;
+    box-shadow: none;
+    border: none;
+    background: none;
+    max-width: 100%;
+    border-radius: 0ex;
+    border: none; }
+  .OJProblemViewer div.sidetoccontainer {
+    font-family: "DejaVu Serif", "Bitstream Vera Serif", "Lucida Bright", Georgia, serif;
+    float: left;
+    width: 20%;
+    margin: 0pt -1px 3ex 0pt;
+    border-right: 1px solid silver;
+    border-bottom: 1px solid silver;
+    background: #FAF7F4;
+    font-size: .9em;
+    border-radius: 0px 0px 20px 0px; }
+  .OJProblemViewer div.sidetoccontents {
+    overflow-y: auto;
+    width: 100%;
+    text-align: left; }
+  .OJProblemViewer nav.sidetoc p {
+    line-height: 1.2;
+    margin: 1ex .5em 1ex .5em;
+    text-indent: 0; }
+  .OJProblemViewer nav.sidetoc p a {
+    color: black;
+    font-size: .7em; }
+  .OJProblemViewer div.sidetoctitle {
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 1px solid silver; }
+  .OJProblemViewer nav.sidetoc a:hover {
+    text-decoration: underline; }
+  .OJProblemViewer section.textbody {
+    margin: 0ex 1em 0ex 1em; }
+  .OJProblemViewer div.multicolsheading {
+    -webkit-column-span: all;
+    -moz-column-span: all;
+    column-span: all; }
+  .OJProblemViewer div.multicols {
+    -webkit-columns: 3 380px;
+    -moz-columns: 3 380px;
+    columns: 3 380px; }
+  .OJProblemViewer div.multicols p {
+    margin-top: 0ex; }
+  .OJProblemViewer span.numerator {
+    font-size: 60%;
+    vertical-align: .4em; }
+  .OJProblemViewer span.denominator {
+    font-size: 60%; }
+  .OJProblemViewer div.alg2evline {
+    margin-left: 1em;
+    padding-left: 1em;
+    border-left: 1px solid black;
+    border-radius: 0px 0px 0px 1ex; }
+  .OJProblemViewer div.alg2evsline {
+    margin-left: 1em;
+    padding-left: 1em;
+    border-left: 1px solid black; }
+  .OJProblemViewer div.alg2enoline {
+    margin-left: 1em;
+    padding-left: 1em; }
+  .OJProblemViewer span.alg2elinenumber {
+    margin-right: .5em;
+    font-size: 50%;
+    color: red; }
+  .OJProblemViewer span.floatright {
+    float: right; }
+  .OJProblemViewer .floatnotes {
+    margin: 0ex 5% 0ex 5%;
+    padding: 0ex 1em 0ex 1em;
+    font-size: .80em;
+    text-align: left; }
+  .OJProblemViewer .authorartist {
+    display: block;
+    font-size: .70em;
+    font-style: italic; }
+  .OJProblemViewer nav .authorartist {
+    display: inline; }
+  .OJProblemViewer .theoremcontents {
+    font-style: italic;
+    margin-top: 3ex;
+    margin-bottom: 3ex; }
+  .OJProblemViewer .theoremlabel {
+    font-style: normal;
+    font-weight: bold;
+    margin-right: .5em; }
+  .OJProblemViewer span.theoremheader,
+  .OJProblemViewer span.theoremheaderplain,
+  .OJProblemViewer span.theoremheaderdefinition,
+  .OJProblemViewer span.theoremheaderbreak,
+  .OJProblemViewer span.theoremheadermarginbreak,
+  .OJProblemViewer span.theoremheaderchangebreak,
+  .OJProblemViewer span.theoremheaderchange,
+  .OJProblemViewer span.theoremheadermargin {
+    font-style: normal;
+    font-weight: bold;
+    margin-right: 1em; }
+  .OJProblemViewer span.amsthmnameplain,
+  .OJProblemViewer span.amsthmnamedefinition,
+  .OJProblemViewer span.amsthmnumberplain,
+  .OJProblemViewer span.amsthmnumberdefinition {
+    font-style: normal;
+    font-weight: bold; }
+  .OJProblemViewer span.amsthmnameremark,
+  .OJProblemViewer span.amsthmnumberremark {
+    font-style: italic;
+    font-weight: normal; }
+  .OJProblemViewer span.amsthmnoteplain,
+  .OJProblemViewer span.amsthmnotedefinition {
+    font-style: normal; }
+  .OJProblemViewer span.theoremheaderremark,
+  .OJProblemViewer span.theoremheaderproof,
+  .OJProblemViewer span.amsthmproofname {
+    font-style: italic;
+    font-weight: normal;
+    margin-right: 1em; }
+  .OJProblemViewer span.theoremheadersc {
+    font-style: normal;
+    font-variant: small-caps;
+    font-weight: normal;
+    margin-right: 1em; }
+  .OJProblemViewer .theoremendmark {
+    float: right; }
+  .OJProblemViewer div.amsthmbodyplain, .OJProblemViewer div.theorembodyplain, .OJProblemViewer div.theorembodynonumberplain,
+  .OJProblemViewer div.theorembodybreak, .OJProblemViewer div.theorembodynonumberbreak,
+  .OJProblemViewer div.theorembodymarginbreak,
+  .OJProblemViewer div.theorembodychangebreak,
+  .OJProblemViewer div.theorembodychange,
+  .OJProblemViewer div.theorembodymargin {
+    font-style: italic;
+    margin-top: 3ex;
+    margin-bottom: 3ex; }
+  .OJProblemViewer div.theorembodydefinition, .OJProblemViewer div.theorembodyremark, .OJProblemViewer div.theorembodyproof,
+  .OJProblemViewer div.theorembodyplainupright, .OJProblemViewer nonumberplainuprightsc,
+  .OJProblemViewer div.amsthmbodydefinition, .OJProblemViewer div.amsthmbodyremark,
+  .OJProblemViewer div.amsthmproof {
+    font-style: normal;
+    margin-top: 3ex;
+    margin-bottom: 3ex; }
+  .OJProblemViewer div.backnaur {
+    display: block;
+    margin: 2ex 2em 2ex 2em; }
+  .OJProblemViewer div.backnaur p {
+    margin: .25ex 0ex .25ex 0ex; }
+  .OJProblemViewer div.backnaurprod {
+    display: inline-block;
+    min-width: 8em;
+    text-align: right; }
+  .OJProblemViewer div.backnaurdesc {
+    display: inline-block; }
+  .OJProblemViewer div.notesimportantnote, .OJProblemViewer div.noteswarningnote, .OJProblemViewer div.notesinformationnote {
+    clear: both;
+    margin: 2ex 2em 2ex 2em;
+    border: 1px solid silver; }
+  .OJProblemViewer div.notesicon {
+    float: left;
+    display: inline-block;
+    background: gold;
+    padding: 0ex 1em 0ex 1em;
+    margin-right: 1em;
+    font-weight: bold; }
+  .OJProblemViewer div.notescontents {
+    font-style: italic; }
+  .OJProblemViewer .latexlogofont {
+    font-family: "Linux Libertine O", "Nimbus Roman No 9 L", "FreeSerif", "Hoefler Text", Times, "Times New Roman", serif;
+    font-variant: normal; }
+  .OJProblemViewer .latexlogo {
+    font-family: "Linux Libertine O", "Nimbus Roman No 9 L", "FreeSerif", "Hoefler Text", Times, "Times New Roman", serif;
+    font-size: 1.1em; }
+  .OJProblemViewer .latexlogosup {
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    font-size: 0.7em;
+    vertical-align: 0.25em;
+    margin-left: -0.4em;
+    margin-right: -0.15em; }
+  .OJProblemViewer .latexlogosub {
+    text-transform: uppercase;
+    vertical-align: -0.27ex;
+    margin-left: -0.08em;
+    margin-right: -0.07em;
+    font-size: 1em; }
+  .OJProblemViewer .latexlogotwoe {
+    text-transform: none;
+    font-variant-numeric: oldstyle-nums; }
+  .OJProblemViewer .latexlogotwoesub {
+    font-style: italic;
+    vertical-align: -0.27ex;
+    margin-left: -0.11em;
+    margin-right: -0.1em;
+    font-size: 1em; }
+  .OJProblemViewer .xelatexlogo {
+    font-family: "Linux Libertine O", "Nimbus Roman No 9 L", "FreeSerif", "Hoefler Text", Times, "Times New Roman", serif;
+    letter-spacing: .03em;
+    font-size: 1.1em; }
+  .OJProblemViewer .xelatexlogosub {
+    vertical-align: -0.27ex;
+    margin-left: -0.0667em;
+    margin-right: -.05em;
+    font-size: 1em;
+    letter-spacing: .03em; }
+  .OJProblemViewer .amslogo {
+    font-family: "TeXGyreChorus","URW Chancery L", "Apple Chancery","ITC Zapf Chancery","Monotype Corsiva", "Linux Libertine O", "Nimbus Roman No 9 L",  "FreeSerif", "Hoefler Text", Times, "Times New Roman", serif;
+    font-style: italic; }
+  .OJProblemViewer .lyxlogo {
+    font-family: "URW Classico", Optima, "Linux Biolinum O", "DejaVu Sans", "Bitstream Vera Sans", Geneva, Verdana, sans-serif; }
+  .OJProblemViewer nav.topnavigation {
+    display: none; }
+  .OJProblemViewer nav.botnavigation {
+    display: none; }
+  .OJProblemViewer span.sidetocthetitle {
+    display: none; }
+  @media screen and (max-width: 50em) {
+    .OJProblemViewer div.sidetoccontainer {
+      float: none;
+      width: 100%;
+      padding: 0;
+      border-radius: 0;
+      border-bottom: 1px solid black;
+      border-top: 1px solid black;
+      box-shadow: none; }
+    .OJProblemViewer span.sidetocthetitle {
+      display: inline; }
+    .OJProblemViewer nav.botnavigation {
+      display: block; }
+    .OJProblemViewer div.bodycontainer {
+      width: 100%; }
+    .OJProblemViewer .marginpar {
+      max-width: 100%;
+      float: none;
+      display: block;
+      margin: 1ex 1em 1ex 1em; } }
+  @media print {
+    .OJProblemViewer {
+      font-family: "Linux Libertine O", "DejaVu Serif", "Bitstream Vera Serif", "Liberation Serif", "Nimbus Roman No 9 L", "FreeSerif", "Hoefler Text", Times, "Times New Roman", serif; }
+      .OJProblemViewer div.sidetoccontainer {
+        display: none; }
+      .OJProblemViewer nav.topnavigation {
+        display: none; }
+      .OJProblemViewer nav.botnavigation {
+        display: none; }
+      .OJProblemViewer div.bodycontainer {
+        width: 100%; } }
+  @media handheld {
+    .OJProblemViewer div.sidetoccontainer {
+      display: none; }
+    .OJProblemViewer nav.topnavigation {
+      display: block; }
+    .OJProblemViewer nav.botnavigation {
+      display: block; }
+    .OJProblemViewer div.bodycontainer {
+      width: 100%; } }
+  @media projection {
+    .OJProblemViewer div.sidetoccontainer {
+      display: none; }
+    .OJProblemViewer nav.topnavigation {
+      display: block; }
+    .OJProblemViewer nav.botnavigation {
+      display: block; }
+    .OJProblemViewer div.bodycontainer {
+      width: 100%; } }

@@ -37,7 +37,8 @@ Wt::WLineEdit *problemSelector_;
 Wt::WDialog *addDialog_;
 Wt::WLineEdit *id_;
 Wt::WLineEdit *title_;
-Wt::WFileUpload *description_;
+Wt::WFileUpload *htmlDescription_;
+Wt::WFileUpload *pdfDescription_;
 Wt::WTreeView *categories_;
 
 void problemSelectorSlot();

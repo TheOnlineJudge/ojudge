@@ -20,8 +20,6 @@ OJCodeEditorWidget::OJCodeEditorWidget() {
 void OJCodeEditorWidget::render(WFlags<RenderFlag> flags) {
 
 	if(flags.test(RenderFlag::Full)) {
-		WApplication *app = WApplication::instance();
-
 		WStringStream strm;
 
 		strm << "{";
