@@ -14,7 +14,6 @@
 #include "dbmodel/DBModel.h"
 #include "base64.h"
 #include "widgets/OJProblemViewerWidget.h"
-#include <unistd.h>
 
 using namespace Wt;
 
