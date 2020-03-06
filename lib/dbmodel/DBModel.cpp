@@ -84,13 +84,14 @@ dbo::ptr<Problem> DBModel::addProblem(long long id, std::string title) {
 	return session.add(std::move(problem));
 }
 
-void DBModel::updateDescription(long long problemId, std::vector<unsigned char>& descData) {
+void DBModel::updateDescription(long long problemId, std::optional<std::string> htmlData, std::optional<std::vector<unsigned char>> pdfData) {
 
 	dbo::Transaction transaction(session);
 	dbo::ptr<Problem> problem = session.find<Problem>().where("id = ?").bind(problemId);
 
 	dbo::ptr<Description> description = session.add(std::unique_ptr<Description>(new Description()));
-	description.modify()->pdfdata = descData;
+	description.modify()->htmldata = htmlData;
+	description.modify()->pdfdata = pdfData;
 	problem.modify()->description = description;
 }
 

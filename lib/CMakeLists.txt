@@ -29,7 +29,8 @@ viewmodels/CategoryModel.cpp
 viewmodels/LanguageModel.cpp
 viewmodels/ProblemModel.cpp
 viewmodels/ViewModels.cpp
-widgets/WCodeEditorWidget.cpp
+widgets/OJCodeEditorWidget.cpp
+widgets/OJProblemViewerWidget.cpp
 AboutWidget.cpp
 AdminWidget.cpp
 AdminCategoryWidget.cpp

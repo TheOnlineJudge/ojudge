@@ -111,13 +111,21 @@ void AdminProblemWidget::showAddEditDialog(const WModelIndex& index) {
 	auto title = cpp14::make_unique<WLineEdit>();
 	title_ = title.get();
 
-	auto description = cpp14::make_unique<WFileUpload>();
-	description_ = description.get();
-	description_->changed().connect(description_, &WFileUpload::upload);
+	auto htmlDescription = cpp14::make_unique<WFileUpload>();
+	htmlDescription_ = htmlDescription.get();
+	htmlDescription_->changed().connect(htmlDescription_, &WFileUpload::upload);
 
-	auto progress = cpp14::make_unique<WProgressBar>();
-	WProgressBar *progress_ = progress.get() ;
-	description_->setProgressBar(progress_);
+	auto htmlProgress = cpp14::make_unique<WProgressBar>();
+	WProgressBar *htmlProgress_ = htmlProgress.get() ;
+	htmlDescription_->setProgressBar(htmlProgress_);
+
+	auto pdfDescription = cpp14::make_unique<WFileUpload>();
+	pdfDescription_ = pdfDescription.get();
+	pdfDescription_->changed().connect(pdfDescription_, &WFileUpload::upload);
+
+	auto pdfProgress = cpp14::make_unique<WProgressBar>();
+	WProgressBar *pdfProgress_ = pdfProgress.get();
+	pdfDescription_->setProgressBar(pdfProgress_);
 
 	auto categories = cpp14::make_unique<WTreeView>();
 	categories->setModel(viewModels_->getCategoryModel()) ;
@@ -129,12 +137,15 @@ void AdminProblemWidget::showAddEditDialog(const WModelIndex& index) {
 
 	result->bindString("idlabel",WString("ID"));
 	result->bindString("titlelabel",WString("Title"));
-	result->bindString("descriptionlabel",WString("Problem description"));
+	result->bindString("htmldescriptionlabel",WString("HTML problem description"));
+	result->bindString("pdfdescriptionlabel",WString("PDF problem description"));
 	result->bindString("categorieslabel",WString("Categories"));
 	result->bindWidget("id",std::move(id));
 	result->bindWidget("title",std::move(title));
-	result->bindWidget("description",std::move(description));
-	result->bindWidget("progress",std::move(progress));
+	result->bindWidget("htmldescription",std::move(htmlDescription));
+	result->bindWidget("htmlprogress",std::move(htmlProgress));
+	result->bindWidget("pdfdescription",std::move(pdfDescription));
+	result->bindWidget("pdfprogress",std::move(pdfProgress));
 	result->bindWidget("categories",std::move(categories));
 
 	WPushButton *ok = addDialog_->footer()->addWidget(cpp14::make_unique<WPushButton>("Save"));
@@ -154,9 +165,11 @@ void AdminProblemWidget::showAddEditDialog(const WModelIndex& index) {
 void AdminProblemWidget::addDialogDone(DialogCode code) {
 	if(code == DialogCode::Accepted) {
 		viewModels_->getProblemModel()->addProblem(std::stoi(id_->text().toUTF8()),title_->text().toUTF8());
-		std::ifstream descFile(description_->spoolFileName(), std::ios::binary);
-		std::vector<unsigned char> descFileContents(std::istreambuf_iterator<char>{descFile},{});
-		dbmodel_->updateDescription(std::stoi(id_->text().toUTF8()),descFileContents);
+		std::ifstream htmlFile(htmlDescription_->spoolFileName(), std::ios::binary);
+		std::string htmlFileContents(std::istreambuf_iterator<char>{htmlFile},{});
+		std::ifstream pdfFile(pdfDescription_->spoolFileName(), std::ios::binary);
+		std::vector<unsigned char> pdfFileContents(std::istreambuf_iterator<char>{pdfFile},{});
+		dbmodel_->updateDescription(std::stoi(id_->text().toUTF8()),std::optional<std::string>{htmlFileContents},std::optional<std::vector<unsigned char>>{pdfFileContents});
 	}
 		
 	removeChild(addDialog_);

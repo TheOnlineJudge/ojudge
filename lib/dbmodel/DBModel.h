@@ -100,12 +100,14 @@ void persist(Action& a) {
 
 class Description {
 public:
-std::vector<unsigned char> pdfdata;
+std::optional< std::string > htmldata;
+std::optional< std::vector<unsigned char> > pdfdata;
 dbo::ptr<Problem> problem;
 
 template<class Action>
 void persist(Action& a) {
 	dbo::id(a, problem, "problem", dbo::NotNull|dbo::OnDeleteCascade);
+	dbo::field(a, htmldata, "htmldata");
 	dbo::field(a, pdfdata, "pdfdata");
 }
 };
@@ -241,7 +243,7 @@ dbo::ptr<Category> addCategory(std::string title, int parent);
 Problems getProblems();
 dbo::ptr<Problem> getProblem(long long id);
 dbo::ptr<Problem> addProblem(long long id, std::string title);
-void updateDescription(long long problemId, std::vector<unsigned char>& descData);
+void updateDescription(long long problemId, std::optional<std::string> htmlData, std::optional<std::vector<unsigned char>> pdfData);
 
 Settings getSettings();
 std::string getSetting(std::string settingName);
