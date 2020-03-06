@@ -92,11 +92,18 @@
       ${title}
     </div>
     <div class="form-group">
-      <label for="${id:description}">${descriptionlabel}</label>
-      ${description}
+      <label for="${id:htmldescription}">${htmldescriptionlabel}</label>
+      ${htmldescription}
     </div>
     <div class="form-group">
-      ${progress}
+      ${htmlprogress}
+    </div>
+    <div class="form-group">
+      <label for="${id:pdfdescription}">${pdfdescriptionlabel}</label>
+      ${pdfdescription}
+    </div>
+    <div class="form-group">
+      ${pdfprogress}
     </div>
     <div class="form-group">
       <label for="${id:categories}">${categorieslabel}</label>

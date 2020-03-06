@@ -63,6 +63,7 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	setTitle(WString(dbmodel_->getSetting("siteTitle")));
 	instance()->styleSheet().addRule(":root", std::string("--ojcolor: ") + dbmodel_->getSetting("siteColor"));
 	useStyleSheet("css/ojudge.css");
+	useStyleSheet("css/OJProblemViewer.css");
 	setLoadingIndicator(cpp14::make_unique<WOverlayLoadingIndicator>());
 
 	auto bootstrapTheme = std::make_shared<WBootstrapTheme>();
