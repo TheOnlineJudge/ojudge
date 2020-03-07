@@ -20,6 +20,7 @@ HomeWidget::HomeWidget() {
 	welcome->addStyleClass("hometitle");
 
 	auto intro = addWidget(cpp14::make_unique<WText>("<div>Here you will find hundreds of problems. They are like the ones used during programming contests, and are available in HTML and PDF formats. You can submit your sources in a variety of languages, trying to solve any of the problems available in our database.</div>"));
+	intro->addStyleClass("hometext");
 
 	auto boxes = addWidget(cpp14::make_unique<WContainerWidget>());
 	boxes->addStyleClass("boxes");
@@ -28,23 +29,14 @@ HomeWidget::HomeWidget() {
 	auto boxesLayout = boxes->setLayout(cpp14::make_unique<WHBoxLayout>());
 	boxesLayout->setContentsMargins(0,0,0,0);
 
-	boxesLayout->addStretch(1);
-
 	auto box1 = boxesLayout->addWidget(cpp14::make_unique<WContainerWidget>(),0);
 	box1->addStyleClass("box box1");
-	box1->hide();
-
-	boxesLayout->addStretch(1);
 
 	auto box2 = boxesLayout->addWidget(cpp14::make_unique<WContainerWidget>(),0);
 	box2->addStyleClass("box box2");
 
-	boxesLayout->addStretch(1);
-
 	auto box3 = boxesLayout->addWidget(cpp14::make_unique<WContainerWidget>(),0);
 	box3->addStyleClass("box box3");
-
-	boxesLayout->addStretch(1);
 
 	WAnimation anim(AnimationEffect::Pop | AnimationEffect::Fade,TimingFunction::Linear,1000);
 
