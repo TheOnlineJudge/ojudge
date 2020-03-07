@@ -17,6 +17,10 @@ body {
   padding: 0px !important;
 }
 
+.container {
+  padding: 0px !important;
+}
+
 .ojtitle {
   font-family:'OJudge Title';
   font-size:72px;
@@ -86,11 +90,11 @@ body {
   background-color:var(--ojcolor);
   height: 170px;
   margin: 0px !important;
-  border-radius: 5px 5px 0px 0px;
 }
 
 .maincontent {
   min-height: calc(100vh - 284px);
+  padding: 20px;
 }
 
 .boxes {
