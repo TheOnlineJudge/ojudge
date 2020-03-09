@@ -9,8 +9,8 @@
 
 #include <Wt/WVBoxLayout.h>
 #include <Wt/WHBoxLayout.h>
-#include <Wt/WPushButton.h>
 #include "ProblemWidget.h"
+#include "PdfResource.h"
 #include "dbmodel/DBModel.h"
 #include "base64.h"
 #include "widgets/OJProblemViewerWidget.h"
@@ -32,9 +32,9 @@ ProblemWidget::ProblemWidget(DBModel *dbmodel, ViewModels *viewModels) : dbmodel
 
 	problemViewer_ = menuLayout->addWidget(cpp14::make_unique<OJProblemViewerWidget>(),1);
 
-	auto menuWidget = cpp14::make_unique<ProblemSidemenuWidget>(dbmodel_,viewModels_);
-	menuWidget->setWidth(350);
-	menuLayout->addWidget(std::move(menuWidget),0);
+	menuWidget_ = menuLayout->addWidget(cpp14::make_unique<ProblemSidemenuWidget>(dbmodel_,viewModels_),0);
+
+	menuWidget_->setWidth(350);
 }
 
 void ProblemWidget::setProblem(long long id) {
@@ -51,6 +51,8 @@ void ProblemWidget::setProblem(long long id) {
 	Dbo::Transaction transaction = dbmodel_->startTransaction();
 	dbo::ptr<Description> desc = problemData->description;
 	problemViewer_->setContent(desc->htmldata.value());
+
+	menuWidget_->setProblem(id);
 }
 
 ProblemSidemenuWidget::ProblemSidemenuWidget(DBModel *dbmodel, ViewModels *viewModels) : dbmodel_(dbmodel), viewModels_(viewModels) {
@@ -58,12 +60,14 @@ ProblemSidemenuWidget::ProblemSidemenuWidget(DBModel *dbmodel, ViewModels *viewM
 	auto mainLayout = setLayout(cpp14::make_unique<WVBoxLayout>());
 
 	auto submitButton = mainLayout->addWidget(cpp14::make_unique<WPushButton>("Submit solution"),0);
-	auto downloadButton = mainLayout->addWidget(cpp14::make_unique<WPushButton>("Download PDF version"),0);
+	downloadButton_ = mainLayout->addWidget(cpp14::make_unique<WPushButton>("Download PDF version"),0);
+	downloadButton_->setLink(WLink(std::make_shared<PdfResource>(dbmodel_)));
 
 	mainLayout->addStretch(1);
-
 }
 
 void ProblemSidemenuWidget::setProblem(long long id) {
 
+	PdfResource *tmpPdfRes = (PdfResource*)downloadButton_->link().resource().get();
+	tmpPdfRes->setProblemId(id);
 }
