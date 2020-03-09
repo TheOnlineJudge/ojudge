@@ -49,6 +49,7 @@ FooterWidget.cpp
 HomeWidget.cpp
 LanguagesWidget.cpp
 LoginWidget.cpp
+PdfResource.cpp
 ProblemsWidget.cpp
 ProblemWidget.cpp
 ProfileWidget.cpp
