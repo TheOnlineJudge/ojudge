@@ -80,30 +80,49 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	root()->addStyleClass("maxwidth");
 	root()->addStyleClass("maxheight");
 
-	auto navigationBar = root()->addWidget(std::move(cpp14::make_unique<WNavigationBar>()));
+
+	/*
+	========================================================
+						Page layout
+	========================================================
+	<body>
+		<root>
+			<containter whith vbox layout>
+				<floatNavBAr>
+				<navigationBAr>
+					<stackContainter>
+						<mainStack_>
+						<footerWidget>
+	*/
+
+	auto container = root()->addWidget(std::move(cpp14::make_unique<WContainerWidget>()));
+	container->addStyleClass("stdwidth");
+	container->addStyleClass("maxwidth");
+	container->addStyleClass("container");
+
+	auto vbox = container->setLayout(cpp14::make_unique<WVBoxLayout>());
+
+	auto navigationBar = vbox->addWidget(std::move(cpp14::make_unique<WNavigationBar>()));
 	navigationBar->setResponsive(true);
 	navigationBar->addStyleClass("center");
-	navigationBar->addStyleClass("stdwidth");
 	navigationBar->addStyleClass("header");
 	navigationBar->addStyleClass("mynavbar");
 
-	floatNavBar_ = root()->addWidget(std::move(cpp14::make_unique<WNavigationBar>()));
+	floatNavBar_ = vbox->addWidget(std::move(cpp14::make_unique<WNavigationBar>()));
 	floatNavBar_->setResponsive(true);
 	floatNavBar_->addStyleClass("center");
-	floatNavBar_->addStyleClass("stdwidth");
 	floatNavBar_->addStyleClass("header");
 	floatNavBar_->addStyleClass("navbar-fixed-top");
 	floatNavBar_->addStyleClass("floatbar");
 	floatNavBar_->hide();
 
-	mainStack_ = root()->addWidget(std::move(cpp14::make_unique<WStackedWidget>()));
+	auto stackContainer  = vbox->addWidget(std::move(cpp14::make_unique<WContainerWidget>()));
+	mainStack_ = stackContainer->addWidget(std::move(cpp14::make_unique<WStackedWidget>()));
 	mainStack_->addStyleClass("center");
-	mainStack_->addStyleClass("stdwidth");
 	mainStack_->addStyleClass("maincontent");
 
-	auto footerWidget = root()->addWidget(std::move(cpp14::make_unique<FooterWidget>(dbmodel_)));
+	auto footerWidget = stackContainer->addWidget(std::move(cpp14::make_unique<FooterWidget>(dbmodel_)));
 	footerWidget->addStyleClass("center");
-	footerWidget->addStyleClass("stdwidth");
 	footerWidget->addStyleClass("footer");
 
 	auto logo = cpp14::make_unique<WImage>(dbmodel_->getSetting("siteLogo"));
