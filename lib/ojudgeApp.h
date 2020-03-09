@@ -43,7 +43,6 @@ ViewModels *getViewModels();
 
 private:
 Wt::WMenu *mainMenu_;
-Wt::WMenu *mainFloatMenu_;
 Wt::WStackedWidget *mainStack_;
 ProblemWidget *problemWidget_;
 Wt::WContainerWidget *aboutWidget_;
@@ -57,17 +56,12 @@ Wt::WContainerWidget *sponsorsWidget_;
 Wt::WContainerWidget *teamWidget_;
 Wt::WContainerWidget *tutorialWidget_;
 Wt::WMenuItem *dashboardMenu_;
-Wt::WMenuItem *dashboardFloatMenu_;
 Wt::WMenuItem *loginMenu_;
-Wt::WMenuItem *loginFloatMenu_;
 Wt::WMenuItem *profileMenu_;
-Wt::WMenuItem *profileFloatMenu_;
-Wt::WNavigationBar *floatNavBar_;
 Wt::Auth::AuthModel *authModel_;
 std::unique_ptr<LoginWidget> loginWidget_;
 
 void pathChanged(std::string newPath);
-void switchNavbar(bool visible);
 void logout();
 
 Session *session_;
