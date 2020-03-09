@@ -67,17 +67,14 @@
   margin-top: 75px;
   padding-top: 20px;
   padding-bottom: 20px;
-  padding-right: 12%;
-  padding-left: 12%;
+  padding-right: 13%;
+  padding-left: 13%;
   margin-left: auto;
   margin-right: auto;
 }
 
-login a{
-  width: 700px;
-}
 
-@media (max-width: 1290px) {
+@media (max-width: 1024px) {
   .maincontent {
     padding-right: 2%;
     padding-left: 2%;
@@ -181,8 +178,11 @@ login a{
   color:white;
 }
 
-navbar-right {
+
+@media (min-width: 1024px)
+.navbar-right {
   margin-right: 0px !important;
+	margin-left: 10px !important;
 }
 
 .mynavbar {
@@ -220,15 +220,6 @@ navbar-right {
   background: white;
 }
 
-.navbar-form {
-  height: 0px;
-  overflow: hidden;
-  border-width: 0px;  
-  margin: 0px;
-  padding: 0px;
-  border: 0px;
-  align-content: center;
-}
 
 .navbar-toggle,
 .login button,
@@ -244,4 +235,26 @@ navbar-right {
   background-image: none !important;
   border-color: var(--ojcolor) !important;
   margin: 2px;
+}
+
+.navbar-form {
+  height: 0px;
+  overflow: hidden;
+  border-width: 0px;  
+  margin: 0px;
+  padding: 0px;
+  border: 0px;
+  align-content: center;
+}
+
+
+@media only screen and (max-width: 1024px) {
+  .navbar-brand {
+    font-size:34px;
+  }
+
+  .navbar-nav > li > a  {
+    padding: 11px !important;
+    font-size: 13px;
+  }
 }
