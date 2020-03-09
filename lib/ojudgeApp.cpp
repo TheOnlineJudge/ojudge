@@ -101,6 +101,7 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	container->addStyleClass("container");
 
 	auto vbox = container->setLayout(cpp14::make_unique<WVBoxLayout>());
+	vbox->setContentsMargins(0,0,0,0);
 
 	auto navigationBar = vbox->addWidget(std::move(cpp14::make_unique<WNavigationBar>()));
 	navigationBar->setResponsive(true);
@@ -117,6 +118,7 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	floatNavBar_->hide();
 
 	auto stackContainer  = vbox->addWidget(std::move(cpp14::make_unique<WContainerWidget>()));
+	stackContainer->setMargin(6,Side::Top);
 	mainStack_ = stackContainer->addWidget(std::move(cpp14::make_unique<WStackedWidget>()));
 	mainStack_->addStyleClass("center");
 	mainStack_->addStyleClass("maincontent");
