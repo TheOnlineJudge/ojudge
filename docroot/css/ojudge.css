@@ -59,12 +59,13 @@
 .footer {
   background-color:var(--ojcolor);
   height: 170px;
+  margin: 0px !important;
 }
 
 .maincontent {
-  min-height: calc(100vh - 245px);
+  min-height: calc(100vh - 241px);
   max-width: 100vw;
-  margin-top: 75px;
+  margin-top: 71px;
   padding-top: 20px;
   padding-bottom: 20px;
   padding-right: 13%;
@@ -72,7 +73,6 @@
   margin-left: auto;
   margin-right: auto;
 }
-
 
 @media (max-width: 1024px) {
   .maincontent {
@@ -178,11 +178,11 @@
   color:white;
 }
 
-
-@media (min-width: 1024px)
-.navbar-right {
-  margin-right: 0px !important;
-	margin-left: 10px !important;
+@media (min-width: 1024px) {
+  .navbar-right {
+    margin-right: 0px !important;
+    margin-left: 10px !important;
+  }
 }
 
 .mynavbar {
