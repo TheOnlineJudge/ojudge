@@ -23,8 +23,6 @@
 #include <Wt/WMenu.h>
 #include <Wt/WStackedWidget.h>
 #include "authmodel/Session.h"
-#include "dbmodel/DBModel.h"
-#include "viewmodels/ViewModels.h"
 #include "AdminWidget.h"
 
 using namespace Wt;
@@ -50,7 +48,7 @@ AdminWidget::AdminWidget(Session *session,ViewModels *viewModels,DBModel *dbmode
 
 }
 
-AdminCategoryWidget::AdminCategoryWidget(const std::shared_ptr<CategoryModel> catmodel) : catmodel_(catmodel) {
+AdminWidget::AdminCategoryWidget::AdminCategoryWidget(const std::shared_ptr<CategoryModel> catmodel) : catmodel_(catmodel) {
 
         mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
         mainLayout_->setContentsMargins(0,0,0,0);
@@ -80,7 +78,7 @@ AdminCategoryWidget::AdminCategoryWidget(const std::shared_ptr<CategoryModel> ca
         treeWidget_->addStyleClass("myAdminCategoryTree");
 }
 
-void AdminCategoryWidget::showAddEditDialog(const WModelIndex& index) {
+void AdminWidget::AdminCategoryWidget::showAddEditDialog(const WModelIndex& index) {
 
         std::string dialogTitle;
 
@@ -145,7 +143,7 @@ void AdminCategoryWidget::showAddEditDialog(const WModelIndex& index) {
         addEditDialog_->show();
 }
 
-void AdminCategoryWidget::addEditDialogDone(DialogCode code) {
+void AdminWidget::AdminCategoryWidget::addEditDialogDone(DialogCode code) {
         int parentId = 0;
         if(code == DialogCode::Accepted) {
                 WModelIndex tmpIndex;
@@ -164,11 +162,11 @@ void AdminCategoryWidget::addEditDialogDone(DialogCode code) {
         removeChild(addEditDialog_);
 }
 
-AdminCategoryWidget::AdminActionsDelegate::AdminActionsDelegate() {
+AdminWidget::AdminCategoryWidget::AdminActionsDelegate::AdminActionsDelegate() {
 
 }
 
-std::unique_ptr<WWidget> AdminCategoryWidget::AdminActionsDelegate::update(WWidget *widget, const WModelIndex& index, WFlags<ViewItemRenderFlag> flags) {
+std::unique_ptr<WWidget> AdminWidget::AdminCategoryWidget::AdminActionsDelegate::update(WWidget *widget, const WModelIndex& index, WFlags<ViewItemRenderFlag> flags) {
 
         WidgetRef widgetRef(widget);
 
@@ -216,7 +214,7 @@ std::unique_ptr<WWidget> AdminCategoryWidget::AdminActionsDelegate::update(WWidg
 
 }
 
-AdminContestWidget::AdminContestWidget() {
+AdminWidget::AdminContestWidget::AdminContestWidget() {
 
         mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
         mainLayout_->setContentsMargins(0,0,0,0);
@@ -232,7 +230,7 @@ AdminContestWidget::AdminContestWidget() {
         addButton->setToolTip(WString("Add new contest"));
 }
 
-AdminLanguageWidget::AdminLanguageWidget() {
+AdminWidget::AdminLanguageWidget::AdminLanguageWidget() {
 
         mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
         mainLayout_->setContentsMargins(0,0,0,0);
@@ -248,7 +246,7 @@ AdminLanguageWidget::AdminLanguageWidget() {
         addButton->setToolTip(WString("Add new language"));
 }
 
-AdminProblemWidget::AdminProblemWidget(ViewModels *viewModels, DBModel *dbmodel) : viewModels_(viewModels), dbmodel_(dbmodel) {
+AdminWidget::AdminProblemWidget::AdminProblemWidget(ViewModels *viewModels, DBModel *dbmodel) : viewModels_(viewModels), dbmodel_(dbmodel) {
 
         mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
         mainLayout_->setContentsMargins(0,0,0,0);
@@ -304,7 +302,7 @@ AdminProblemWidget::AdminProblemWidget(ViewModels *viewModels, DBModel *dbmodel)
 
 }
 
-void AdminProblemWidget::problemSelectorSlot() {
+void AdminWidget::AdminProblemWidget::problemSelectorSlot() {
 
         proxyModel_->setFilterKeyColumn(0);
         proxyModel_->setFilterRole(ItemDataRole::Display);
@@ -315,7 +313,7 @@ void AdminProblemWidget::problemSelectorSlot() {
         }
 }
 
-void AdminProblemWidget::showAddEditDialog(const WModelIndex& index) {
+void AdminWidget::AdminProblemWidget::showAddEditDialog(const WModelIndex& index) {
 
         std::string dialogTitle;
 
@@ -388,7 +386,7 @@ void AdminProblemWidget::showAddEditDialog(const WModelIndex& index) {
 
 }
 
-void AdminProblemWidget::addDialogDone(DialogCode code) {
+void AdminWidget::AdminProblemWidget::addDialogDone(DialogCode code) {
         if(code == DialogCode::Accepted) {
                 viewModels_->getProblemModel()->addProblem(std::stoi(id_->text().toUTF8()),title_->text().toUTF8());
                 std::ifstream htmlFile(htmlDescription_->spoolFileName(), std::ios::binary);
@@ -401,11 +399,11 @@ void AdminProblemWidget::addDialogDone(DialogCode code) {
         removeChild(addDialog_);
 }
 
-AdminProblemWidget::AdminActionsDelegate::AdminActionsDelegate() {
+AdminWidget::AdminProblemWidget::AdminActionsDelegate::AdminActionsDelegate() {
 
 }
 
-std::unique_ptr<WWidget> AdminProblemWidget::AdminActionsDelegate::update(WWidget *widget, const WModelIndex& index, WFlags<ViewItemRenderFlag> flags) {
+std::unique_ptr<WWidget> AdminWidget::AdminProblemWidget::AdminActionsDelegate::update(WWidget *widget, const WModelIndex& index, WFlags<ViewItemRenderFlag> flags) {
 
         WidgetRef widgetRef(widget);
 
@@ -443,7 +441,7 @@ std::unique_ptr<WWidget> AdminProblemWidget::AdminActionsDelegate::update(WWidge
 
 }
 
-AdminSettingsWidget::AdminSettingsWidget(DBModel *dbmodel) : dbmodel_(dbmodel) {
+AdminWidget::AdminSettingsWidget::AdminSettingsWidget(DBModel *dbmodel) : dbmodel_(dbmodel) {
 
         Settings settings = dbmodel_->getSettings();
         Dbo::Transaction transaction = dbmodel_->startTransaction();
@@ -474,7 +472,7 @@ AdminSettingsWidget::AdminSettingsWidget(DBModel *dbmodel) : dbmodel_(dbmodel) {
         auto footerSettingsMenu = leftMenu->addItem("Footer",cpp14::make_unique<WContainerWidget>());
 }
 
-AdminUserWidget::AdminUserWidget() {
+AdminWidget::AdminUserWidget::AdminUserWidget() {
 
         mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
         mainLayout_->setContentsMargins(0,0,0,0);

@@ -26,15 +26,6 @@
 #include "dbmodel/DBModel.h"
 
 class Session;
-class ViewModels;
-class DBModel;
-
-class AdminCategoryWidget;
-class AdminContestsWidget;
-class AdminLanguageWidget;
-class AdminProblemWidget;
-class AdminSettingsWidget;
-class AdminUserWidget;
 
 class AdminWidget : public Wt::WContainerWidget {
 public:
@@ -44,8 +35,6 @@ private:
 Session *session_;
 ViewModels *viewModels_;
 DBModel *dbmodel_;
-
-};
 
 class AdminCategoryWidget : public Wt::WContainerWidget {
 public:
@@ -170,6 +159,8 @@ AdminUserWidget();
 
 private:
 Wt::WVBoxLayout *mainLayout_;
+};
+
 };
 
 #endif // ADMINWIDGET_H
