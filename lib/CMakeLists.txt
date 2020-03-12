@@ -33,12 +33,6 @@ widgets/OJCodeEditorWidget.cpp
 widgets/OJProblemViewerWidget.cpp
 AboutWidget.cpp
 AdminWidget.cpp
-AdminCategoryWidget.cpp
-AdminContestWidget.cpp
-AdminLanguageWidget.cpp
-AdminProblemWidget.cpp
-AdminSettingsWidget.cpp
-AdminUserWidget.cpp
 AuthWidget.cpp
 ContactWidget.cpp
 ContestsWidget.cpp
