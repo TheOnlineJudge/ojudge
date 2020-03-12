@@ -56,21 +56,21 @@ public:
 AdminActionsDelegate();
 virtual std::unique_ptr<Wt::WWidget> update(Wt::WWidget *widget, const Wt::WModelIndex& index, Wt::WFlags<Wt::ViewItemRenderFlag> flags) override;
 Wt::Signal<const Wt::WModelIndex&>& editCategory() {
-        return editCategory_;
+	return editCategory_;
 }
 Wt::Signal<const Wt::WModelIndex&>& deleteCategory() {
-        return deleteCategory_;
+	return deleteCategory_;
 }
 Wt::Signal<const Wt::WModelIndex&,bool>& moveCategory() {
-        return moveCategory_;
+	return moveCategory_;
 }
 
 private:
 struct WidgetRef {
-        std::unique_ptr<Wt::WWidget> created;
-        Wt::WWidget *w;
-        WidgetRef(Wt::WWidget *widget) : w(widget) {
-        }
+	std::unique_ptr<Wt::WWidget> created;
+	Wt::WWidget *w;
+	WidgetRef(Wt::WWidget *widget) : w(widget) {
+	}
 };
 
 Wt::Signal<const Wt::WModelIndex&> editCategory_;
@@ -124,18 +124,18 @@ public:
 AdminActionsDelegate();
 virtual std::unique_ptr<Wt::WWidget> update(Wt::WWidget *widget, const Wt::WModelIndex& index, Wt::WFlags<Wt::ViewItemRenderFlag> flags) override;
 Wt::Signal<const Wt::WModelIndex&>& editProblem() {
-        return editProblem_;
+	return editProblem_;
 }
 Wt::Signal<const Wt::WModelIndex&>& deleteProblem() {
-        return deleteProblem_;
+	return deleteProblem_;
 }
 
 private:
 struct WidgetRef {
-        std::unique_ptr<Wt::WWidget> created;
-        Wt::WWidget *w;
-        WidgetRef(Wt::WWidget *widget) : w(widget) {
-        }
+	std::unique_ptr<Wt::WWidget> created;
+	Wt::WWidget *w;
+	WidgetRef(Wt::WWidget *widget) : w(widget) {
+	}
 };
 
 Wt::Signal<const Wt::WModelIndex&> editProblem_;
