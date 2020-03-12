@@ -30,6 +30,7 @@ viewmodels/LanguageModel.cpp
 viewmodels/ProblemModel.cpp
 viewmodels/ViewModels.cpp
 widgets/OJCodeEditorWidget.cpp
+widgets/OJColorPicker.cpp
 widgets/OJProblemViewerWidget.cpp
 AboutWidget.cpp
 AdminWidget.cpp
