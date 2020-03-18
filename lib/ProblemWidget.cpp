@@ -10,9 +10,9 @@
 #include <Wt/WVBoxLayout.h>
 #include <Wt/WHBoxLayout.h>
 #include <Wt/WCssDecorationStyle.h>
+#include <Wt/Utils.h>
 #include "ProblemWidget.h"
 #include "PdfResource.h"
-#include "base64.h"
 #include "widgets/OJProblemViewerWidget.h"
 #include "widgets/OJCodeEditorWidget.h"
 
@@ -80,6 +80,19 @@ void ProblemWidget::showSubmissionDialog() {
 }
 
 void ProblemWidget::closeSubmissionDialog(DialogCode code) {
+
+	switch(code) {
+	case DialogCode::Accepted:
+		break;
+	case DialogCode::Rejected:
+		WStringStream strm;
+
+		strm << "sessionStorage.setItem('OJdraft" << problemData_.id() << "',";
+		strm << "'" << Utils::base64Encode(submissionDialog_->code(),false) << "');";
+
+		doJavaScript(strm.str());
+		break;
+	}
 
 	removeChild(submissionDialog_);
 }
@@ -189,7 +202,6 @@ void ProblemSidemenuWidget::setProblem(dbo::ptr<Problem> problemData) {
 ProblemDiscussionDialog::ProblemDiscussionDialog(DBModel *dbmodel, ViewModels *viewModels) : dbmodel_(dbmodel), viewModels_(viewModels) {
 	setWindowTitle("Discussion dialog");
 	setClosable(true);
-	setTransient(true);
 }
 
 void ProblemDiscussionDialog::setProblem(dbo::ptr<Problem> problemData) {
@@ -200,7 +212,6 @@ void ProblemDiscussionDialog::setProblem(dbo::ptr<Problem> problemData) {
 ProblemStatisticsDialog::ProblemStatisticsDialog(DBModel *dbmodel, ViewModels *viewModels) : dbmodel_(dbmodel), viewModels_(viewModels) {
 	setWindowTitle("Statistics dialog");
 	setClosable(true);
-	setTransient(true);
 
 	contents()->addWidget(cpp14::make_unique<WText>("Statistics stuff"));
 }
@@ -212,14 +223,24 @@ void ProblemStatisticsDialog::setProblem(dbo::ptr<Problem> problemData) {
 ProblemSubmissionDialog::ProblemSubmissionDialog(DBModel *dbmodel, ViewModels *viewModels) : dbmodel_(dbmodel), viewModels_(viewModels) {
 	setWindowTitle("Submit");
 	setClosable(true);
-	setTransient(true);
 	resize(1024,700);
 
-	auto codeEditor = contents()->addWidget(cpp14::make_unique<OJCodeEditorWidget>());
-	codeEditor->resize(800,500);
+	codeEditor_ = contents()->addWidget(cpp14::make_unique<OJCodeEditorWidget>());
+	codeEditor_->resize(800,500);
 }
 
 void ProblemSubmissionDialog::setProblem(dbo::ptr<Problem> problemData) {
 
 	setWindowTitle(std::to_string(problemData.id())  + " - " + problemData->title);
+
+	codeEditor_->loadCodeFromSession("OJdraft" + std::to_string(problemData.id()));
+}
+
+std::string ProblemSubmissionDialog::code() {
+
+	return codeEditor_->code();
+}
+
+void ProblemSubmissionDialog::setCode(std::string code) {
+	codeEditor_->setCode(code);
 }

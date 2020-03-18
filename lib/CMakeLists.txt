@@ -16,7 +16,6 @@ FILE_TO_STRING(messages.xml messages_xml.cpp messages_xml)
 SET (ojudge_lib
 form_templates_xml.cpp
 messages_xml.cpp
-base64.cpp
 authmodel/Session.cpp
 authmodel/User.cpp
 authmodel/UserDetailsModel.cpp
@@ -30,15 +29,10 @@ viewmodels/LanguageModel.cpp
 viewmodels/ProblemModel.cpp
 viewmodels/ViewModels.cpp
 widgets/OJCodeEditorWidget.cpp
+widgets/OJColorPicker.cpp
 widgets/OJProblemViewerWidget.cpp
 AboutWidget.cpp
 AdminWidget.cpp
-AdminCategoryWidget.cpp
-AdminContestWidget.cpp
-AdminLanguageWidget.cpp
-AdminProblemWidget.cpp
-AdminSettingsWidget.cpp
-AdminUserWidget.cpp
 AuthWidget.cpp
 ContactWidget.cpp
 ContestsWidget.cpp

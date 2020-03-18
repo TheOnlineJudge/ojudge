@@ -19,6 +19,7 @@
 
 class ViewModels;
 class OJProblemViewerWidget;
+class OJCodeEditorWidget;
 class ProblemDescriptionWidget;
 class ProblemSidemenuWidget;
 // Not for milestione 1.0.0 - class ProblemDiscussionDialog;
@@ -106,10 +107,13 @@ class ProblemSubmissionDialog : public Wt::WDialog {
 public:
 ProblemSubmissionDialog(DBModel *dbmodel,ViewModels *viewModels);
 void setProblem(dbo::ptr<Problem> problemData);
+std::string code();
+void setCode(std::string code);
 
 private:
 DBModel *dbmodel_;
 ViewModels *viewModels_;
+OJCodeEditorWidget *codeEditor_;
 };
 
 #endif // PROBLEMWIDGET_H
