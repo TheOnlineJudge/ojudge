@@ -11,18 +11,22 @@
 #define OJCODEEDITORWIDGET_H
 
 #include <Wt/WCompositeWidget.h>
+#include <Wt/WJavaScript.h>
 
 class OJCodeEditorWidget : public Wt::WCompositeWidget {
 public:
 OJCodeEditorWidget();
-const std::vector<unsigned char>& code();
-void setCode(const std::vector<unsigned char>& code);
+const std::string& code();
+void setCode(const std::string& code);
+void loadCodeFromSession(const std::string& key);
 
 private:
 virtual void render(Wt::WFlags<Wt::RenderFlag> flags) override;
 void create();
 Wt::WContainerWidget *impl_;
-std::vector<unsigned char> code_;
+std::string code_;
+void getEditorCode(std::string editorCode);
+Wt::JSignal<std::string> editorCodeSignal_;
 };
 
 #endif // OJCODEEDITORWIDGET_H

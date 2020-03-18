@@ -23,6 +23,7 @@
 #include <Wt/WMenu.h>
 #include <Wt/WStackedWidget.h>
 #include "authmodel/Session.h"
+#include "widgets/OJColorPicker.h"
 #include "AdminWidget.h"
 
 using namespace Wt;
@@ -460,7 +461,14 @@ AdminWidget::AdminSettingsWidget::AdminSettingsWidget(DBModel *dbmodel) : dbmode
 		auto result = generalSettings->addWidget(cpp14::make_unique<WTemplate>(WString::tr("lineEdit-template")));
 		result->addFunction("id",&WTemplate::Functions::id);
 
-		auto edit = cpp14::make_unique<WLineEdit>(setting->settingValue);
+		std::unique_ptr<WWidget> edit;
+
+		if(setting->settingName == "siteColor") {
+			edit = cpp14::make_unique<OJColorPicker>(WColor(setting->settingValue));
+			edit->setWidth(50);
+		} else {
+			edit = cpp14::make_unique<WLineEdit>(setting->settingValue);
+		}
 
 		result->bindString("label",WString::tr(setting->settingName));
 		result->bindWidget("edit", std::move(edit));
