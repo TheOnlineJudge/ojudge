@@ -69,15 +69,11 @@ void OJCodeEditorWidget::loadCodeFromSession(const std::string& key) {
 
 	WStringStream strm;
 
-	std::cout << key << std::endl;
-
 	strm << "if(sessionStorage.getItem('" << key << "')) {";
 	strm << "setTimeout(function(){editor.session.setValue(atob(sessionStorage.getItem('" << key << "')));},0);";
 	strm << "}";
-	std::cout << strm.str() << std::endl;
 
 	doJavaScript(strm.str());
-
 }
 
 void OJCodeEditorWidget::getEditorCode(std::string editorCode) {
