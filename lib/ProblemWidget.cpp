@@ -227,6 +227,12 @@ ProblemSubmissionDialog::ProblemSubmissionDialog(DBModel *dbmodel, ViewModels *v
 
 	codeEditor_ = contents()->addWidget(cpp14::make_unique<OJCodeEditorWidget>());
 	codeEditor_->resize(800,500);
+
+	WPushButton *submit = footer()->addWidget(cpp14::make_unique<WPushButton>("Submit"));
+	WPushButton *cancel = footer()->addWidget(cpp14::make_unique<WPushButton>("Cancel"));
+
+	submit->clicked().connect(this,&WDialog::accept);
+	cancel->clicked().connect(this,&WDialog::reject);
 }
 
 void ProblemSubmissionDialog::setProblem(dbo::ptr<Problem> problemData) {

@@ -193,6 +193,30 @@ body {
   color:white;
 }
 
+.oj-editor-toolbar {
+  background-color: #eee;
+  padding: 6px 6px 6px 12px;
+}
+
+.oj-editor-toolbar .btn {
+  background:none !important;
+  border:0px !important;
+  padding: 6px 6px !important;
+  margin: 0px 0px !important;
+}
+
+.oj-editor-toolbar .btn > img {
+  height:18px;
+}
+
+.oj-editor-toolbar .btn.active {
+  background-color:#ccc !important;
+}
+
+.oj-editor-toolbar .btn-default {
+  box-shadow:none !important;
+}
+
 @media (min-width: 768px) {
   .mynavbar {
     border-color: transparent !important;

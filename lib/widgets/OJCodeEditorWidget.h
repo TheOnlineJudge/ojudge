@@ -12,6 +12,7 @@
 
 #include <Wt/WCompositeWidget.h>
 #include <Wt/WJavaScript.h>
+#include <Wt/WPushButton.h>
 
 class OJCodeEditorWidget : public Wt::WCompositeWidget {
 public:
@@ -26,6 +27,8 @@ void create();
 Wt::WContainerWidget *impl_;
 std::string code_;
 void getEditorCode(std::string editorCode);
+Wt::WContainerWidget *editorWidget_;
+void editorFocus();
 Wt::JSignal<std::string> editorCodeSignal_;
 };
 
