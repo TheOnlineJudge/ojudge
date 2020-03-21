@@ -94,6 +94,26 @@ void OJCodeEditorWidget::render(WFlags<RenderFlag> flags) {
 		editorWidget_ = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
 		editorWidget_->setMargin(0);
 
+		auto footerWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),0);
+		footerWidget->setMargin(0);
+		footerWidget->addStyleClass("oj-editor-footer");
+		
+		auto footerLayout = footerWidget->setLayout(cpp14::make_unique<WHBoxLayout>());
+		footerLayout->setContentsMargins(0,0,0,0);
+
+		auto codeLengthLabel = footerLayout->addWidget(cpp14::make_unique<WText>("Code length: "),0);
+		auto codeLengthValue = footerLayout->addWidget(cpp14::make_unique<WText>("000"),0);
+		
+		footerLayout->addStretch(1);
+
+		auto cursorRowLabel = footerLayout->addWidget(cpp14::make_unique<WText>("Row: "),0);
+		auto cursorRowValue = footerLayout->addWidget(cpp14::make_unique<WText>("0"),0);
+	
+		footerLayout->addSpacing(10);
+
+		auto cursorColumnLabel = footerLayout->addWidget(cpp14::make_unique<WText>("Column: "),0);
+		auto cursorColumnValue = footerLayout->addWidget(cpp14::make_unique<WText>("0"),0);
+
 		WStringStream strm;
 
 		strm << "var self = " << editorWidget_->jsRef() << ";";

@@ -217,6 +217,11 @@ body {
   box-shadow:none !important;
 }
 
+.oj-editor-footer {
+  background-color: #eee;
+  padding: 6px 6px 6px 12px;
+}
+
 @media (min-width: 768px) {
   .mynavbar {
     border-color: transparent !important;
