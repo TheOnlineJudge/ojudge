@@ -193,6 +193,61 @@ body {
   color:white;
 }
 
+.oj-editor-toolbar {
+  background-color: #eee;
+  padding: 6px 6px 6px 12px;
+}
+
+.oj-editor-toolbar .btn {
+  background:none !important;
+  border:0px !important;
+  padding: 6px 6px !important;
+  margin: 0px 0px !important;
+}
+
+.oj-editor-toolbar .btn > img {
+  height:18px;
+}
+
+.oj-editor-toolbar .btn.active {
+  background-color:#ccc !important;
+}
+
+.oj-editor-toolbar .btn-default {
+  box-shadow:none !important;
+}
+
+.oj-editor-footer {
+  background-color: #eee;
+  padding: 6px 6px 6px 12px;
+}
+
+.oj-editor-cursorinfo {
+  width:35px;
+  text-align:right;
+}
+
+.oj-editor-led {
+  margin-top: 1px !important;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #0f0;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #441313 0 -1px 9px, rgba(0, 255, 0, 0.5) 0 2px 12px;
+}
+
+.oj-editor-led.unsaved {
+  background-color: #f00;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #441313 0 -1px 9px, rgba(255, 0, 0, 0.5) 0 2px 12px;
+  animation: blinkRed 0.5s infinite;
+}
+
+@keyframes blinkRed {
+    from { background-color: #F00; }
+    50% { background-color: #A00; box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #441313 0 -1px 9px, rgba(255, 0, 0, 0.5) 0 2px 0;}
+    to { background-color: #F00; }
+}
+
 @media (min-width: 768px) {
   .mynavbar {
     border-color: transparent !important;

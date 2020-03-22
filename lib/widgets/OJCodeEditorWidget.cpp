@@ -8,32 +8,180 @@
 *********************************************************************/
 
 #include <Wt/WApplication.h>
-#include <Wt/WContainerWidget.h>
+#include <Wt/WHBoxLayout.h>
+#include <Wt/WVBoxLayout.h>
+#include <Wt/WImage.h>
+#include <Wt/WSpinBox.h>
+#include <Wt/WToolBar.h>
+#include <Wt/WPushButton.h>
+#include <Wt/WComboBox.h>
+#include <Wt/Json/Parser.h>
+#include <Wt/WStringListModel.h>
 #include "OJCodeEditorWidget.h"
 
 using namespace Wt;
 
-OJCodeEditorWidget::OJCodeEditorWidget() : editorCodeSignal_(this,"editorcode") {
+OJCodeEditorWidget::OJCodeEditorWidget() : editorCodeSignal_(this,"editorcode"), aceThemesSignal_(this,"acethemes") {
 	create();
 }
 
 void OJCodeEditorWidget::render(WFlags<RenderFlag> flags) {
 
 	if(flags.test(RenderFlag::Full)) {
+
+		auto mainLayout = impl_->setLayout(cpp14::make_unique<WVBoxLayout>());
+		mainLayout->setContentsMargins(0,0,0,0);
+
+		auto toolbarWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>());
+		toolbarWidget->addStyleClass("oj-editor-toolbar");
+		toolbarWidget->setMargin(0);
+
+		auto toolbarLayout = toolbarWidget->setLayout(cpp14::make_unique<WHBoxLayout>());
+		toolbarLayout->setContentsMargins(0,0,0,0);
+
+		auto fontSizeIconLayout = toolbarLayout->addLayout(cpp14::make_unique<WVBoxLayout>());
+		fontSizeIconLayout->setContentsMargins(0,0,0,0);
+		fontSizeIconLayout->addStretch(1);
+		auto fontSizeIcon = fontSizeIconLayout->addWidget(cpp14::make_unique<WImage>("images/editor/font-size.svg"),0);
+		fontSizeIcon->setHeight(18);
+		fontSizeIcon->setToolTip("Select editor font size");
+		fontSizeIconLayout->addStretch(1);
+		auto fontSizeValue = toolbarLayout->addWidget(cpp14::make_unique<WSpinBox>());
+		fontSizeValue->addStyleClass("form-inline");
+		fontSizeValue->setValue(16);
+		fontSizeValue->setWidth(75);
+		fontSizeValue->setSuffix("px");
+		fontSizeValue->setToolTip("Select editor font size");
+
+		toolbarLayout->addSpacing(10);
+
+		auto indentLessButton = toolbarLayout->addWidget(cpp14::make_unique<WPushButton>(),0);
+		indentLessButton->setIcon(WLink("images/editor/indent-less.svg"));
+		indentLessButton->setCanReceiveFocus(false);
+		indentLessButton->setToolTip("Reduce indentation space");
+		indentLessButton->clicked().connect(this,&OJCodeEditorWidget::editorFocus);
+
+		auto indentMoreButton = toolbarLayout->addWidget(cpp14::make_unique<WPushButton>(),0);
+		indentMoreButton->setIcon(WLink("images/editor/indent-more.svg"));
+		indentMoreButton->setCanReceiveFocus(false);
+		indentMoreButton->setToolTip("Increase indentation space");
+		indentMoreButton->clicked().connect(this,&OJCodeEditorWidget::editorFocus);
+
+		toolbarLayout->addSpacing(10);
+
+		auto wrapButton = toolbarLayout->addWidget(cpp14::make_unique<WPushButton>(),0);
+		wrapButton->setIcon(WLink("images/editor/wrap.svg"));
+		wrapButton->setCheckable(true);
+		wrapButton->setChecked(true);
+		wrapButton->setCanReceiveFocus(false);
+		wrapButton->setToolTip("Line wrapping");
+		wrapButton->clicked().connect(this,&OJCodeEditorWidget::editorFocus);
+
+		toolbarLayout->addSpacing(10);
+
+		auto themeIconLayout = toolbarLayout->addLayout(cpp14::make_unique<WVBoxLayout>());
+		themeIconLayout->setContentsMargins(0,0,0,0);
+		themeIconLayout->addStretch(1);
+		auto themeIcon = themeIconLayout->addWidget(cpp14::make_unique<WImage>("images/editor/theme.svg"),0);
+		themeIcon->setHeight(18);
+		themeIcon->setToolTip("Select editor theme");
+		themeIconLayout->addStretch(1);
+		editorTheme_ = toolbarLayout->addWidget(cpp14::make_unique<WComboBox>());
+		editorTheme_->activated().connect(this,&OJCodeEditorWidget::themeChanged);
+		editorTheme_->setWidth(150);
+		editorTheme_->setToolTip("Select editor theme");
+
+		toolbarLayout->addStretch(1);
+
+		editorWidget_ = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
+		editorWidget_->setMargin(0);
+
+		auto footerWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),0);
+		footerWidget->setMargin(0);
+		footerWidget->addStyleClass("oj-editor-footer");
+		
+		auto footerLayout = footerWidget->setLayout(cpp14::make_unique<WHBoxLayout>());
+		footerLayout->setContentsMargins(0,0,0,0);
+
+		footerLayout->addWidget(std::move(savedStatusTmp_),0);
+		savedStatus_->setMargin(0);
+		savedStatus_->addStyleClass("oj-editor-led");
+
+		footerLayout->addSpacing(10);
+
+		auto codeLengthLabel = footerLayout->addWidget(cpp14::make_unique<WText>("Code length: "),0);
+		codeLengthProgress_ = footerLayout->addWidget(cpp14::make_unique<WProgressBar>(),0);
+		codeLengthProgress_->setMaximum(lengthLimit_);
+		codeLengthValue_ = footerLayout->addWidget(cpp14::make_unique<WText>("0"),0);
+		auto codeLengthSep = footerLayout->addWidget(cpp14::make_unique<WText>(" / "),0);
+		codeLengthLimit_ = footerLayout->addWidget(cpp14::make_unique<WText>(std::to_string(lengthLimit_)),0);
+		
+		footerLayout->addStretch(1);
+
+		auto cursorRowLabel = footerLayout->addWidget(cpp14::make_unique<WText>("Row: "),0);
+		cursorRowValueTmp_->addStyleClass("oj-editor-cursorinfo");
+		footerLayout->addWidget(std::move(cursorRowValueTmp_),0);
+	
+		footerLayout->addSpacing(10);
+
+		auto cursorColumnLabel = footerLayout->addWidget(cpp14::make_unique<WText>("Column: "),0);
+		cursorColumnValueTmp_->addStyleClass("oj-editor-cursorinfo");
+		footerLayout->addWidget(std::move(cursorColumnValueTmp_),0);
+
 		WStringStream strm;
 
-		strm << "var self = " << jsRef() << ";";
+		strm << "var self = " << editorWidget_->jsRef() << ";";
 		strm << "var editor = ace.edit(self);";
+		strm << "var timeout = null;";
 		strm << "editor.setTheme('ace/theme/textmate');";
 		strm << "editor.session.setMode('ace/mode/c_cpp');";
+		strm << "editor.session.setUseSoftTabs(false);";
+		strm << "editor.session.setTabSize(" << tabSize_ << ");";
+		strm << "editor.session.setUseWrapMode(" << (wordWrap_?"true":"false") << ");";
 		strm << "editor.setShowPrintMargin(false);";
-		strm << "editor.session.on('change', function() { " << editorCodeSignal_.createCall({"editor.session.getValue()"}) << ";});";
-		strm << "self.style.fontSize='16px';";
+		strm << "editor.setFontSize(" << fontSize_ << ");";
+		strm << "ace.config.loadModule('ace/ext/themelist',function(themelist) {"
+			<< aceThemesSignal_.createCall({"JSON.stringify(themelist)"}) << ";});";
+		strm << "editor.session.on('change', function() {"
+			<< "clearTimeout(timeout);"
+			<< "timeout = setTimeout(function() { "
+			<< editorCodeSignal_.createCall({"editor.session.getValue()"}) << ";},1000);});";
+		strm << "editor.session.on('change', function() { " << savedStatus_->jsRef() << ".classList.add('unsaved');});";
+		strm << "editor.selection.on('changeCursor',function() { var cP = editor.getCursorPosition();"
+			<< cursorRowValue_->jsRef() << ".innerText = cP.row;"
+			<< cursorColumnValue_->jsRef() << ".innerText = cP.column;});";
 
 		doJavaScript(strm.str());
+
+		indentLessButton->clicked().connect([=] { 
+			ensureEditor();
+			tabSize_ = (tabSize_>1?--tabSize_:1);
+			doJavaScript("editor.session.setTabSize(" + std::to_string(tabSize_) + ");");
+		});
+
+		indentMoreButton->clicked().connect([=] {
+			ensureEditor();
+			tabSize_++;
+			doJavaScript("editor.session.setTabSize(" + std::to_string(tabSize_) + ");");
+		});
+
+		wrapButton->clicked().connect([=] {
+			ensureEditor();
+			wordWrap_ = wrapButton->isChecked();
+			doJavaScript("editor.session.setUseWrapMode(" + std::string(wordWrap_?"true":"false") + ");");
+		});
+
+		fontSizeValue->valueChanged().connect([=] (int fontSize) {
+			ensureEditor();
+			fontSize_ = fontSize;
+			doJavaScript("editor.setFontSize(" + std::to_string(fontSize_) + ");");
+		});
 	}
 
 	WCompositeWidget::render(flags);
+
+	isRendered_ = true;
+	editorFocus();
 }
 
 void OJCodeEditorWidget::create() {
@@ -45,8 +193,31 @@ void OJCodeEditorWidget::create() {
 
 	app->require("https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.8/ace.js","ace");
 
-	editorCodeSignal_.connect(this,&OJCodeEditorWidget::getEditorCode);
+	savedStatusTmp_ = cpp14::make_unique<WContainerWidget>();
+	savedStatus_ = savedStatusTmp_.get();
 
+	cursorRowValueTmp_ = cpp14::make_unique<WText>("0");
+	cursorRowValue_ = cursorRowValueTmp_.get();
+
+	cursorColumnValueTmp_ = cpp14::make_unique<WText>("0");
+	cursorColumnValue_ = cursorColumnValueTmp_.get();
+
+	editorCodeSignal_.connect(this,&OJCodeEditorWidget::getEditorCode);
+	aceThemesSignal_.connect(this,&OJCodeEditorWidget::getAceThemes);
+
+}
+
+void OJCodeEditorWidget::ensureEditor() {
+
+	if(!isRendered_) return;
+
+	WStringStream strm;
+
+	strm << "if(!editor) {";
+	strm << "var editor = ace.edit(" << editorWidget_->jsRef() << ");";
+	strm << "}";
+
+	doJavaScript(strm.str());
 }
 
 const std::string& OJCodeEditorWidget::code() {
@@ -56,30 +227,85 @@ const std::string& OJCodeEditorWidget::code() {
 
 void OJCodeEditorWidget::setCode(const std::string& code) {
 
+	ensureEditor();
+
 	code_ = code;
 
 	WStringStream strm;
-
-	strm << "setTimeout(function(){editor.session.setValue('" << code_ << "');},0)";
-
+	strm << "setTimeout(function(){";
+	strm << "editor.session.setValue('" << code_ << "');";
+	strm << savedStatus_->jsRef() << ".classList.remove('unsaved');";
+	strm << "},0)";
 	doJavaScript(strm.str());
 }
 
 void OJCodeEditorWidget::loadCodeFromSession(const std::string& key) {
 
+	ensureEditor();
+
 	WStringStream strm;
-
-	std::cout << key << std::endl;
-
 	strm << "if(sessionStorage.getItem('" << key << "')) {";
-	strm << "setTimeout(function(){editor.session.setValue(atob(sessionStorage.getItem('" << key << "')));},0);";
+	strm << "setTimeout(function(){";
+	strm << "editor.session.setValue(atob(sessionStorage.getItem('" << key << "')));";
+	strm << savedStatus_->jsRef() << ".classList.remove('unsaved');";
+	strm << "},0);";
 	strm << "}";
-	std::cout << strm.str() << std::endl;
-
 	doJavaScript(strm.str());
-
 }
 
 void OJCodeEditorWidget::getEditorCode(std::string editorCode) {
 	code_ = editorCode;
+
+	codeLengthValue_->setText(std::to_string(code_.size()));
+	codeLengthProgress_->setValue(code_.size());	
+
+	savedStatus_->removeStyleClass("unsaved",true);
+}
+
+void OJCodeEditorWidget::getAceThemes(std::string aceThemes) {
+
+	Json::Object result;
+	Json::parse(aceThemes,result);
+	aceThemes_ = result.get("themes");
+
+	WStringListModel *comboModel = (WStringListModel *)editorTheme_->model().get();
+	int ct = 0;
+	for(const Json::Object &i: aceThemes_) {
+		comboModel->addString(std::string(i.get("caption")) + (i.get("isDark")?" (dark)":""));
+		comboModel->setData(comboModel->index(ct),std::string(i.get("name")),ItemDataRole::User + 1);
+		comboModel->setData(comboModel->index(ct),std::string(i.get("theme")),ItemDataRole::User + 2);
+		ct++;
+	}
+
+	editorTheme_->setCurrentIndex(9); // FIXME - This is temporary until user settings are in place
+}
+
+void OJCodeEditorWidget::themeChanged(int index) {
+
+	WStringListModel *comboModel = (WStringListModel *)editorTheme_->model().get();
+
+	ensureEditor();
+
+	WStringStream strm;
+	strm << "editor.setTheme('"
+		<< cpp17::any_cast<std::string>(comboModel->data(comboModel->index(index),ItemDataRole::User + 2))
+		<< "');";
+
+	doJavaScript(strm.str());
+}
+
+void OJCodeEditorWidget::editorFocus() {
+
+	ensureEditor();
+
+	WStringStream strm;
+	strm << "editor.focus();";
+	doJavaScript(strm.str());
+}
+
+void OJCodeEditorWidget::setLengthLimit(int limit) {
+
+	lengthLimit_ = limit;
+	codeLengthProgress_->setMaximum(lengthLimit_);
+	codeLengthLimit_->setText(std::to_string(lengthLimit_));
 }
