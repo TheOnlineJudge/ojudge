@@ -124,60 +124,40 @@ body {
   background-color:yellow;
 }
 
-.mypanel {
-  margin:0px;
-  box-shadow:none !important;
-  border:0;
-  border-color:transparent;
-  border-radius:4px;
-}
-
-.mypanel > .panel-heading {
-  color:#eee;
-  background-image:none !important;
-  background-color:var(--ojcolor);
-  border:0;
-  border-radius:4px;
-}
-
-.myTree .icon {
-  height:18px;
-}
-
-.myAdminCategoryTree {
+.oj-admin-category-tree {
   border:0px;
 }
 
-.myAdminCategoryTree .Wt-item {
+.oj-admin-category-tree .Wt-item {
   background-color:none;
   transition:1s;
 }
 
-.myAdminCategoryTree .Wt-item:hover {
+.oj-admin-category-tree .Wt-item:hover {
   background-color:#e7e7e7;
   border-radius:5px;
   transition:0s;
 }
 
-.myAdminCategoryTreeItem .icon {
+.oj-admin-category-tree-item .icon {
   height:18px;
 }
 
-.myAdminProblemTable .icon {
+.oj-admin-problem-table .icon {
   height:18px;
 }
 
-.myProblemsCategories,
-.myProblemsCategories .Wt-treeview .Wt-tv-br, .Wt-treeview ul .Wt-tv-c {
+.oj-problems-categories,
+.oj-problems-categories .Wt-treeview .Wt-tv-br, .Wt-treeview ul .Wt-tv-c {
   border:0px;
 }
 
-.myProblemsCategories .Wt-header {
+.oj-problems-categories .Wt-header {
   display:none;
 }
 
-.myProblemsCategories,
-.myProblemsProblems {
+.oj-problems-categories,
+.oj-problems-problems {
   height:100%;
 }
 

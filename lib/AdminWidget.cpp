@@ -76,7 +76,7 @@ AdminWidget::AdminCategoryWidget::AdminCategoryWidget(const std::shared_ptr<Cate
 	auto adminActionsDelegate = std::make_shared<AdminCategoryWidget::AdminActionsDelegate>();
 	adminActionsDelegate->editCategory().connect(this,&AdminCategoryWidget::showAddEditDialog);
 	treeWidget_->setItemDelegateForColumn(3,adminActionsDelegate);
-	treeWidget_->addStyleClass("myAdminCategoryTree");
+	treeWidget_->addStyleClass("oj-admin-category-tree");
 }
 
 void AdminWidget::AdminCategoryWidget::showAddEditDialog(const WModelIndex& index) {

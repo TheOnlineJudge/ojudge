@@ -112,7 +112,7 @@ cpp17::any CategoryModel::data(const WModelIndex& index, ItemDataRole role) cons
 		}
 	} else if(role == ItemDataRole::StyleClass) {
 		if(index.column()==0) {
-			return std::string("myAdminCategoryTreeItem");
+			return std::string("oj-admin-category-tree-item");
 		}
 	} else if(role == CategoryIdRole) {
 		return category;

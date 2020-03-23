@@ -55,7 +55,7 @@ cpp17::any ProblemModel::data(const WModelIndex& index, ItemDataRole role) const
 		}
 	} else if(role == ItemDataRole::StyleClass) {
 		if(index.column()==0) {
-			return std::string("myAdminProblemTable");
+			return std::string("oj-admin-problem-table");
 		}
 	} else if(role == ProblemRowRole) {
 		return index.row();
