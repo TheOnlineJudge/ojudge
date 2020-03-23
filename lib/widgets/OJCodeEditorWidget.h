@@ -23,12 +23,21 @@
 class OJCodeEditorWidget : public Wt::WCompositeWidget {
 public:
 OJCodeEditorWidget();
-const std::string& code();
+std::string code();
 void setCode(const std::string& code);
 void loadCodeFromSession(const std::string& key);
 void setLengthLimit(int limit);
 
 private:
+class OJCodeEditorProgress : public Wt::WProgressBar {
+public:
+OJCodeEditorProgress();
+virtual Wt::WString text() const;
+
+private:
+virtual void updateBar(Wt::DomElement& bar);
+};
+
 virtual void render(Wt::WFlags<Wt::RenderFlag> flags) override;
 void create();
 Wt::WContainerWidget *impl_;
@@ -42,9 +51,7 @@ std::unique_ptr<Wt::WText> cursorRowValueTmp_;
 Wt::WText *cursorRowValue_;
 std::unique_ptr<Wt::WText> cursorColumnValueTmp_;
 Wt::WText *cursorColumnValue_;
-Wt::WText *codeLengthValue_;
-Wt::WText *codeLengthLimit_;
-Wt::WProgressBar *codeLengthProgress_;
+OJCodeEditorProgress *codeLengthProgress_;
 Wt::WComboBox *editorTheme_;
 void editorFocus();
 void ensureEditor();

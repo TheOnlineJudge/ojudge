@@ -17,6 +17,7 @@
 #include <Wt/WComboBox.h>
 #include <Wt/Json/Parser.h>
 #include <Wt/WStringListModel.h>
+#include <Wt/Utils.h>
 #include "OJCodeEditorWidget.h"
 
 using namespace Wt;
@@ -110,11 +111,9 @@ void OJCodeEditorWidget::render(WFlags<RenderFlag> flags) {
 		footerLayout->addSpacing(10);
 
 		auto codeLengthLabel = footerLayout->addWidget(cpp14::make_unique<WText>("Code length: "),0);
-		codeLengthProgress_ = footerLayout->addWidget(cpp14::make_unique<WProgressBar>(),0);
+		codeLengthProgress_ = footerLayout->addWidget(cpp14::make_unique<OJCodeEditorProgress>(),0);
 		codeLengthProgress_->setMaximum(lengthLimit_);
-		codeLengthValue_ = footerLayout->addWidget(cpp14::make_unique<WText>("0"),0);
-		auto codeLengthSep = footerLayout->addWidget(cpp14::make_unique<WText>(" / "),0);
-		codeLengthLimit_ = footerLayout->addWidget(cpp14::make_unique<WText>(std::to_string(lengthLimit_)),0);
+		auto codeLengthBytes = footerLayout->addWidget(cpp14::make_unique<WText>(" bytes"),0);
 		
 		footerLayout->addStretch(1);
 
@@ -145,7 +144,7 @@ void OJCodeEditorWidget::render(WFlags<RenderFlag> flags) {
 		strm << "editor.session.on('change', function() {"
 			<< "clearTimeout(timeout);"
 			<< "timeout = setTimeout(function() { "
-			<< editorCodeSignal_.createCall({"editor.session.getValue()"}) << ";},1000);});";
+			<< editorCodeSignal_.createCall({"encodeURIComponent(editor.session.getValue())"}) << ";},1000);});";
 		strm << "editor.session.on('change', function() { " << savedStatus_->jsRef() << ".classList.add('unsaved');});";
 		strm << "editor.selection.on('changeCursor',function() { var cP = editor.getCursorPosition();"
 			<< cursorRowValue_->jsRef() << ".innerText = cP.row;"
@@ -220,9 +219,9 @@ void OJCodeEditorWidget::ensureEditor() {
 	doJavaScript(strm.str());
 }
 
-const std::string& OJCodeEditorWidget::code() {
+std::string OJCodeEditorWidget::code() {
 
-	return code_;
+	return Utils::urlDecode(code_);
 }
 
 void OJCodeEditorWidget::setCode(const std::string& code) {
@@ -246,7 +245,7 @@ void OJCodeEditorWidget::loadCodeFromSession(const std::string& key) {
 	WStringStream strm;
 	strm << "if(sessionStorage.getItem('" << key << "')) {";
 	strm << "setTimeout(function(){";
-	strm << "editor.session.setValue(atob(sessionStorage.getItem('" << key << "')));";
+	strm << "editor.session.setValue(decodeURIComponent(atob(sessionStorage.getItem('" << key << "'))));";
 	strm << savedStatus_->jsRef() << ".classList.remove('unsaved');";
 	strm << "},0);";
 	strm << "}";
@@ -256,8 +255,7 @@ void OJCodeEditorWidget::loadCodeFromSession(const std::string& key) {
 void OJCodeEditorWidget::getEditorCode(std::string editorCode) {
 	code_ = editorCode;
 
-	codeLengthValue_->setText(std::to_string(code_.size()));
-	codeLengthProgress_->setValue(code_.size());	
+	codeLengthProgress_->setValue(Utils::urlDecode(code_).size());	
 
 	savedStatus_->removeStyleClass("unsaved",true);
 }
@@ -290,6 +288,7 @@ void OJCodeEditorWidget::themeChanged(int index) {
 	strm << "editor.setTheme('"
 		<< cpp17::any_cast<std::string>(comboModel->data(comboModel->index(index),ItemDataRole::User + 2))
 		<< "');";
+	strm << "editor.focus();";
 
 	doJavaScript(strm.str());
 }
@@ -307,5 +306,16 @@ void OJCodeEditorWidget::setLengthLimit(int limit) {
 
 	lengthLimit_ = limit;
 	codeLengthProgress_->setMaximum(lengthLimit_);
-	codeLengthLimit_->setText(std::to_string(lengthLimit_));
+}
+
+OJCodeEditorWidget::OJCodeEditorProgress::OJCodeEditorProgress() {
+
+}
+
+WString OJCodeEditorWidget::OJCodeEditorProgress::text() const {
+	return WString(std::to_string((int)value()) + " / " + std::to_string((int)maximum()));
+}
+
+void OJCodeEditorWidget::OJCodeEditorProgress::updateBar(DomElement& bar) {
+	WProgressBar::updateBar(bar);
 }
