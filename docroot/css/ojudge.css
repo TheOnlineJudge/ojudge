@@ -124,12 +124,16 @@ body {
   background-color:yellow;
 }
 
-.oj-admin-category-tree {
+.oj-admin-category-tree,
+.oj-admin-problem-table {
   border:0px;
 }
 
 .oj-admin-category-tree .Wt-item {
-  background-color:none;
+  transition:1s;
+}
+
+.oj-admin-problem-table .Wt-tv-contents .Wt-tv-c {
   transition:1s;
 }
 
@@ -139,12 +143,19 @@ body {
   transition:0s;
 }
 
-.oj-admin-category-tree-item .icon {
+.oj-admin-problem-table .Wt-tv-contents .Wt-tv-c:hover {
+  background-color:#e7e7e7;
+  border-radius:5px;
+  transition:0s;
+}
+
+.oj-admin-category-tree-item .icon,
+.oj-admin-problem-table-item .icon {
   height:18px;
 }
 
-.oj-admin-problem-table .icon {
-  height:18px;
+.oj-admin-problem-table .Wt-tv-contents .Wt-tv-c {
+  border:0px;
 }
 
 .oj-problems-categories,

@@ -296,11 +296,13 @@ AdminWidget::AdminProblemWidget::AdminProblemWidget(ViewModels *viewModels, DBMo
 	tableWidget_->setHeaderHeight(26);
 	tableWidget_->setSortingEnabled(false);
 	tableWidget_->setColumnHidden(3,true);
+	tableWidget_->setColumnResizeEnabled(false);
+	tableWidget_->setColumnWidth(1,WLength(919));
 
 	auto adminActionsDelegate = std::make_shared<AdminProblemWidget::AdminActionsDelegate>();
 	adminActionsDelegate->editProblem().connect(this,&AdminProblemWidget::showAddEditDialog);
 	tableWidget_->setItemDelegateForColumn(2,adminActionsDelegate);
-
+	tableWidget_->addStyleClass("oj-admin-problem-table");
 }
 
 void AdminWidget::AdminProblemWidget::problemSelectorSlot() {
@@ -382,6 +384,17 @@ void AdminWidget::AdminProblemWidget::showAddEditDialog(const WModelIndex& index
 /*      ok->disable();
         description_->uploaded().connect(ok, &WPushButton::enable);*/
 
+	if(index.isValid()) {
+		const std::shared_ptr<ProblemModel> problemModel = viewModels_->getProblemModel();
+		long long problemId = cpp17::any_cast<long long>(problemModel->data(index));
+	//	dbo::ptr<Problem> problem = dbmodel_->getProblem(cpp17::any_cast<long long>(viewModels_->getProblemModel()->data(index)));
+	//	id_->setText(std::to_string(problem.id()));
+	//	title_->setText(problem->title);
+		id_->setText(std::to_string(problemId));
+		title_->setText(cpp17::any_cast<std::string>(problemModel->data(problemModel->index(index.row(),1))));
+		categories_->setSelectedIndexes(viewModels_->getProblemModel()->getCategories(problemId));
+	}
+
 	addDialog_->finished().connect(this,&AdminProblemWidget::addDialogDone);
 	addDialog_->show();
 
@@ -390,6 +403,7 @@ void AdminWidget::AdminProblemWidget::showAddEditDialog(const WModelIndex& index
 void AdminWidget::AdminProblemWidget::addDialogDone(DialogCode code) {
 	if(code == DialogCode::Accepted) {
 		viewModels_->getProblemModel()->addProblem(std::stoi(id_->text().toUTF8()),title_->text().toUTF8());
+		viewModels_->getProblemModel()->setCategories(std::stoi(id_->text().toUTF8()),categories_->selectedIndexes());
 		std::ifstream htmlFile(htmlDescription_->spoolFileName(), std::ios::binary);
 		std::string htmlFileContents(std::istreambuf_iterator<char>{htmlFile},{});
 		std::ifstream pdfFile(pdfDescription_->spoolFileName(), std::ios::binary);
