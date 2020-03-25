@@ -249,6 +249,7 @@ dbo::ptr<Category> addCategory(std::string title, int parent);
 Problems getProblems();
 dbo::ptr<Problem> getProblem(long long id);
 dbo::ptr<Problem> addProblem(long long id, std::string title);
+void setProblemCategories(long long id, std::set<int> categories);
 void updateDescription(long long problemId, std::optional<std::string> htmlData, std::optional<std::vector<unsigned char> > pdfData);
 
 Settings getSettings();

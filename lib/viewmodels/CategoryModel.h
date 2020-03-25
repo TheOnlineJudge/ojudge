@@ -29,6 +29,7 @@ virtual Wt::cpp17::any headerData(int section, Wt::Orientation orientation = Wt:
 
 void addCategory(std::string title, const Wt::WModelIndex& parent);
 void insertCategory(int row, const Wt::WModelIndex& parent, int categoryId);
+const Wt::WModelIndexSet categoriesToIndexes(const std::set<int>& categories);
 
 private:
 CategoryStore *categoryStore_;

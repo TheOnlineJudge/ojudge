@@ -17,6 +17,7 @@
 #include "ProblemStore.h"
 
 std::mutex addProblem_mutex;
+std::mutex setCategories_mutex;
 
 using namespace Wt;
 
@@ -29,11 +30,13 @@ ProblemStore::ProblemStore(DBModel *dbModel) : dbModel_(dbModel) {
 
 	for(Problems::const_iterator i = problems.begin(); i != problems.end(); i++) {
 		dbo::ptr<Problem> problem = *i;
+		problemDataIndex_[problem->id] = row;
 		problemData_[row].id = problem->id;
 		problemData_[row].title = problem->title;
 		for(Categories::const_iterator j = problem->categories.begin(); j != problem->categories.end(); j++) {
 			dbo::ptr<Category> category = *j;
-			problemData_[problem.id()].categories += std::string("#" + std::to_string(category.id()));
+			problemData_[row].categories += std::string("#" + std::to_string(category.id()));
+			problemData_[row].categoriesSet.insert(category.id());
 		}
 		problemData_[row].categories += std::string("#");
 		row++;
@@ -60,6 +63,7 @@ void ProblemStore::addProblem(long long id, std::string title, const WModelIndex
 
 	int row = problemData_.size();
 	problemData_[row] = tmpProblemData;
+	problemDataIndex_[id] = row;
 
 	auto server = Wt::WServer::instance();
 	server->postAll([=] {
@@ -68,4 +72,24 @@ void ProblemStore::addProblem(long long id, std::string title, const WModelIndex
 		app->getViewModels()->getProblemModel()->insertProblem(row,parent);
 		app->triggerUpdate();
 	});
+}
+
+void ProblemStore::setCategories(long long id, const std::set<int>& categories) {
+
+	std::lock_guard<std::mutex> guard(setCategories_mutex);
+
+	dbModel_->setProblemCategories(id,categories);
+
+	std::string tmpStr;
+	for(auto tmpCat: categories) {
+		tmpStr += std::string("#" + std::to_string(tmpCat));
+	}
+	tmpStr += std::string("#");
+
+	problemData_[problemDataIndex_.at(id)].categories = tmpStr;
+}
+
+const std::set<int> ProblemStore::getCategories(long long id) {
+
+	return problemData_[problemDataIndex_.at(id)].categoriesSet;
 }

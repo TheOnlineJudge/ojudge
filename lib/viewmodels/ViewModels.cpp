@@ -14,7 +14,7 @@ ViewModels::ViewModels(DataStore *dataStore) : dataStore_(dataStore) {
 
 	categoryModel_ = std::make_shared<CategoryModel>(dataStore_->getCategoryStore());
 	languageModel_ = std::make_shared<LanguageModel>(dataStore_->getLanguageStore());
-	problemModel_ = std::make_shared<ProblemModel>(dataStore_->getProblemStore());
+	problemModel_ = std::make_shared<ProblemModel>(dataStore_->getProblemStore(),categoryModel_);
 
 }
 

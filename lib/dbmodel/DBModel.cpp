@@ -113,6 +113,18 @@ dbo::ptr<Problem> DBModel::getProblem(long long id) {
 	return session.find<Problem>().where("id = ?").bind(id);
 }
 
+void DBModel::setProblemCategories(long long id, std::set<int> categories) {
+
+	dbo::Transaction transaction(session);
+	dbo::ptr<Problem> problem = session.find<Problem>().where("id = ?").bind(id);
+	problem.modify()->categories.clear();
+
+	for(auto tmpCatId: categories) {
+		dbo::ptr<Category> tmpCat = session.find<Category>().where("id = ?").bind(tmpCatId);
+		problem.modify()->categories.insert(tmpCat);
+	}
+}
+
 Settings DBModel::getSettings() {
 
 	dbo::Transaction transaction(session);

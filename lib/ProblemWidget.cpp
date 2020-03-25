@@ -88,7 +88,7 @@ void ProblemWidget::closeSubmissionDialog(DialogCode code) {
 		WStringStream strm;
 
 		strm << "sessionStorage.setItem('OJdraft" << problemData_.id() << "',";
-		strm << "'" << Utils::base64Encode(submissionDialog_->code(),false) << "');";
+		strm << "'" << Utils::base64Encode(Utils::urlEncode(submissionDialog_->code()),false) << "');";
 
 		doJavaScript(strm.str());
 		break;
@@ -226,7 +226,7 @@ ProblemSubmissionDialog::ProblemSubmissionDialog(DBModel *dbmodel, ViewModels *v
 	resize(1024,700);
 
 	codeEditor_ = contents()->addWidget(cpp14::make_unique<OJCodeEditorWidget>());
-	codeEditor_->resize(700,530);
+	codeEditor_->resize(774,530);
 
 	WPushButton *submit = footer()->addWidget(cpp14::make_unique<WPushButton>("Submit"));
 	WPushButton *cancel = footer()->addWidget(cpp14::make_unique<WPushButton>("Cancel"));

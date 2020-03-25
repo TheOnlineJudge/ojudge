@@ -87,6 +87,21 @@ WModelIndex CategoryModel::index(int row, int column, const WModelIndex& parent)
 	return createIndex(row,column,parentId);
 }
 
+const WModelIndexSet CategoryModel::categoriesToIndexes(const std::set<int>& categories) {
+
+	WModelIndexSet tmpIndexSet;
+
+	for(auto& category: categories) {
+		for(auto& item: treeData_) {
+			if(item.categoryId() == category) {
+				tmpIndexSet.insert(createIndex(item.index(), 0, item.parentId()));
+			}
+		}
+	}
+
+	return tmpIndexSet;
+}
+
 cpp17::any CategoryModel::data(const WModelIndex& index, ItemDataRole role) const {
 
 	if (!index.isValid())
@@ -112,7 +127,7 @@ cpp17::any CategoryModel::data(const WModelIndex& index, ItemDataRole role) cons
 		}
 	} else if(role == ItemDataRole::StyleClass) {
 		if(index.column()==0) {
-			return std::string("myAdminCategoryTreeItem");
+			return std::string("oj-admin-category-tree-item");
 		}
 	} else if(role == CategoryIdRole) {
 		return category;

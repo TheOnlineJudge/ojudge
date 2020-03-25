@@ -31,7 +31,7 @@ ProblemsWidget::ProblemsWidget(ViewModels *viewModels) : viewModels_(viewModels)
 	menuLayout->setContentsMargins(0,0,0,0);
 
 	auto categoriesWidget = menuLayout->addWidget(cpp14::make_unique<WTreeView>(),0);
-	categoriesWidget->addStyleClass("myProblemsCategories");
+	categoriesWidget->addStyleClass("oj-problems-categories");
 	categoriesWidget->decorationStyle().setCursor(Cursor::PointingHand);
 	categoriesWidget->setModel(viewModels_->getCategoryModel());
 	categoriesWidget->setWidth(WLength(300));
@@ -49,7 +49,7 @@ ProblemsWidget::ProblemsWidget(ViewModels *viewModels) : viewModels_(viewModels)
 	problemsWidget->setModel(proxyModel_);
 	problemsWidget->setRowHeight(26);
 	problemsWidget->setHeaderHeight(26);
-	problemsWidget->addStyleClass("myProblemsProblems");
+	problemsWidget->addStyleClass("oj-problems-problems");
 	problemsWidget->setColumnHidden(3,true);
 	problemsWidget->decorationStyle().setCursor(Cursor::PointingHand);
 	problemsWidget->clicked().connect(this,&ProblemsWidget::problemClicked);

@@ -10,14 +10,16 @@
 #include "../datastore/ProblemStore.h"
 
 #include "ProblemModel.h"
+#include "CategoryModel.h"
 
 using namespace Wt;
 
-ProblemModel::ProblemModel(ProblemStore *problemStore) : WAbstractTableModel(), problemStore_(problemStore) {
+ProblemModel::ProblemModel(ProblemStore *problemStore, std::shared_ptr<CategoryModel> categoryModel) : WAbstractTableModel(), problemStore_(problemStore), categoryModel_(categoryModel) {
 
 }
 
 void ProblemModel::addProblem(long long id, std::string title, const WModelIndex& parent) {
+
 	problemStore_->addProblem(id,title,parent);
 }
 
@@ -25,7 +27,20 @@ void ProblemModel::insertProblem(int row, const WModelIndex& parent) {
 
 	beginInsertRows(parent,row,row);
 	endInsertRows();
+}
 
+void ProblemModel::setCategories(long long id, const WModelIndexSet& categories) {
+	std::set<int> tmpCats;
+
+	for(const WModelIndex& tmpIdx: categories) {
+		tmpCats.insert(cpp17::any_cast<int>(tmpIdx.data(CategoryModel::CategoryIdRole)));
+	}
+
+	problemStore_->setCategories(id,tmpCats);
+}
+
+const WModelIndexSet ProblemModel::getCategories(long long id) {
+	return categoryModel_->categoriesToIndexes(problemStore_->getCategories(id));
 }
 
 int ProblemModel::columnCount(const WModelIndex& parent) const {
@@ -55,7 +70,7 @@ cpp17::any ProblemModel::data(const WModelIndex& index, ItemDataRole role) const
 		}
 	} else if(role == ItemDataRole::StyleClass) {
 		if(index.column()==0) {
-			return std::string("myAdminProblemTable");
+			return std::string("oj-admin-problem-table-item");
 		}
 	} else if(role == ProblemRowRole) {
 		return index.row();
@@ -82,4 +97,8 @@ cpp17::any ProblemModel::headerData(int section, Orientation orientation, ItemDa
 	}
 
 	return cpp17::any();
+}
+
+WModelIndex ProblemModel::index(int row, int column, const WModelIndex& parent) const {
+	return createIndex(row,column,parent.internalId());
 }
