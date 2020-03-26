@@ -24,7 +24,7 @@ ProblemWidget::ProblemWidget(DBModel *dbmodel, ViewModels *viewModels) : dbmodel
 	mainLayout->setContentsMargins(0,0,0,0);
 
 	pageTitle_ = mainLayout->addWidget(cpp14::make_unique<WText>("Problem"),0);
-	pageTitle_->addStyleClass("pagetitle");
+	pageTitle_->addStyleClass("oj-pagetitle");
 
 	auto mainWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
 

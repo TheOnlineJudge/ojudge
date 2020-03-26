@@ -38,7 +38,7 @@ void OJProblemViewerWidget::create() {
 
 	contentWidget_ = impl_->addWidget(cpp14::make_unique<WText>());
 	contentWidget_->setTextFormat(TextFormat::UnsafeXHTML);
-	contentWidget_->addStyleClass("OJProblemViewer");
+	contentWidget_->addStyleClass("oj-problem-viewer");
 }
 
 void OJProblemViewerWidget::setContent(const std::string& content) {

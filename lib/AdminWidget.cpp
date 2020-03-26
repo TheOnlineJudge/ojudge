@@ -34,7 +34,7 @@ AdminWidget::AdminWidget(Session *session,ViewModels *viewModels,DBModel *dbmode
 	mainLayout->setContentsMargins(0,0,0,0);
 
 	auto pageTitle = mainLayout->addWidget(cpp14::make_unique<WText>("Admin"),0);
-	pageTitle->addStyleClass("pagetitle");
+	pageTitle->addStyleClass("oj-pagetitle");
 
 	auto mainWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
 
@@ -181,7 +181,7 @@ std::unique_ptr<WWidget> AdminWidget::AdminCategoryWidget::AdminActionsDelegate:
 		isNew = true;
 		widgetRef.created = std::unique_ptr<WWidget>(new WContainerWidget());
 		WContainerWidget *t = static_cast<WContainerWidget*>(widgetRef.created.get());
-		t->addStyleClass("actions");
+		t->addStyleClass("oj-actions");
 		auto layout = t->setLayout(cpp14::make_unique<WHBoxLayout>());
 		layout->setContentsMargins(0,4,0,4);
 		auto edit = layout->addWidget(cpp14::make_unique<WImage>("images/edit.svg"));
@@ -432,7 +432,7 @@ std::unique_ptr<WWidget> AdminWidget::AdminProblemWidget::AdminActionsDelegate::
 		isNew = true;
 		widgetRef.created = std::unique_ptr<WWidget>(new WContainerWidget());
 		WContainerWidget *t = static_cast<WContainerWidget*>(widgetRef.created.get());
-		t->addStyleClass("actions");
+		t->addStyleClass("oj-actions");
 		auto layout = t->setLayout(cpp14::make_unique<WHBoxLayout>());
 		layout->setContentsMargins(0,4,0,4);
 		auto edit = layout->addWidget(cpp14::make_unique<WImage>("images/edit.svg"));

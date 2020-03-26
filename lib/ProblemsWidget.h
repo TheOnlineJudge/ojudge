@@ -14,6 +14,7 @@
 #include <Wt/WSortFilterProxyModel.h>
 #include <Wt/WTreeView.h>
 #include <Wt/WTableView.h>
+#include <Wt/WAbstractItemDelegate.h>
 
 class ViewModels;
 
@@ -26,6 +27,21 @@ std::shared_ptr<Wt::WSortFilterProxyModel> proxyModel_;
 ViewModels *viewModels_;
 void categoryClicked(Wt::WModelIndex modelIndex, Wt::WMouseEvent mouseEvent);
 void problemClicked(Wt::WModelIndex modelIndex, Wt::WMouseEvent mouseEvent);
+
+class ProblemDelegate : public Wt::WAbstractItemDelegate {
+public:
+ProblemDelegate();
+virtual std::unique_ptr<Wt::WWidget> update(Wt::WWidget *widget, const Wt::WModelIndex& index, Wt::WFlags<Wt::ViewItemRenderFlag> flags) override;
+
+private:
+struct WidgetRef {
+        std::unique_ptr<Wt::WWidget> created;
+        Wt::WWidget *w;
+        WidgetRef(Wt::WWidget *widget) : w(widget) {
+        }
+};
+
+};
 
 };
 

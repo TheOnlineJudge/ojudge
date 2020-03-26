@@ -24,7 +24,7 @@ using namespace Wt;
 FooterWidget::FooterWidget(DBModel *dbmodel) : dbmodel_(dbmodel) {
 
 	setPadding(WLength(5));
-	addStyleClass(WString("footer"));
+	addStyleClass("oj-footer");
 
 	auto wrapWidget = addWidget(cpp14::make_unique<WContainerWidget>());
 	wrapWidget->setMargin(WLength(0));
@@ -36,7 +36,7 @@ FooterWidget::FooterWidget(DBModel *dbmodel) : dbmodel_(dbmodel) {
 	auto aboutLayout = aboutWidget->setLayout(cpp14::make_unique<WVBoxLayout>());
 	aboutLayout->setContentsMargins(0,0,0,0);
 	auto aboutTitle = aboutLayout->addWidget(cpp14::make_unique<WText>(dbmodel_->getSetting("siteTitle")));
-	aboutTitle->addStyleClass(WString("footerHead"));
+	aboutTitle->addStyleClass(WString("oj-footer-head"));
 
 	aboutLayout->addWidget(cpp14::make_unique<WAnchor>(WLink(LinkType::InternalPath,"/about"),"About"));
 	aboutLayout->addWidget(cpp14::make_unique<WAnchor>(WLink(LinkType::InternalPath,"/team"),"Our Team"));
@@ -47,7 +47,7 @@ FooterWidget::FooterWidget(DBModel *dbmodel) : dbmodel_(dbmodel) {
 	auto contributeLayout = contributeWidget->setLayout(cpp14::make_unique<WVBoxLayout>());
 	contributeLayout->setContentsMargins(0,0,0,0);
 	auto contributeTitle = contributeLayout->addWidget(cpp14::make_unique<WText>("Contribute"));
-	contributeTitle->addStyleClass(WString("footerHead"));
+	contributeTitle->addStyleClass(WString("oj-footer-head"));
 
 	contributeLayout->addWidget(cpp14::make_unique<WAnchor>(WLink(LinkType::InternalPath,"/contribute"),"Contribute"));
 	contributeLayout->addWidget(cpp14::make_unique<WAnchor>(WLink(LinkType::InternalPath,"/sponsors"),"Our Sponsors"));
@@ -57,7 +57,7 @@ FooterWidget::FooterWidget(DBModel *dbmodel) : dbmodel_(dbmodel) {
 	auto helpLayout = helpWidget->setLayout(cpp14::make_unique<WVBoxLayout>());
 	helpLayout->setContentsMargins(0,0,0,0);
 	auto helpTitle = helpLayout->addWidget(cpp14::make_unique<WText>("Help"));
-	helpTitle->addStyleClass(WString("footerHead"));
+	helpTitle->addStyleClass(WString("oj-footer-head"));
 
 	helpLayout->addWidget(cpp14::make_unique<WAnchor>(WLink(LinkType::InternalPath,"/tutorial"),"Getting Started"));
 	helpLayout->addWidget(cpp14::make_unique<WAnchor>(WLink(LinkType::InternalPath,"/languages"),"Language Templates"));
@@ -67,7 +67,7 @@ FooterWidget::FooterWidget(DBModel *dbmodel) : dbmodel_(dbmodel) {
 	auto contactusLayout = contactusWidget->setLayout(cpp14::make_unique<WVBoxLayout>());
 	contactusLayout->setContentsMargins(0,0,0,0);
 	auto contactusTitle = contactusLayout->addWidget(cpp14::make_unique<WText>("Contact Us"));
-	contactusTitle->addStyleClass(WString("footerHead"));
+	contactusTitle->addStyleClass(WString("oj-footer-head"));
 
 	contactusLayout->addWidget(cpp14::make_unique<WAnchor>(WLink(LinkType::InternalPath,"/contact"),"Contact Form"));
 	contactusLayout->addStretch(1);
