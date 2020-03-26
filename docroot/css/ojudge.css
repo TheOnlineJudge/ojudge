@@ -17,11 +17,7 @@ body {
   padding: 0px !important;
 }
 
-.container {
-  padding: 0px !important;
-}
-
-.ojtitle {
+.oj-title {
   font-family:'OJudge Title';
   font-size:72px;
   margin:0px;
@@ -29,7 +25,7 @@ body {
   color:var(--ojcolor);
 }
 
-.ojfloattitle {
+.oj-float-title {
   font-family:'OJudge Title';
   font-size:32px;
   margin:0px;
@@ -39,7 +35,7 @@ body {
   height:50px;
 }
 
-.hometitle {
+.oj-hometitle {
   font-family:'OJudge Title';
   font-size:48px;
   width:100%;
@@ -48,17 +44,13 @@ body {
   color: var(--ojcolor);
 }
 
-.pagetitle {
+.oj-pagetitle {
   font-family:'OJudge Title';
   font-size: 32px;
   color: var(--ojcolor);
 }
 
-.footer a {
-  color:white;
-}
-
-.footerHead {
+.oj-footer-head {
   font-family:'OJudge Title';
   font-size:20px;
   color:white;
@@ -69,58 +61,62 @@ body {
   margin-right: auto;
 }
 
-.maxwidth {
+.oj-maxwidth {
   width: 100%;
 }
 
-.maxheight {
+.oj-maxheight {
   height: 100%;
 }
 
-.stdwidth {
+.oj-stdwidth {
   max-width: 1280px;
 }
 
-.header {
+.oj-header {
   height: 102px;
   margin-bottom: 1px;
 }
 
-.footer {
+.oj-footer a {
+  color:white;
+}
+
+.oj-footer {
   background-color:var(--ojcolor);
   height: 170px;
   margin: 0px !important;
 }
 
-.maincontent {
+.oj-maincontent {
   min-height: calc(100vh - 284px);
   padding: 20px;
 }
 
-.boxes {
+.oj-boxes {
   height:400px;
   margin-top:40px;
 }
 
-.box {
+.oj-box {
   height:400px;
   width: 300px;
 }
 
-.box:hover {
+.oj-box:hover {
   box-shadow: 0px 0px 16px;
   cursor:pointer;
 }
 
-.box1 {
+.oj-box1 {
   background-color:blue;
 }
 
-.box2 {
+.oj-box2 {
   background-color:green;
 }
 
-.box3 {
+.oj-box3 {
   background-color:yellow;
 }
 
@@ -159,11 +155,15 @@ body {
 }
 
 .oj-problems-categories,
-.oj-problems-categories .Wt-treeview .Wt-tv-br, .Wt-treeview ul .Wt-tv-c {
+.oj-problems-categories .Wt-tv-br,
+.oj-problems-categories ul .Wt-tv-c,
+.oj-problems-problems,
+.oj-problems-problems .Wt-tv-contents .Wt-tv-c {
   border:0px;
 }
 
-.oj-problems-categories .Wt-header {
+.oj-problems-categories .Wt-header,
+.oj-problems-problems .Wt-header {
   display:none;
 }
 
@@ -172,7 +172,7 @@ body {
   height:100%;
 }
 
-.actions .disabled {
+.oj-actions .disabled {
   visibility:hidden;
 }
 
@@ -227,27 +227,27 @@ body {
   box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #441313 0 -1px 9px, rgba(0, 255, 0, 0.5) 0 2px 12px;
 }
 
-.oj-editor-led.unsaved {
+.oj-editor-led.oj-unsaved {
   background-color: #f00;
   box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #441313 0 -1px 9px, rgba(255, 0, 0, 0.5) 0 2px 12px;
-  animation: blinkRed 0.5s infinite;
+  animation: oj-blinkRed 0.5s infinite;
 }
 
-@keyframes blinkRed {
+@keyframes oj-blinkRed {
     from { background-color: #F00; }
     50% { background-color: #A00; box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #441313 0 -1px 9px, rgba(255, 0, 0, 0.5) 0 2px 0;}
     to { background-color: #F00; }
 }
 
 @media (min-width: 768px) {
-  .mynavbar {
+  .oj-navbar {
     border-color: transparent !important;
     background-image: none !important;
     background-color: transparent !important;
     box-shadow: none !important;
   }
 
-  .floatbar {
+  .oj-floatbar {
     border-color: transparent !important;
     height:50px !important;
     background-image: none !important;
@@ -258,43 +258,43 @@ body {
     max-width: 1280px;
   }
 
-  .mynavbar .navbar-collapse {
+  .oj-navbar .navbar-collapse {
     padding-left: 15px !important;
     padding-right: 20px !important;
   }
 
-  .floatbar .navbar-collapse {
+  .oj-floatbar .navbar-collapse {
     padding-left: 15px !important;
     padding-right: 20px !important;
     height: 50px !important;
   }
 
-  .mynavbar .navbar-nav > li {
+  .oj-navbar .navbar-nav > li {
     margin-left: 2px !important;
     padding-top:25px !important;
   }
 
-  .floatbar .navbar-nav > li {
+  .oj-floatbar .navbar-nav > li {
     margin-left: 2px !important;
     padding-top:5px !important;
   }
 
-  .floatbar .navbar-left {
+  .oj-floatbar .navbar-left {
     height:50px !important;
     padding-top:5px !important;
   }
 
-  .mynavbar .navbar-form {
+  .oj-navbar .navbar-form {
     margin: 0px;
     padding: 0px;
   }
 
-  .floatbar .navbar-form {
+  .oj-floatbar .navbar-form {
     margin: 0px;
     padding: 0px;
   }
 
-  .mynavbar .navbar-nav > li > a {
+  .oj-navbar .navbar-nav > li > a {
     color: var(--ojcolor) !important;
     height: 40px !important;
     padding-top: 10px !important;
@@ -302,7 +302,7 @@ body {
     text-shadow: none !important;
   }
 
-  .floatbar .navbar-nav > li > a {
+  .oj-floatbar .navbar-nav > li > a {
     color: white !important;
     height: 40px !important;
     padding-top: 10px !important;
@@ -310,38 +310,38 @@ body {
     text-shadow: none !important;
   }
 
-  .mynavbar .navbar-nav > li > a:hover,
-  .mynavbar .navbar-nav > li > a:focus {
+  .oj-navbar .navbar-nav > li > a:hover,
+  .oj-navbar .navbar-nav > li > a:focus {
     color: #23527c !important;
     background-color: #eee !important;
     border-radius: 4px !important;
   }
 
-  .floatbar .navbar-nav > li > a:hover,
-  .floatbar .navbar-nav > li > a:focus {
+  .oj-floatbar .navbar-nav > li > a:hover,
+  .oj-floatbar .navbar-nav > li > a:focus {
     color: #23527c !important;
     background-color: #eee !important;
     border-radius: 4px !important;
   }
 
-  .mynavbar .navbar-nav > .active > a,
-  .mynavbar .navbar-nav > .active > a:hover,
-  .mynavbar .navbar-nav > .active > a:focus,
-  .mynavbar .navbar-nav > .open > a,
-  .mynavbar .navbar-nav > .open > a:hover,
-  .mynavbar .navbar-nav > .open > a:focus {
+  .oj-navbar .navbar-nav > .active > a,
+  .oj-navbar .navbar-nav > .active > a:hover,
+  .oj-navbar .navbar-nav > .active > a:focus,
+  .oj-navbar .navbar-nav > .open > a,
+  .oj-navbar .navbar-nav > .open > a:hover,
+  .oj-navbar .navbar-nav > .open > a:focus {
     color: white !important;
     background-color: var(--ojcolor) !important;
     border-radius: 4px !important;
     background-image: none !important;
   }
 
-  .floatbar .navbar-nav > .active > a,
-  .floatbar .navbar-nav > .active > a:hover,
-  .floatbar .navbar-nav > .active > a:focus,
-  .floatbar .navbar-nav > .open > a,
-  .floatbar .navbar-nav > .open > a:hover,
-  .floatbar .navbar-nav > .open > a:focus {
+  .oj-floatbar .navbar-nav > .active > a,
+  .oj-floatbar .navbar-nav > .active > a:hover,
+  .oj-floatbar .navbar-nav > .active > a:focus,
+  .oj-floatbar .navbar-nav > .open > a,
+  .oj-floatbar .navbar-nav > .open > a:hover,
+  .oj-floatbar .navbar-nav > .open > a:focus {
     color: var(--ojcolor) !important;
     background-color: white  !important;
     border-radius: 4px !important;

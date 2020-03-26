@@ -23,7 +23,7 @@ ProblemsWidget::ProblemsWidget(ViewModels *viewModels) : viewModels_(viewModels)
 	mainLayout->setContentsMargins(0,0,0,0);
 
 	auto pageTitle = mainLayout->addWidget(cpp14::make_unique<WText>("Problems"),0);
-	pageTitle->addStyleClass("pagetitle");
+	pageTitle->addStyleClass("oj-pagetitle");
 
 	auto mainWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
 
@@ -50,8 +50,12 @@ ProblemsWidget::ProblemsWidget(ViewModels *viewModels) : viewModels_(viewModels)
 	problemsWidget->setRowHeight(26);
 	problemsWidget->setHeaderHeight(26);
 	problemsWidget->addStyleClass("oj-problems-problems");
+	problemsWidget->setColumnHidden(1,true);
+	problemsWidget->setColumnHidden(2,true);
 	problemsWidget->setColumnHidden(3,true);
+	problemsWidget->setColumnWidth(0,921);
 	problemsWidget->decorationStyle().setCursor(Cursor::PointingHand);
+	problemsWidget->setSortingEnabled(false);
 	problemsWidget->clicked().connect(this,&ProblemsWidget::problemClicked);
 
 }
@@ -67,4 +71,32 @@ void ProblemsWidget::problemClicked(WModelIndex modelIndex, WMouseEvent mouseEve
 	auto app = dynamic_cast<ojudgeApp*>(Wt::WApplication::instance());
 	app->setInternalPath("/problem/"+asString(modelIndex.data()).toUTF8(),true);
 
+}
+
+ProblemsWidget::ProblemDelegate::ProblemDelegate() {
+
+}
+
+std::unique_ptr<WWidget> ProblemsWidget::ProblemDelegate::update(WWidget *widget, const WModelIndex& index, WFlags<ViewItemRenderFlag> flags) {
+
+	WidgetRef widgetRef(widget);
+
+	bool isNew = false;
+
+	if(widgetRef.w) {
+		widgetRef.w = nullptr;
+	}
+
+	if(!widgetRef.w) {
+		isNew = true;
+		widgetRef.created = std::unique_ptr<WWidget>(new WContainerWidget());
+                WContainerWidget *t = static_cast<WContainerWidget*>(widgetRef.created.get());
+                t->addStyleClass("oj-problems-problems-item");
+	}
+
+        if(isNew) {
+                return std::move(widgetRef.created);
+        } else {
+                return nullptr;
+        }
 }

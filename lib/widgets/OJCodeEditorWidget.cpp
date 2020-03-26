@@ -145,7 +145,7 @@ void OJCodeEditorWidget::render(WFlags<RenderFlag> flags) {
 			<< "clearTimeout(timeout);"
 			<< "timeout = setTimeout(function() { "
 			<< editorCodeSignal_.createCall({"encodeURIComponent(editor.session.getValue())"}) << ";},1000);});";
-		strm << "editor.session.on('change', function() { " << savedStatus_->jsRef() << ".classList.add('unsaved');});";
+		strm << "editor.session.on('change', function() { " << savedStatus_->jsRef() << ".classList.add('oj-unsaved');});";
 		strm << "editor.selection.on('changeCursor',function() { var cP = editor.getCursorPosition();"
 			<< cursorRowValue_->jsRef() << ".innerText = cP.row;"
 			<< cursorColumnValue_->jsRef() << ".innerText = cP.column;});";
@@ -233,7 +233,7 @@ void OJCodeEditorWidget::setCode(const std::string& code) {
 	WStringStream strm;
 	strm << "setTimeout(function(){";
 	strm << "editor.session.setValue('" << code_ << "');";
-	strm << savedStatus_->jsRef() << ".classList.remove('unsaved');";
+	strm << savedStatus_->jsRef() << ".classList.remove('oj-unsaved');";
 	strm << "},0)";
 	doJavaScript(strm.str());
 }
@@ -246,7 +246,7 @@ void OJCodeEditorWidget::loadCodeFromSession(const std::string& key) {
 	strm << "if(sessionStorage.getItem('" << key << "')) {";
 	strm << "setTimeout(function(){";
 	strm << "editor.session.setValue(decodeURIComponent(atob(sessionStorage.getItem('" << key << "'))));";
-	strm << savedStatus_->jsRef() << ".classList.remove('unsaved');";
+	strm << savedStatus_->jsRef() << ".classList.remove('oj-unsaved');";
 	strm << "},0);";
 	strm << "}";
 	doJavaScript(strm.str());
@@ -257,7 +257,7 @@ void OJCodeEditorWidget::getEditorCode(std::string editorCode) {
 
 	codeLengthProgress_->setValue(Utils::urlDecode(code_).size());	
 
-	savedStatus_->removeStyleClass("unsaved",true);
+	savedStatus_->removeStyleClass("oj-unsaved",true);
 }
 
 void OJCodeEditorWidget::getAceThemes(std::string aceThemes) {

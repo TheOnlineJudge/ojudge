@@ -63,7 +63,7 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	setTitle(WString(dbmodel_->getSetting("siteTitle")));
 	instance()->styleSheet().addRule(":root", std::string("--ojcolor: ") + dbmodel_->getSetting("siteColor"));
 	useStyleSheet("css/ojudge.css");
-	useStyleSheet("css/OJProblemViewer.css");
+	useStyleSheet("css/oj-problem-viewer.css");
 	setLoadingIndicator(cpp14::make_unique<WOverlayLoadingIndicator>());
 
 	auto bootstrapTheme = std::make_shared<WBootstrapTheme>();
@@ -77,27 +77,12 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 
 	root()->setMargin(WLength(0));
 	root()->setPadding(WLength(0));
-	root()->addStyleClass("maxwidth");
-	root()->addStyleClass("maxheight");
-
-
-	/*
-	========================================================
-						Page layout
-	========================================================
-	<body>
-		<root>
-			<containter whith vbox layout>
-				<floatNavBAr>
-				<navigationBAr>
-					<stackContainter>
-						<mainStack_>
-						<footerWidget>
-	*/
+	root()->addStyleClass("oj-maxwidth");
+	root()->addStyleClass("oj-maxheight");
 
 	auto container = root()->addWidget(std::move(cpp14::make_unique<WContainerWidget>()));
-	container->addStyleClass("stdwidth");
-	container->addStyleClass("maxwidth");
+	container->addStyleClass("oj-stdwidth");
+	container->addStyleClass("oj-maxwidth");
 	container->addStyleClass("container");
 
 	auto vbox = container->setLayout(cpp14::make_unique<WVBoxLayout>());
@@ -106,37 +91,36 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	auto navigationBar = vbox->addWidget(std::move(cpp14::make_unique<WNavigationBar>()));
 	navigationBar->setResponsive(true);
 	navigationBar->addStyleClass("center");
-	navigationBar->addStyleClass("header");
-	navigationBar->addStyleClass("mynavbar");
+	navigationBar->addStyleClass("oj-header");
+	navigationBar->addStyleClass("oj-navbar");
 
 	floatNavBar_ = vbox->addWidget(std::move(cpp14::make_unique<WNavigationBar>()));
 	floatNavBar_->setResponsive(true);
 	floatNavBar_->addStyleClass("center");
-	floatNavBar_->addStyleClass("header");
+	floatNavBar_->addStyleClass("oj-header");
 	floatNavBar_->addStyleClass("navbar-fixed-top");
-	floatNavBar_->addStyleClass("floatbar");
+	floatNavBar_->addStyleClass("oj-floatbar");
 	floatNavBar_->hide();
 
 	auto stackContainer  = vbox->addWidget(std::move(cpp14::make_unique<WContainerWidget>()));
 	stackContainer->setMargin(6,Side::Top);
 	mainStack_ = stackContainer->addWidget(std::move(cpp14::make_unique<WStackedWidget>()));
 	mainStack_->addStyleClass("center");
-	mainStack_->addStyleClass("maincontent");
+	mainStack_->addStyleClass("oj-maincontent");
 
 	auto footerWidget = stackContainer->addWidget(std::move(cpp14::make_unique<FooterWidget>(dbmodel_)));
 	footerWidget->addStyleClass("center");
-	footerWidget->addStyleClass("footer");
 
 	auto logo = cpp14::make_unique<WImage>(dbmodel_->getSetting("siteLogo"));
 	logo->setHeight(WLength(90));
 	navigationBar->addWidget(std::move(logo));
 
 	auto title = cpp14::make_unique<WText>(dbmodel_->getSetting("siteTitle"));
-	title->addStyleClass("ojtitle");
+	title->addStyleClass("oj-title");
 	navigationBar->addWidget(std::move(title));
 
 	auto floattitle = cpp14::make_unique<WText>(dbmodel_->getSetting("siteTitle"));
-	floattitle->addStyleClass("ojfloattitle");
+	floattitle->addStyleClass("oj-float-title");
 	floattitle->setHeight(WLength(50));
 	floatNavBar_->addWidget(std::move(floattitle));
 

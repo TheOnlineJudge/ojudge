@@ -19,7 +19,7 @@ LanguagesWidget::LanguagesWidget() {
 	mainLayout->setContentsMargins(0,0,0,0);
 
 	auto pageTitle = mainLayout->addWidget(cpp14::make_unique<WText>("Language Templates"),0);
-	pageTitle->addStyleClass("pagetitle");
+	pageTitle->addStyleClass("oj-pagetitle");
 
 	auto mainWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
 
