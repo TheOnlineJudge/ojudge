@@ -10,11 +10,16 @@ html {
 }
 
 body {
+  font-family:Arial;
   width: 100%;
 }
 
 .container {
   padding: 0px !important;
+}
+
+.btn > img {
+  height:18px;
 }
 
 .oj-title {
@@ -167,6 +172,37 @@ body {
   display:none;
 }
 
+.oj-problems-problems-item {
+  border:1px solid #dddddd !important;
+  border-radius:10px;
+  height:50px !important;
+  margin-bottom:2px !important;
+  transition:1s;
+}
+
+.oj-problems-problems-item:hover {
+  background-color: #eee;
+  transition:0s;
+}
+
+.oj-problems-problems-item .oj-problems-problems-id {
+  text-align:right;
+  line-height:44px;
+  font-size:48px;
+  font-weight:bold;
+  color:#888;
+  letter-spacing:-2px;
+}
+
+.oj-problems-problems-item .oj-problems-problems-title {
+  line-height:2;
+}
+
+.oj-problems-problems-item .oj-problems-problems-stats {
+  line-height:1;
+  height:24px;
+}
+
 .oj-problems-categories,
 .oj-problems-problems {
   height:100%;
@@ -234,9 +270,43 @@ body {
 }
 
 @keyframes oj-blinkRed {
-    from { background-color: #F00; }
-    50% { background-color: #A00; box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #441313 0 -1px 9px, rgba(255, 0, 0, 0.5) 0 2px 0;}
-    to { background-color: #F00; }
+  from { background-color: #F00; }
+  50% { background-color: #A00; box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #441313 0 -1px 9px, rgba(255, 0, 0, 0.5) 0 2px 0;}
+  to { background-color: #F00; }
+}
+
+.oj-rating-set {
+  cursor:pointer;
+}
+
+.oj-rating-set > img {
+  background:url('/images/star_off.svg') no-repeat;
+  background-size:40px;
+  height:40px;
+  padding-top:40px;
+  box-sizing:border-box;
+}
+
+.oj-rating-set > img.active {
+  padding-top:0px;
+}
+
+.oj-rating-view {
+  position:relative;
+}
+
+.oj-rating-view-foreground {
+  width:0;
+  position:absolute;
+  top:0px;
+  left:0px;
+  overflow:hidden;
+  display:block !important;
+  line-height:normal !important;
+}
+
+.oj-rating-view-foreground > img {
+  overflow:unset !important;
 }
 
 @media (min-width: 768px) {

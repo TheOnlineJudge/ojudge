@@ -15,6 +15,7 @@
 #include "PdfResource.h"
 #include "widgets/OJProblemViewerWidget.h"
 #include "widgets/OJCodeEditorWidget.h"
+#include "widgets/OJRatingSetWidget.h"
 
 using namespace Wt;
 
@@ -149,8 +150,17 @@ ProblemSidemenuWidget::ProblemSidemenuWidget(DBModel *dbmodel, ViewModels *viewM
 		showDialog_.emit(ProblemWidgetDialog::Submission);
 	});
 
-	downloadButton_ = mainLayout->addWidget(cpp14::make_unique<WPushButton>("Download PDF version"),0);
+	auto downloadBookmarkLayout = mainLayout->addLayout(cpp14::make_unique<WHBoxLayout>(),0);
+	downloadBookmarkLayout->setContentsMargins(0,0,0,0);
+
+	downloadButton_ = downloadBookmarkLayout->addWidget(cpp14::make_unique<WPushButton>("Download PDF"),0);
 	downloadButton_->setLink(WLink(std::make_shared<PdfResource>(dbmodel_)));
+	downloadButton_->setIcon(WLink("images/pdf.svg"));
+
+	// ------------- To be shown only if an user is logged in
+	auto bookmarkButton = downloadBookmarkLayout->addWidget(cpp14::make_unique<WPushButton>("Bookmark problem"),0);
+	bookmarkButton->setCheckable(true);
+	bookmarkButton->setIcon(WLink("images/bookmark.svg"));
 
 	// Placeholder for problem info (CPU limit, RAM limit, etc.)
 	auto infoFrame = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),0);
@@ -177,17 +187,14 @@ ProblemSidemenuWidget::ProblemSidemenuWidget(DBModel *dbmodel, ViewModels *viewM
 		showDialog_.emit(ProblemWidgetDialog::Discussion);
 	});*/
 
-	// ------------- To be shown only if an user is logged in
-	auto starredButton = mainLayout->addWidget(cpp14::make_unique<WPushButton>("Starred problem"),0);
-	starredButton->setCheckable(true);
+	auto rateLabel = mainLayout->addWidget(cpp14::make_unique<WText>("Rate this problem"));
+	rateLabel->setTextAlignment(AlignmentFlag::Center);
 
-	auto voteButtons = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),0);
-	auto voteLayout = voteButtons->setLayout(cpp14::make_unique<WHBoxLayout>());
-	voteLayout->setContentsMargins(0,0,0,0);
-
-	auto voteUpButton = voteLayout->addWidget(cpp14::make_unique<WPushButton>("Vote Up"),1);
-	auto voteDownButton = voteLayout->addWidget(cpp14::make_unique<WPushButton>("Vote Down"),1);
-	// -------------
+	auto rateLayout = mainLayout->addLayout(cpp14::make_unique<WHBoxLayout>());
+	rateLayout->setContentsMargins(0,0,0,0);
+	rateLayout->addStretch(1);
+	auto rateSet = rateLayout->addWidget(cpp14::make_unique<OJRatingSetWidget>(),0);
+	rateLayout->addStretch(1);
 
 	mainLayout->addStretch(1);
 }

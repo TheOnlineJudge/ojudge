@@ -31,6 +31,8 @@ viewmodels/ViewModels.cpp
 widgets/OJCodeEditorWidget.cpp
 widgets/OJColorPicker.cpp
 widgets/OJProblemViewerWidget.cpp
+widgets/OJRatingSetWidget.cpp
+widgets/OJRatingViewWidget.cpp
 AboutWidget.cpp
 AdminWidget.cpp
 AuthWidget.cpp
