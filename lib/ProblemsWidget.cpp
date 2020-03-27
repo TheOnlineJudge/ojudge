@@ -14,6 +14,7 @@
 #include "ojudgeApp.h"
 #include "ProblemsWidget.h"
 #include "viewmodels/ViewModels.h"
+#include "widgets/OJRatingViewWidget.h"
 
 using namespace Wt;
 
@@ -47,7 +48,7 @@ ProblemsWidget::ProblemsWidget(ViewModels *viewModels) : viewModels_(viewModels)
 	proxyModel_->setFilterKeyColumn(3);
 
 	problemsWidget->setModel(proxyModel_);
-	problemsWidget->setRowHeight(26);
+	problemsWidget->setRowHeight(52);
 	problemsWidget->setHeaderHeight(26);
 	problemsWidget->addStyleClass("oj-problems-problems");
 	problemsWidget->setColumnHidden(1,true);
@@ -57,6 +58,9 @@ ProblemsWidget::ProblemsWidget(ViewModels *viewModels) : viewModels_(viewModels)
 	problemsWidget->decorationStyle().setCursor(Cursor::PointingHand);
 	problemsWidget->setSortingEnabled(false);
 	problemsWidget->clicked().connect(this,&ProblemsWidget::problemClicked);
+
+	auto problemDelegate = std::make_shared<ProblemDelegate>();
+	problemsWidget->setItemDelegateForColumn(0,problemDelegate);
 
 }
 
@@ -91,7 +95,28 @@ std::unique_ptr<WWidget> ProblemsWidget::ProblemDelegate::update(WWidget *widget
 		isNew = true;
 		widgetRef.created = std::unique_ptr<WWidget>(new WContainerWidget());
                 WContainerWidget *t = static_cast<WContainerWidget*>(widgetRef.created.get());
+		t->setMargin(0);
                 t->addStyleClass("oj-problems-problems-item");
+
+		auto layout = t->setLayout(cpp14::make_unique<WHBoxLayout>());
+		layout->setContentsMargins(3,3,3,3);
+
+		auto problemId = layout->addWidget(cpp14::make_unique<WText>(std::to_string(cpp17::any_cast<long long>(index.data()))),0);
+		problemId->addStyleClass("oj-problems-problems-id");
+
+		auto centerLayout = layout->addLayout(cpp14::make_unique<WVBoxLayout>(),1);
+		centerLayout->setContentsMargins(0,0,0,0);
+
+		auto problemTitle = centerLayout->addWidget(cpp14::make_unique<WText>("This is the problem title"),0);
+		problemTitle->setMargin(0);
+		problemTitle->addStyleClass("oj-problems-problems-title");
+
+		auto problemStats = centerLayout->addWidget(cpp14::make_unique<WText>("Problem stats here"),0);
+		problemStats->setMargin(0);
+		problemStats->addStyleClass("oj-problems-problems-stats");
+
+		auto problemRating = layout->addWidget(cpp14::make_unique<OJRatingViewWidget>(),0);
+		problemRating->setRating(50);
 	}
 
         if(isNew) {
