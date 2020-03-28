@@ -17,7 +17,6 @@
 #include <boost/filesystem.hpp>
 #include <Wt/WServer.h>
 #include "lib/ojudgeApp.h"
-#include "lib/authmodel/Session.h"
 #include "lib/dbmodel/DBModel.h"
 #include "lib/viewmodels/ViewModels.h"
 #include "lib/datastore/DataStore.h"
@@ -27,13 +26,12 @@ namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
 po::variables_map vm;
-std::stringstream dbConnect;
 DBModel *dbmodel;
 DataStore *dataStore;
+Session *session;
 
 std::unique_ptr<WApplication> createApplication(const WEnvironment &env) {
 
-	Session *session = new Session(dbConnect.str().c_str());
 	ViewModels *viewModels = new ViewModels(dataStore);
 	return cpp14::make_unique<ojudgeApp>(env,session,viewModels,dbmodel);
 }
@@ -76,19 +74,21 @@ int main(int argc, char **argv) {
 	;
 	po::store(po::parse_config_file<char>(configFilePath.c_str(),desc),vm);
 
+	std::stringstream dbConnect;
+
 	dbConnect << "host=" << vm["database.host"].as<std::string>() << " ";
 	dbConnect << "dbname=" << vm["database.dbname"].as<std::string>() << " ";
 	dbConnect << "user=" << vm["database.user"].as<std::string>() << " ";
 	dbConnect << "password=" << vm["database.password"].as<std::string>();
 
-	dbmodel = new DBModel(dbConnect.str().c_str());
+	session = new Session(dbConnect.str().c_str());
+	Session::configureAuth();
+	dbmodel = new DBModel(session);
 	dataStore = new DataStore(dbmodel);
 
 	try {
 		WServer server(argc, argv, WTHTTP_CONFIGURATION);
 		server.addEntryPoint(EntryPointType::Application, createApplication);
-
-		Session::configureAuth();
 
 		server.run();
 	} catch (WServer::Exception &e) {

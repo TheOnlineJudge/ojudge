@@ -16,9 +16,6 @@ FILE_TO_STRING(messages.xml messages_xml.cpp messages_xml)
 SET (ojudge_lib
 form_templates_xml.cpp
 messages_xml.cpp
-authmodel/Session.cpp
-authmodel/User.cpp
-authmodel/UserDetailsModel.cpp
 datastore/CategoryStore.cpp
 datastore/DataStore.cpp
 datastore/LanguageStore.cpp

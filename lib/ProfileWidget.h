@@ -11,7 +11,7 @@
 #define PROFILEWIDGET_H
 
 #include <Wt/WContainerWidget.h>
-#include "authmodel/Session.h"
+#include "dbmodel/DBModel.h"
 
 class ProfileWidget : public Wt::WContainerWidget {
 public:

@@ -10,7 +10,7 @@
 #include <Wt/Auth/AuthWidget.h>
 #include <Wt/Auth/PasswordService.h>
 #include <Wt/WBorderLayout.h>
-#include "authmodel/Session.h"
+#include "dbmodel/DBModel.h"
 #include "AuthWidget.h"
 #include "LoginWidget.h"
 

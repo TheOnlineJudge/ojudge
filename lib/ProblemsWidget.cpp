@@ -59,7 +59,7 @@ ProblemsWidget::ProblemsWidget(ViewModels *viewModels) : viewModels_(viewModels)
 	problemsWidget->setSortingEnabled(false);
 	problemsWidget->clicked().connect(this,&ProblemsWidget::problemClicked);
 
-	auto problemDelegate = std::make_shared<ProblemDelegate>();
+	auto problemDelegate = std::make_shared<ProblemDelegate>(viewModels_);
 	problemsWidget->setItemDelegateForColumn(0,problemDelegate);
 
 }
@@ -77,11 +77,13 @@ void ProblemsWidget::problemClicked(WModelIndex modelIndex, WMouseEvent mouseEve
 
 }
 
-ProblemsWidget::ProblemDelegate::ProblemDelegate() {
+ProblemsWidget::ProblemDelegate::ProblemDelegate(ViewModels *viewModels) : viewModels_(viewModels) {
 
 }
 
 std::unique_ptr<WWidget> ProblemsWidget::ProblemDelegate::update(WWidget *widget, const WModelIndex& index, WFlags<ViewItemRenderFlag> flags) {
+
+	const std::shared_ptr<ProblemModel> problemModel = viewModels_->getProblemModel();
 
 	WidgetRef widgetRef(widget);
 
@@ -107,7 +109,8 @@ std::unique_ptr<WWidget> ProblemsWidget::ProblemDelegate::update(WWidget *widget
 		auto centerLayout = layout->addLayout(cpp14::make_unique<WVBoxLayout>(),1);
 		centerLayout->setContentsMargins(0,0,0,0);
 
-		auto problemTitle = centerLayout->addWidget(cpp14::make_unique<WText>("This is the problem title"),0);
+		WModelIndex titleIndex = problemModel->index(index.row(),1,index.parent());
+		auto problemTitle = centerLayout->addWidget(cpp14::make_unique<WText>(cpp17::any_cast<std::string>(titleIndex.data())),0);
 		problemTitle->setMargin(0);
 		problemTitle->addStyleClass("oj-problems-problems-title");
 
@@ -115,8 +118,11 @@ std::unique_ptr<WWidget> ProblemsWidget::ProblemDelegate::update(WWidget *widget
 		problemStats->setMargin(0);
 		problemStats->addStyleClass("oj-problems-problems-stats");
 
-		auto problemRating = layout->addWidget(cpp14::make_unique<OJRatingViewWidget>(),0);
+		auto ratingLayout = layout->addLayout(cpp14::make_unique<WVBoxLayout>(),0);
+		ratingLayout->addStretch(1);
+		auto problemRating = ratingLayout->addWidget(cpp14::make_unique<OJRatingViewWidget>(),0);
 		problemRating->setRating(50);
+		ratingLayout->addStretch(1);
 	}
 
         if(isNew) {

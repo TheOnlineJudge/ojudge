@@ -30,7 +30,7 @@ void problemClicked(Wt::WModelIndex modelIndex, Wt::WMouseEvent mouseEvent);
 
 class ProblemDelegate : public Wt::WAbstractItemDelegate {
 public:
-ProblemDelegate();
+ProblemDelegate(ViewModels *viewModels);
 virtual std::unique_ptr<Wt::WWidget> update(Wt::WWidget *widget, const Wt::WModelIndex& index, Wt::WFlags<Wt::ViewItemRenderFlag> flags) override;
 
 private:
@@ -40,7 +40,7 @@ struct WidgetRef {
         WidgetRef(Wt::WWidget *widget) : w(widget) {
         }
 };
-
+ViewModels *viewModels_;
 };
 
 };

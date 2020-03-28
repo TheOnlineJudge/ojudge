@@ -10,14 +10,22 @@
 #ifndef DBMODEL_H
 #define DBMODEL_H
 
+#include <Wt/Auth/Login.h>
 #include <Wt/Dbo/Dbo.h>
 #include <Wt/Dbo/WtSqlTraits.h>
+#include <Wt/Dbo/Session.h>
+#include <Wt/Dbo/ptr.h>
+#include <Wt/Dbo/Types.h>
+#include <Wt/WDate.h>
+#include <Wt/WGlobal.h>
+#include <Wt/Auth/Dbo/AuthInfo.h>
 #include <string>
 
 using namespace Wt;
 
 namespace dbo = Wt::Dbo;
 
+class User;
 class Category;
 class Problem;
 class Description;
@@ -28,6 +36,8 @@ class Verdict;
 class Language;
 class Contest;
 
+typedef Wt::Auth::Dbo::AuthInfo<User> AuthInfo;
+typedef Auth::Dbo::UserDatabase<AuthInfo> UserDatabase;
 typedef dbo::collection< dbo::ptr<Category> > Categories;
 typedef dbo::collection< dbo::ptr<Problem> > Problems;
 typedef dbo::collection< dbo::ptr<Description> > Descriptions;
@@ -62,14 +72,64 @@ struct dbo_traits<Description> : public dbo_default_traits {
 }
 }
 
+class Session : public dbo::Session {
+public:
+static void configureAuth();
+
+Session(const std::string &postgresDb);
+~Session();
+
+void loadUsers();
+
+dbo::ptr<User> user();
+dbo::ptr<User> user(const Auth::User &user);
+
+Auth::AbstractUserDatabase &users();
+Auth::Login &login() {
+        return login_;
+}
+
+static const Auth::AuthService &auth();
+static const Auth::PasswordService &passwordAuth();
+static const std::vector<const Auth::OAuthService*> oAuth();
+
+private:
+std::unique_ptr<UserDatabase> users_;
+Auth::Login login_;
+};
+
+enum class Role {
+        Visitor = 0,
+        Registered = 1,
+        Moderator = 2,
+        Publisher = 3,
+        Editor = 4,
+        Admin = 32
+};
+
+class User {
+public:
+dbo::weak_ptr<AuthInfo> authInfo;
+Role role;
+Submissions submissions;
+
+template<class Action>
+void persist(Action& a)
+{
+        dbo::hasOne(a, authInfo, "user");
+        dbo::field(a, role, "role");
+        dbo::hasMany(a, submissions, dbo::ManyToOne, "user");
+}
+};
+
 class Category {
 public:
 std::string title;
 int order;
 
 dbo::ptr<Category> parent;
-dbo::collection< dbo::ptr<Category> > children;
-dbo::collection< dbo::ptr<Problem> > problems;
+Categories children;
+Problems problems;
 
 template<class Action>
 void persist(Action& a) {
@@ -86,11 +146,11 @@ public:
 long long id;
 std::string title;
 
-dbo::collection< dbo::ptr<Category> > categories;
-dbo::collection< dbo::ptr<Testcase> > testcases;
-dbo::collection< dbo::ptr<Submission> > submissions;
+Categories categories;
+Testcases testcases;
+Submissions submissions;
 dbo::weak_ptr<Description> description;
-dbo::collection< dbo::ptr<Contest> > contests;
+Contests contests;
 
 template<class Action>
 void persist(Action& a) {
@@ -127,8 +187,8 @@ std::optional< std::string > aceStyle;
 std::optional< std::vector<unsigned char> > compileScript;
 std::optional< std::vector<unsigned char> > linkScript;
 std::vector<unsigned char> runScript;
-dbo::collection< dbo::ptr<Submission> > submissions;
-dbo::collection< dbo::ptr<Contest> > contests;
+Submissions submissions;
+Contests contests;
 
 template<class Action>
 void persist(Action& a) {
@@ -153,9 +213,9 @@ std::optional< std::vector<unsigned char> > logo;
 bool isVirtual;
 WDateTime startTime;
 WDateTime endTime;
-dbo::collection< dbo::ptr<Problem> > problems;
-dbo::collection< dbo::ptr<Language> > languages;
-dbo::collection< dbo::ptr<Submission> > submissions;
+Problems problems;
+Languages languages;
+Submissions submissions;
 
 template<class Action>
 void persist(Action& a) {
@@ -199,17 +259,17 @@ void persist(Action& a) {
 class Submission {
 public:
 dbo::ptr<Problem> problem;
-//	dbo::ptr<User> user;
+dbo::ptr<User> user;
 dbo::ptr<Testcase> testcase;
 dbo::ptr<Contest> contest;
 WDateTime datetime;
 dbo::ptr<Language> language;
-dbo::collection< dbo::ptr<Verdict> > verdicts;
+Verdicts verdicts;
 
 template<class Action>
 void persist(Action& a) {
 	dbo::belongsTo(a, problem, "problem", Dbo::NotNull);
-//		dbo::belongsTo(a, user, "user", Dbo::NotNull);
+	dbo::belongsTo(a, user, "user", Dbo::NotNull);
 	dbo::belongsTo(a, testcase, "testcase", Dbo::NotNull);
 	dbo::belongsTo(a, contest, "contest");
 	dbo::field(a, datetime, "datetime");
@@ -238,7 +298,7 @@ void persist(Action& a) {
 
 class DBModel {
 public:
-DBModel(const std::string &postgresDb);
+DBModel(Session* session);
 ~DBModel();
 
 dbo::Transaction startTransaction();
@@ -258,7 +318,7 @@ std::string getSetting(std::string settingName);
 Languages getLanguages();
 
 private:
-dbo::Session session;
+Session* session_;
 };
 
 #endif // DBMODEL_H

@@ -9,8 +9,7 @@
 
 #include "AuthWidget.h"
 #include "RegistrationView.h"
-#include "authmodel/Session.h"
-#include "authmodel/UserDetailsModel.h"
+#include "dbmodel/DBModel.h"
 
 AuthWidget::AuthWidget(Session &session) : Auth::AuthWidget(Session::auth(), session.users(), session.login()), session_(session) {
 }
