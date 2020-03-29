@@ -56,6 +56,15 @@ void showSubmissionDialog();
 // Not for milestone 1.0.0 - void closeDiscussionDialog();
 void closeStatisticsDialog();
 void closeSubmissionDialog(Wt::DialogCode code);
+Wt::Signal<Wt::Auth::Login&>& loginSignal() {
+        return loginSignal_;
+}
+Wt::Signal<>& logoutSignal() {
+        return logoutSignal_;
+}
+
+Wt::Signal<Wt::Auth::Login&> loginSignal_;
+Wt::Signal<> logoutSignal_;
 };
 
 class ProblemDescriptionWidget : public Wt::WContainerWidget {

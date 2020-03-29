@@ -40,21 +40,44 @@ AdminWidget::AdminWidget(Session *session,ViewModels *viewModels,DBModel *dbmode
 
 	WTabWidget *tabWidget = mainWidget->addNew<WTabWidget>();
 
-	tabWidget->addTab(cpp14::make_unique<AdminProblemWidget>(viewModels_,dbmodel_),"Problems",ContentLoading::Lazy);
-	tabWidget->addTab(cpp14::make_unique<AdminCategoryWidget>(viewModels_->getCategoryModel()),"Categories",ContentLoading::Lazy);
-	tabWidget->addTab(cpp14::make_unique<AdminContestWidget>(),"Contests",ContentLoading::Lazy);
-	tabWidget->addTab(cpp14::make_unique<AdminUserWidget>(),"Users",ContentLoading::Lazy);
-	tabWidget->addTab(cpp14::make_unique<AdminLanguageWidget>(),"Languages",ContentLoading::Lazy);
-	tabWidget->addTab(cpp14::make_unique<AdminSettingsWidget>(dbmodel_),"Settings",ContentLoading::Lazy);
+	auto adminProblemWidget = cpp14::make_unique<AdminProblemWidget>(viewModels_,dbmodel_);
+	loginSignal().connect(adminProblemWidget.get(),&AdminProblemWidget::login);
+	logoutSignal().connect(adminProblemWidget.get(),&AdminProblemWidget::logout);
+	tabWidget->addTab(std::move(adminProblemWidget),"Problems",ContentLoading::Lazy);
+
+	auto adminCategoryWidget = cpp14::make_unique<AdminCategoryWidget>(viewModels_->getCategoryModel());
+	loginSignal().connect(adminCategoryWidget.get(),&AdminCategoryWidget::login);
+	logoutSignal().connect(adminCategoryWidget.get(),&AdminCategoryWidget::logout);
+	tabWidget->addTab(std::move(adminCategoryWidget),"Categories",ContentLoading::Lazy);
+
+	auto adminContestWidget = cpp14::make_unique<AdminContestWidget>();
+	loginSignal().connect(adminContestWidget.get(),&AdminContestWidget::login);
+	logoutSignal().connect(adminContestWidget.get(),&AdminContestWidget::logout);
+	tabWidget->addTab(std::move(adminContestWidget),"Contests",ContentLoading::Lazy);
+
+	auto adminUserWidget = cpp14::make_unique<AdminUserWidget>();
+	loginSignal().connect(adminUserWidget.get(),&AdminUserWidget::login);
+	logoutSignal().connect(adminUserWidget.get(),&AdminUserWidget::logout);
+	tabWidget->addTab(std::move(adminUserWidget),"Users",ContentLoading::Lazy);
+
+	auto adminLanguageWidget = cpp14::make_unique<AdminLanguageWidget>();
+	loginSignal().connect(adminLanguageWidget.get(),&AdminLanguageWidget::login);
+	logoutSignal().connect(adminLanguageWidget.get(),&AdminLanguageWidget::logout);
+	tabWidget->addTab(std::move(adminLanguageWidget),"Languages",ContentLoading::Lazy);
+
+	auto adminSettingsWidget = cpp14::make_unique<AdminSettingsWidget>(dbmodel_);
+	loginSignal().connect(adminSettingsWidget.get(),&AdminSettingsWidget::login);
+	logoutSignal().connect(adminSettingsWidget.get(),&AdminSettingsWidget::logout);
+	tabWidget->addTab(std::move(adminSettingsWidget),"Settings",ContentLoading::Lazy);
 
 }
 
 void AdminWidget::login(Auth::Login& login) {
-
+	loginSignal().emit(login);
 }
 
 void AdminWidget::logout() {
-
+	logoutSignal().emit();
 }
 
 AdminWidget::AdminCategoryWidget::AdminCategoryWidget(const std::shared_ptr<CategoryModel> catmodel) : catmodel_(catmodel) {

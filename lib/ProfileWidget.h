@@ -21,7 +21,16 @@ void logout();
 
 private:
 Session *session_;
+Wt::Signal<Wt::Auth::Login&>& loginSignal() {
+        return loginSignal_;
+}
 
+Wt::Signal<>& logoutSignal() {
+        return logoutSignal_;
+}
+
+Wt::Signal<Wt::Auth::Login&> loginSignal_;
+Wt::Signal<> logoutSignal_;
 };
 
 class AccountWidget : public Wt::WContainerWidget {
