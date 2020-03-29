@@ -30,6 +30,7 @@ std::vector<std::unique_ptr<Auth::OAuthService> > myOAuthServices;
 void Session::configureAuth() {
         myAuthService.setAuthTokensEnabled(true, "logincookie");
         myAuthService.setEmailVerificationEnabled(true);
+        myAuthService.setEmailVerificationRequired(true);
 
         auto verifier = cpp14::make_unique<Auth::PasswordVerifier>();
         verifier->addHashFunction(cpp14::make_unique<Auth::BCryptHashFunction>(7));
@@ -58,6 +59,16 @@ Session::~Session() {
 
 void Session::loadUsers() {
         users_ = cpp14::make_unique<UserDatabase>(*this);
+}
+
+void Session::createUserData(const Auth::User &newUser) {
+
+	dbo::Transaction t(*this);
+
+	dbo::ptr<User> userData = user(newUser);
+	userData.modify()->role = Role::Registered;
+	dbo::ptr<UserSettings> settings  = add(std::unique_ptr<UserSettings>(new UserSettings()));
+	userData.modify()->settings = settings;
 }
 
 Auth::AbstractUserDatabase &Session::users() {
@@ -104,6 +115,7 @@ const std::vector<const Auth::OAuthService *> Session::oAuth() {
 DBModel::DBModel(Session* session) : session_(session) {
 
 	session_->mapClass<User>("user");
+	session_->mapClass<UserSettings>("user_settings");
 	session_->mapClass<Category>("category");
 	session_->mapClass<Problem>("problem");
 	session_->mapClass<Description>("description");
@@ -163,6 +175,8 @@ DBModel::DBModel(Session* session) : session_(session) {
                 dbo::Transaction t = startTransaction();
                 dbo::ptr<User> userData = session_->user(newUser);
                 userData.modify()->role = Role::Admin;
+		dbo::ptr<UserSettings> settings = session_->add(std::unique_ptr<UserSettings>(new UserSettings()));
+		userData.modify()->settings = settings;
 	        session_->passwordAuth().updatePassword(newUser,"admin");
         }
 }

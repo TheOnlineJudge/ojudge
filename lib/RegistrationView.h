@@ -23,6 +23,7 @@ virtual std::unique_ptr<WWidget> createFormWidget(WFormModel::Field field);
 
 protected:
 virtual bool validate();
+virtual void registerUserDetails(Auth::User& user);
 
 private:
 Session &session_;

@@ -26,6 +26,7 @@ using namespace Wt;
 namespace dbo = Wt::Dbo;
 
 class User;
+class UserSettings;
 class Category;
 class Problem;
 class Description;
@@ -38,6 +39,7 @@ class Contest;
 
 typedef Wt::Auth::Dbo::AuthInfo<User> AuthInfo;
 typedef Auth::Dbo::UserDatabase<AuthInfo> UserDatabase;
+typedef dbo::collection< dbo::ptr<User> > Users;
 typedef dbo::collection< dbo::ptr<Category> > Categories;
 typedef dbo::collection< dbo::ptr<Problem> > Problems;
 typedef dbo::collection< dbo::ptr<Description> > Descriptions;
@@ -69,6 +71,19 @@ struct dbo_traits<Description> : public dbo_default_traits {
 		return 0;
 	}
 };
+
+template<>
+struct dbo_traits<UserSettings> : public dbo_default_traits {
+	typedef ptr<User> IdType;
+
+	static IdType invalidId() {
+		return ptr<User>{};
+	}
+	static const char *surrogateIdField() {
+		return 0;
+	}
+};
+
 }
 }
 
@@ -88,6 +103,8 @@ Auth::AbstractUserDatabase &users();
 Auth::Login &login() {
         return login_;
 }
+
+void createUserData(const Auth::User &newUser);
 
 static const Auth::AuthService &auth();
 static const Auth::PasswordService &passwordAuth();
@@ -112,6 +129,7 @@ public:
 dbo::weak_ptr<AuthInfo> authInfo;
 Role role;
 Submissions submissions;
+dbo::weak_ptr<UserSettings> settings;
 
 template<class Action>
 void persist(Action& a)
@@ -119,6 +137,25 @@ void persist(Action& a)
         dbo::hasOne(a, authInfo, "user");
         dbo::field(a, role, "role");
         dbo::hasMany(a, submissions, dbo::ManyToOne, "user");
+	dbo::hasOne(a, settings, "user");
+}
+};
+
+class UserSettings {
+public:
+dbo::ptr<User> user;
+std::optional<int> editor_fontsize;
+std::optional<int> editor_indent;
+std::optional<bool> editor_wrap;
+std::optional<std::string> editor_theme;
+
+template<class Action>
+void persist(Action& a) {
+	dbo::id(a, user, "user", dbo::NotNull|dbo::OnDeleteCascade);
+	dbo::field(a, editor_fontsize, "editor_fontsize");
+	dbo::field(a, editor_indent, "editor_indent");
+	dbo::field(a, editor_wrap, "editor_wrap");
+	dbo::field(a, editor_theme, "editor_theme");
 }
 };
 
