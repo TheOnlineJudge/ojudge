@@ -28,29 +28,29 @@ std::vector<std::unique_ptr<Auth::OAuthService> > myOAuthServices;
 }
 
 void Session::configureAuth() {
-        myAuthService.setAuthTokensEnabled(true, "logincookie");
-        myAuthService.setEmailVerificationEnabled(true);
-        myAuthService.setEmailVerificationRequired(true);
+	myAuthService.setAuthTokensEnabled(true, "logincookie");
+	myAuthService.setEmailVerificationEnabled(true);
+	myAuthService.setEmailVerificationRequired(true);
 
-        auto verifier = cpp14::make_unique<Auth::PasswordVerifier>();
-        verifier->addHashFunction(cpp14::make_unique<Auth::BCryptHashFunction>(7));
-        myPasswordService.setVerifier(std::move(verifier));
-        myPasswordService.setAttemptThrottlingEnabled(true);
-        myPasswordService.setStrengthValidator(cpp14::make_unique<Auth::PasswordStrengthValidator>());
+	auto verifier = cpp14::make_unique<Auth::PasswordVerifier>();
+	verifier->addHashFunction(cpp14::make_unique<Auth::BCryptHashFunction>(7));
+	myPasswordService.setVerifier(std::move(verifier));
+	myPasswordService.setAttemptThrottlingEnabled(true);
+	myPasswordService.setStrengthValidator(cpp14::make_unique<Auth::PasswordStrengthValidator>());
 
-        if (Auth::GoogleService::configured()) {
-                myOAuthServices.push_back(cpp14::make_unique<Auth::GoogleService>(myAuthService));
-        }
+	if (Auth::GoogleService::configured()) {
+		myOAuthServices.push_back(cpp14::make_unique<Auth::GoogleService>(myAuthService));
+	}
 
-        if (Auth::FacebookService::configured()) {
-                myOAuthServices.push_back(cpp14::make_unique<Auth::FacebookService>(myAuthService));
-        }
+	if (Auth::FacebookService::configured()) {
+		myOAuthServices.push_back(cpp14::make_unique<Auth::FacebookService>(myAuthService));
+	}
 }
 
 Session::Session(const std::string &postgresDb) {
-        auto connection = cpp14::make_unique<Dbo::backend::Postgres>(postgresDb);
-        connection->setProperty("show-queries", "true");
-        setConnection(std::move(connection));
+	auto connection = cpp14::make_unique<Dbo::backend::Postgres>(postgresDb);
+	connection->setProperty("show-queries", "true");
+	setConnection(std::move(connection));
 }
 
 Session::~Session() {
@@ -58,7 +58,7 @@ Session::~Session() {
 }
 
 void Session::loadUsers() {
-        users_ = cpp14::make_unique<UserDatabase>(*this);
+	users_ = cpp14::make_unique<UserDatabase>(*this);
 }
 
 void Session::createUserData(const Auth::User &newUser) {
@@ -72,44 +72,44 @@ void Session::createUserData(const Auth::User &newUser) {
 }
 
 Auth::AbstractUserDatabase &Session::users() {
-        return *users_;
+	return *users_;
 }
 
 dbo::ptr<User> Session::user() {
-        if(login_.loggedIn()) {
-                return user(login_.user());
-        } else {
-                return dbo::ptr<User>();
-        }
+	if(login_.loggedIn()) {
+		return user(login_.user());
+	} else {
+		return dbo::ptr<User>();
+	}
 }
 
 dbo::ptr<User> Session::user(const Auth::User &authUser) {
-        dbo::ptr<AuthInfo> authInfo = users_->find(authUser);
+	dbo::ptr<AuthInfo> authInfo = users_->find(authUser);
 
-        dbo::ptr<User> user = authInfo->user();
+	dbo::ptr<User> user = authInfo->user();
 
-        if(!user) {
-                user = add(Wt::cpp14::make_unique<User>());
-                authInfo.modify()->setUser(user);
-        }
+	if(!user) {
+		user = add(Wt::cpp14::make_unique<User>());
+		authInfo.modify()->setUser(user);
+	}
 
-        return user;
+	return user;
 }
 
 const Auth::AuthService &Session::auth() {
-        return myAuthService;
+	return myAuthService;
 }
 
 const Auth::PasswordService &Session::passwordAuth() {
-        return myPasswordService;
+	return myPasswordService;
 }
 
 const std::vector<const Auth::OAuthService *> Session::oAuth() {
-        std::vector<const Auth::OAuthService *> result;
-        for(auto &auth : myOAuthServices) {
-                result.push_back(auth.get());
-        }
-        return result;
+	std::vector<const Auth::OAuthService *> result;
+	for(auto &auth : myOAuthServices) {
+		result.push_back(auth.get());
+	}
+	return result;
 }
 
 DBModel::DBModel(Session* session) : session_(session) {
@@ -125,12 +125,12 @@ DBModel::DBModel(Session* session) : session_(session) {
 	session_->mapClass<Verdict>("verdict");
 	session_->mapClass<Language>("language");
 	session_->mapClass<Contest>("contest");
-        session_->mapClass<AuthInfo>("auth_info");
-        session_->mapClass<AuthInfo::AuthIdentityType>("auth_identity");
-        session_->mapClass<AuthInfo::AuthTokenType>("auth_token");
+	session_->mapClass<AuthInfo>("auth_info");
+	session_->mapClass<AuthInfo::AuthIdentityType>("auth_identity");
+	session_->mapClass<AuthInfo::AuthTokenType>("auth_token");
 
-        bool firstRun = false;
-        Auth::User newUser;
+	bool firstRun = false;
+	Auth::User newUser;
 
 	try {
 		session_->createTables();
@@ -157,12 +157,12 @@ DBModel::DBModel(Session* session) : session_(session) {
 				session_->add(std::move(setting));
 			}
 
-	                // Add username admin with password admin
-	                std::unique_ptr<UserDatabase> tmpUsers = cpp14::make_unique<UserDatabase>(*session_);
-	                std::cerr << "Creating user 'admin' with password 'admin' on first run" << std::endl;
-	                newUser = tmpUsers->registerNew();
-	                newUser.addIdentity(Auth::Identity::LoginName, "admin");
-	                firstRun = true;
+			// Add username admin with password admin
+			std::unique_ptr<UserDatabase> tmpUsers = cpp14::make_unique<UserDatabase>(*session_);
+			std::cerr << "Creating user 'admin' with password 'admin' on first run" << std::endl;
+			newUser = tmpUsers->registerNew();
+			newUser.addIdentity(Auth::Identity::LoginName, "admin");
+			firstRun = true;
 		}
 	} catch (std::exception &e) {
 		std::cerr << e.what() << std::endl;
@@ -171,14 +171,14 @@ DBModel::DBModel(Session* session) : session_(session) {
 
 	session_->loadUsers();
 
-        if(firstRun) {
-                dbo::Transaction t = startTransaction();
-                dbo::ptr<User> userData = session_->user(newUser);
-                userData.modify()->role = Role::Admin;
+	if(firstRun) {
+		dbo::Transaction t = startTransaction();
+		dbo::ptr<User> userData = session_->user(newUser);
+		userData.modify()->role = Role::Admin;
 		dbo::ptr<UserSettings> settings = session_->add(std::unique_ptr<UserSettings>(new UserSettings()));
 		userData.modify()->settings = settings;
-	        session_->passwordAuth().updatePassword(newUser,"admin");
-        }
+		session_->passwordAuth().updatePassword(newUser,"admin");
+	}
 }
 
 DBModel::~DBModel() {
@@ -187,6 +187,12 @@ DBModel::~DBModel() {
 
 dbo::Transaction DBModel::startTransaction() {
 	return dbo::Transaction(*session_);
+}
+
+Categories DBModel::getCategories() {
+
+	dbo::Transaction t = startTransaction();
+	return session_->find<Category>().orderBy("parent_id,\"order\"");
 }
 
 dbo::ptr<Category> DBModel::addCategory(std::string title, int parent) {
@@ -198,33 +204,6 @@ dbo::ptr<Category> DBModel::addCategory(std::string title, int parent) {
 	category->order = category->parent->children.size();
 
 	return session_->add(std::move(category));
-}
-
-dbo::ptr<Problem> DBModel::addProblem(long long id, std::string title) {
-
-	dbo::Transaction t = startTransaction();
-	std::unique_ptr<Problem> problem(new Problem());
-	problem->id = id;
-	problem->title = title;
-
-	return session_->add(std::move(problem));
-}
-
-void DBModel::updateDescription(long long problemId, std::optional<std::string> htmlData, std::optional<std::vector<unsigned char> > pdfData) {
-
-	dbo::Transaction t = startTransaction();
-	dbo::ptr<Problem> problem = session_->find<Problem>().where("id = ?").bind(problemId);
-
-	dbo::ptr<Description> description = session_->add(std::unique_ptr<Description>(new Description()));
-	description.modify()->htmldata = htmlData;
-	description.modify()->pdfdata = pdfData;
-	problem.modify()->description = description;
-}
-
-Categories DBModel::getCategories() {
-
-	dbo::Transaction t = startTransaction();
-	return session_->find<Category>().orderBy("parent_id,\"order\"");
 }
 
 Problems DBModel::getProblems() {
@@ -239,6 +218,16 @@ dbo::ptr<Problem> DBModel::getProblem(long long id) {
 	return session_->find<Problem>().where("id = ?").bind(id);
 }
 
+dbo::ptr<Problem> DBModel::addProblem(long long id, std::string title) {
+
+	dbo::Transaction t = startTransaction();
+	std::unique_ptr<Problem> problem(new Problem());
+	problem->id = id;
+	problem->title = title;
+
+	return session_->add(std::move(problem));
+}
+
 void DBModel::setProblemCategories(long long id, std::set<int> categories) {
 
 	dbo::Transaction t = startTransaction();
@@ -249,6 +238,17 @@ void DBModel::setProblemCategories(long long id, std::set<int> categories) {
 		dbo::ptr<Category> tmpCat = session_->find<Category>().where("id = ?").bind(tmpCatId);
 		problem.modify()->categories.insert(tmpCat);
 	}
+}
+
+void DBModel::updateDescription(long long problemId, std::optional<std::string> htmlData, std::optional<std::vector<unsigned char> > pdfData) {
+
+	dbo::Transaction t = startTransaction();
+	dbo::ptr<Problem> problem = session_->find<Problem>().where("id = ?").bind(problemId);
+
+	dbo::ptr<Description> description = session_->add(std::unique_ptr<Description>(new Description()));
+	description.modify()->htmldata = htmlData;
+	description.modify()->pdfdata = pdfData;
+	problem.modify()->description = description;
 }
 
 Settings DBModel::getSettings() {

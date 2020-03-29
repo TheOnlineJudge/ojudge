@@ -25,6 +25,18 @@ using namespace Wt;
 
 namespace dbo = Wt::Dbo;
 
+enum class Role {
+	Visitor = 0,
+	Registered = 1,
+	Moderator = 2,
+	Publisher = 3,
+	Editor = 4,
+	Admin = 32
+};
+
+typedef Wt::Auth::Dbo::AuthInfo<User> AuthInfo;
+typedef Auth::Dbo::UserDatabase<AuthInfo> UserDatabase;
+
 class User;
 class UserSettings;
 class Category;
@@ -37,8 +49,6 @@ class Verdict;
 class Language;
 class Contest;
 
-typedef Wt::Auth::Dbo::AuthInfo<User> AuthInfo;
-typedef Auth::Dbo::UserDatabase<AuthInfo> UserDatabase;
 typedef dbo::collection< dbo::ptr<User> > Users;
 typedef dbo::collection< dbo::ptr<Category> > Categories;
 typedef dbo::collection< dbo::ptr<Problem> > Problems;
@@ -101,7 +111,7 @@ dbo::ptr<User> user(const Auth::User &user);
 
 Auth::AbstractUserDatabase &users();
 Auth::Login &login() {
-        return login_;
+	return login_;
 }
 
 void createUserData(const Auth::User &newUser);
@@ -115,15 +125,6 @@ std::unique_ptr<UserDatabase> users_;
 Auth::Login login_;
 };
 
-enum class Role {
-        Visitor = 0,
-        Registered = 1,
-        Moderator = 2,
-        Publisher = 3,
-        Editor = 4,
-        Admin = 32
-};
-
 class User {
 public:
 dbo::weak_ptr<AuthInfo> authInfo;
@@ -134,9 +135,9 @@ dbo::weak_ptr<UserSettings> settings;
 template<class Action>
 void persist(Action& a)
 {
-        dbo::hasOne(a, authInfo, "user");
-        dbo::field(a, role, "role");
-        dbo::hasMany(a, submissions, dbo::ManyToOne, "user");
+	dbo::hasOne(a, authInfo, "user");
+	dbo::field(a, role, "role");
+	dbo::hasMany(a, submissions, dbo::ManyToOne, "user");
 	dbo::hasOne(a, settings, "user");
 }
 };
