@@ -34,9 +34,6 @@ enum class Role {
 	Admin = 32
 };
 
-typedef Wt::Auth::Dbo::AuthInfo<User> AuthInfo;
-typedef Auth::Dbo::UserDatabase<AuthInfo> UserDatabase;
-
 class User;
 class UserSettings;
 class Category;
@@ -48,6 +45,9 @@ class Testcase;
 class Verdict;
 class Language;
 class Contest;
+
+typedef Wt::Auth::Dbo::AuthInfo<User> AuthInfo;
+typedef Auth::Dbo::UserDatabase<AuthInfo> UserDatabase;
 
 typedef dbo::collection< dbo::ptr<User> > Users;
 typedef dbo::collection< dbo::ptr<Category> > Categories;
