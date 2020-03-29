@@ -11,10 +11,14 @@
 #define TEAMWIDGET_H
 
 #include <Wt/WContainerWidget.h>
+#include <Wt/Auth/Login.h>
 
 class TeamWidget : public Wt::WContainerWidget {
 public:
 TeamWidget();
+void login(Wt::Auth::Login& login);
+void logout();
+
 };
 
 #endif // TEAMWIDGET_H

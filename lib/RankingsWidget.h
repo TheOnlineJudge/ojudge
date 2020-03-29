@@ -11,10 +11,14 @@
 #define RANKINGSWIDGET_H
 
 #include <Wt/WContainerWidget.h>
+#include <Wt/Auth/Login.h>
 
 class RankingsWidget : public Wt::WContainerWidget {
 public:
 RankingsWidget();
+void login(Wt::Auth::Login& login);
+void logout();
+
 };
 
 #endif // RANKINGSWIDGET_H

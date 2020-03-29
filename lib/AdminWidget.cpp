@@ -49,6 +49,14 @@ AdminWidget::AdminWidget(Session *session,ViewModels *viewModels,DBModel *dbmode
 
 }
 
+void AdminWidget::login(Auth::Login& login) {
+
+}
+
+void AdminWidget::logout() {
+
+}
+
 AdminWidget::AdminCategoryWidget::AdminCategoryWidget(const std::shared_ptr<CategoryModel> catmodel) : catmodel_(catmodel) {
 
 	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
@@ -77,6 +85,14 @@ AdminWidget::AdminCategoryWidget::AdminCategoryWidget(const std::shared_ptr<Cate
 	adminActionsDelegate->editCategory().connect(this,&AdminCategoryWidget::showAddEditDialog);
 	treeWidget_->setItemDelegateForColumn(3,adminActionsDelegate);
 	treeWidget_->addStyleClass("oj-admin-category-tree");
+}
+
+void AdminWidget::AdminCategoryWidget::login(Auth::Login& login) {
+
+}
+
+void AdminWidget::AdminCategoryWidget::logout() {
+
 }
 
 void AdminWidget::AdminCategoryWidget::showAddEditDialog(const WModelIndex& index) {
@@ -167,6 +183,14 @@ AdminWidget::AdminCategoryWidget::AdminActionsDelegate::AdminActionsDelegate() {
 
 }
 
+void AdminWidget::AdminCategoryWidget::AdminActionsDelegate::login(Auth::Login& login) {
+
+}
+
+void AdminWidget::AdminCategoryWidget::AdminActionsDelegate::logout() {
+
+}
+
 std::unique_ptr<WWidget> AdminWidget::AdminCategoryWidget::AdminActionsDelegate::update(WWidget *widget, const WModelIndex& index, WFlags<ViewItemRenderFlag> flags) {
 
 	WidgetRef widgetRef(widget);
@@ -231,6 +255,14 @@ AdminWidget::AdminContestWidget::AdminContestWidget() {
 	addButton->setToolTip(WString("Add new contest"));
 }
 
+void AdminWidget::AdminContestWidget::login(Auth::Login& login) {
+
+}
+
+void AdminWidget::AdminContestWidget::logout() {
+
+}
+
 AdminWidget::AdminLanguageWidget::AdminLanguageWidget() {
 
 	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
@@ -245,6 +277,14 @@ AdminWidget::AdminLanguageWidget::AdminLanguageWidget() {
 	addButton->setHeight(WLength(32));
 	addButton->decorationStyle().setCursor(Cursor::PointingHand);
 	addButton->setToolTip(WString("Add new language"));
+}
+
+void AdminWidget::AdminLanguageWidget::login(Auth::Login& login) {
+
+}
+
+void AdminWidget::AdminLanguageWidget::logout() {
+
 }
 
 AdminWidget::AdminProblemWidget::AdminProblemWidget(ViewModels *viewModels, DBModel *dbmodel) : viewModels_(viewModels), dbmodel_(dbmodel) {
@@ -303,6 +343,14 @@ AdminWidget::AdminProblemWidget::AdminProblemWidget(ViewModels *viewModels, DBMo
 	adminActionsDelegate->editProblem().connect(this,&AdminProblemWidget::showAddEditDialog);
 	tableWidget_->setItemDelegateForColumn(2,adminActionsDelegate);
 	tableWidget_->addStyleClass("oj-admin-problem-table");
+}
+
+void AdminWidget::AdminProblemWidget::login(Auth::Login& login) {
+
+}
+
+void AdminWidget::AdminProblemWidget::logout() {
+
 }
 
 void AdminWidget::AdminProblemWidget::problemSelectorSlot() {
@@ -418,6 +466,14 @@ AdminWidget::AdminProblemWidget::AdminActionsDelegate::AdminActionsDelegate() {
 
 }
 
+void AdminWidget::AdminProblemWidget::AdminActionsDelegate::login(Auth::Login& login) {
+
+}
+
+void AdminWidget::AdminProblemWidget::AdminActionsDelegate::logout() {
+
+}
+
 std::unique_ptr<WWidget> AdminWidget::AdminProblemWidget::AdminActionsDelegate::update(WWidget *widget, const WModelIndex& index, WFlags<ViewItemRenderFlag> flags) {
 
 	WidgetRef widgetRef(widget);
@@ -494,8 +550,24 @@ AdminWidget::AdminSettingsWidget::AdminSettingsWidget(DBModel *dbmodel) : dbmode
 	auto footerSettingsMenu = leftMenu->addItem("Footer",cpp14::make_unique<WContainerWidget>());
 }
 
+void AdminWidget::AdminSettingsWidget::login(Auth::Login& login) {
+
+}
+
+void AdminWidget::AdminSettingsWidget::logout() {
+
+}
+
 AdminWidget::AdminUserWidget::AdminUserWidget() {
 
 	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout_->setContentsMargins(0,0,0,0);
+}
+
+void AdminWidget::AdminUserWidget::login(Auth::Login& login) {
+
+}
+
+void AdminWidget::AdminUserWidget::logout() {
+
 }

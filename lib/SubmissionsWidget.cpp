@@ -24,3 +24,11 @@ SubmissionsWidget::SubmissionsWidget() {
 	auto mainWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
 
 }
+
+void SubmissionsWidget::login(Auth::Login& login) {
+
+}
+
+void SubmissionsWidget::logout() {
+
+}

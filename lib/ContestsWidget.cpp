@@ -24,3 +24,11 @@ ContestsWidget::ContestsWidget() {
 	auto mainWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
 
 }
+
+void ContestsWidget::login(Auth::Login& login) {
+
+}
+
+void ContestsWidget::logout() {
+
+}

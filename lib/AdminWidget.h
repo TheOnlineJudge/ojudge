@@ -10,6 +10,7 @@
 #ifndef ADMINWIDGET_H
 #define ADMINWIDGET_H
 
+#include <Wt/Auth/Login.h>
 #include <Wt/WContainerWidget.h>
 #include <Wt/WAbstractItemModel.h>
 #include <Wt/WVBoxLayout.h>
@@ -30,6 +31,8 @@ class Session;
 class AdminWidget : public Wt::WContainerWidget {
 public:
 AdminWidget(Session *session, ViewModels *viewModels, DBModel *dbmodel);
+void login(Wt::Auth::Login& login);
+void logout();
 
 private:
 Session *session_;
@@ -39,6 +42,8 @@ DBModel *dbmodel_;
 class AdminCategoryWidget : public Wt::WContainerWidget {
 public:
 AdminCategoryWidget(const std::shared_ptr<CategoryModel> catmodel);
+void login(Wt::Auth::Login& login);
+void logout();
 
 private:
 const std::shared_ptr<CategoryModel> catmodel_;
@@ -54,6 +59,8 @@ void addEditDialogDone(Wt::DialogCode code);
 class AdminActionsDelegate : public Wt::WAbstractItemDelegate {
 public:
 AdminActionsDelegate();
+void login(Wt::Auth::Login& login);
+void logout();
 virtual std::unique_ptr<Wt::WWidget> update(Wt::WWidget *widget, const Wt::WModelIndex& index, Wt::WFlags<Wt::ViewItemRenderFlag> flags) override;
 Wt::Signal<const Wt::WModelIndex&>& editCategory() {
 	return editCategory_;
@@ -84,6 +91,8 @@ Wt::Signal<const Wt::WModelIndex&,bool> moveCategory_;
 class AdminContestWidget : public Wt::WContainerWidget {
 public:
 AdminContestWidget();
+void login(Wt::Auth::Login& login);
+void logout();
 
 private:
 Wt::WVBoxLayout *mainLayout_;
@@ -92,6 +101,8 @@ Wt::WVBoxLayout *mainLayout_;
 class AdminLanguageWidget : public Wt::WContainerWidget {
 public:
 AdminLanguageWidget();
+void login(Wt::Auth::Login& login);
+void logout();
 
 private:
 Wt::WVBoxLayout *mainLayout_;
@@ -100,6 +111,8 @@ Wt::WVBoxLayout *mainLayout_;
 class AdminProblemWidget : public Wt::WContainerWidget {
 public:
 AdminProblemWidget(ViewModels *viewModels, DBModel *dbmodel);
+void login(Wt::Auth::Login& login);
+void logout();
 
 private:
 Wt::WVBoxLayout *mainLayout_;
@@ -122,6 +135,9 @@ void addDialogDone(Wt::DialogCode code);
 class AdminActionsDelegate : public Wt::WAbstractItemDelegate {
 public:
 AdminActionsDelegate();
+void login(Wt::Auth::Login& login);
+void logout();
+
 virtual std::unique_ptr<Wt::WWidget> update(Wt::WWidget *widget, const Wt::WModelIndex& index, Wt::WFlags<Wt::ViewItemRenderFlag> flags) override;
 Wt::Signal<const Wt::WModelIndex&>& editProblem() {
 	return editProblem_;
@@ -148,6 +164,8 @@ Wt::Signal<const Wt::WModelIndex&> deleteProblem_;
 class AdminSettingsWidget : public Wt::WContainerWidget {
 public:
 AdminSettingsWidget(DBModel *dbmodel);
+void login(Wt::Auth::Login& login);
+void logout();
 
 private:
 DBModel *dbmodel_;
@@ -156,6 +174,8 @@ DBModel *dbmodel_;
 class AdminUserWidget : public Wt::WContainerWidget {
 public:
 AdminUserWidget();
+void login(Wt::Auth::Login& login);
+void logout();
 
 private:
 Wt::WVBoxLayout *mainLayout_;

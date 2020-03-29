@@ -11,10 +11,13 @@
 #define SUBMISSIONSWIDGET_H
 
 #include <Wt/WContainerWidget.h>
+#include <Wt/Auth/Login.h>
 
 class SubmissionsWidget : public Wt::WContainerWidget {
 public:
 SubmissionsWidget();
+void login(Wt::Auth::Login& login);
+void logout();
 
 };
 

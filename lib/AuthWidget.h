@@ -11,6 +11,7 @@
 #define AUTHWIDGET_H
 
 #include <Wt/Auth/AuthWidget.h>
+#include <Wt/Auth/Login.h>
 
 using namespace Wt;
 
@@ -19,6 +20,8 @@ class Session;
 class AuthWidget : public Auth::AuthWidget {
 public:
 AuthWidget(Session &session);
+void login(Wt::Auth::Login& login);
+void logout();
 virtual std::unique_ptr<WWidget> createRegistrationView(const Auth::Identity& id) override;
 void resetForm();
 

@@ -11,10 +11,13 @@
 #define CONTACTWIDGET_H
 
 #include <Wt/WContainerWidget.h>
+#include <Wt/Auth/Login.h>
 
 class ContactWidget : public Wt::WContainerWidget {
 public:
 ContactWidget();
+void login(Wt::Auth::Login& login);
+void logout();
 };
 
 #endif // CONTACTWIDGET_H

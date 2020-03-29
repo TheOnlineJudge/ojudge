@@ -44,6 +44,14 @@ ProfileWidget::ProfileWidget(Session *session) : session_(session) {
 
 }
 
+void ProfileWidget::login(Auth::Login& login) {
+
+}
+
+void ProfileWidget::logout() {
+
+}
+
 AccountWidget::AccountWidget(Session *session) : session_(session) {
 
 	addWidget(cpp14::make_unique<WText>("Account"));
@@ -58,6 +66,14 @@ AccountWidget::AccountWidget(Session *session) : session_(session) {
 
 	accountTable->elementAt(2,0)->addWidget(cpp14::make_unique<WText>("eMail"));
 	accountTable->elementAt(2,1)->addWidget(cpp14::make_unique<WText>(session_->login().user().email()));
+}
+
+void AccountWidget::login(Auth::Login& login) {
+
+}
+
+void AccountWidget::logout() {
+
 }
 
 SecurityWidget::SecurityWidget(Session *session) : session_(session) {
@@ -77,6 +93,14 @@ SecurityWidget::SecurityWidget(Session *session) : session_(session) {
 
 }
 
+void SecurityWidget::login(Auth::Login& login) {
+
+}
+
+void SecurityWidget::logout() {
+
+}
+
 NotificationsWidget::NotificationsWidget(Session *session) : session_(session) {
 
 	addWidget(cpp14::make_unique<WText>("Notifications"));
@@ -88,5 +112,13 @@ NotificationsWidget::NotificationsWidget(Session *session) : session_(session) {
 	notificationsTable->elementAt(1,0)->addWidget(cpp14::make_unique<WText>("Browser notifications"));
 
 	notificationsTable->elementAt(2,0)->addWidget(cpp14::make_unique<WText>("App notifications"));
+
+}
+
+void NotificationsWidget::login(Auth::Login& login) {
+
+}
+
+void NotificationsWidget::logout() {
 
 }

@@ -16,6 +16,8 @@
 class ProfileWidget : public Wt::WContainerWidget {
 public:
 ProfileWidget(Session *session);
+void login(Wt::Auth::Login& login);
+void logout();
 
 private:
 Session *session_;
@@ -25,6 +27,8 @@ Session *session_;
 class AccountWidget : public Wt::WContainerWidget {
 public:
 AccountWidget(Session *session);
+void login(Wt::Auth::Login& login);
+void logout();
 
 private:
 Session *session_;
@@ -33,6 +37,8 @@ Session *session_;
 class SecurityWidget : public Wt::WContainerWidget {
 public:
 SecurityWidget(Session *session);
+void login(Wt::Auth::Login& login);
+void logout();
 
 private:
 Session *session_;
@@ -41,6 +47,8 @@ Session *session_;
 class NotificationsWidget : public Wt::WContainerWidget {
 public:
 NotificationsWidget(Session *session);
+void login(Wt::Auth::Login& login);
+void logout();
 
 private:
 Session *session_;

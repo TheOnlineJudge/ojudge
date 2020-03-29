@@ -15,12 +15,15 @@
 #include <Wt/WTreeView.h>
 #include <Wt/WTableView.h>
 #include <Wt/WAbstractItemDelegate.h>
+#include <Wt/Auth/Login.h>
 
 class ViewModels;
 
 class ProblemsWidget : public Wt::WContainerWidget {
 public:
 ProblemsWidget(ViewModels *viewModels);
+void login(Wt::Auth::Login& login);
+void logout();
 
 private:
 std::shared_ptr<Wt::WSortFilterProxyModel> proxyModel_;
@@ -31,6 +34,8 @@ void problemClicked(Wt::WModelIndex modelIndex, Wt::WMouseEvent mouseEvent);
 class ProblemDelegate : public Wt::WAbstractItemDelegate {
 public:
 ProblemDelegate(ViewModels *viewModels);
+void login(Wt::Auth::Login& login);
+void logout();
 virtual std::unique_ptr<Wt::WWidget> update(Wt::WWidget *widget, const Wt::WModelIndex& index, Wt::WFlags<Wt::ViewItemRenderFlag> flags) override;
 
 private:

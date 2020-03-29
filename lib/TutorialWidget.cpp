@@ -24,3 +24,11 @@ TutorialWidget::TutorialWidget() {
 	auto mainWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
 
 }
+
+void TutorialWidget::login(Auth::Login& login) {
+
+}
+
+void TutorialWidget::logout() {
+
+}

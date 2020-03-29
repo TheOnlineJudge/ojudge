@@ -11,10 +11,14 @@
 #define FACTSWIDGET_H
 
 #include <Wt/WContainerWidget.h>
+#include <Wt/Auth/Login.h>
 
 class FactsWidget : public Wt::WContainerWidget {
 public:
 FactsWidget();
+void login(Wt::Auth::Login& login);
+void logout();
+
 };
 
 #endif // FACTSWIDGET_H

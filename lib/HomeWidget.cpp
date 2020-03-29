@@ -52,3 +52,11 @@ HomeWidget::HomeWidget() {
 	box2->animateShow(anim);
 	box3->animateShow(anim);
 }
+
+void HomeWidget::login(Auth::Login& login) {
+
+}
+
+void HomeWidget::logout() {
+
+}

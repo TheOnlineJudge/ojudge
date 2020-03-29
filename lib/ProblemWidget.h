@@ -11,6 +11,7 @@
 #define PROBLEMWIDGET_H
 
 #include <Wt/WContainerWidget.h>
+#include <Wt/Auth/Login.h>
 #include <Wt/WText.h>
 #include <Wt/WPushButton.h>
 #include <Wt/WLink.h>
@@ -35,6 +36,8 @@ enum class ProblemWidgetDialog {
 class ProblemWidget : public Wt::WContainerWidget {
 public:
 ProblemWidget(DBModel *dbmodel,ViewModels *viewModels);
+void login(Wt::Auth::Login& login);
+void logout();
 void setProblem(long long id);
 
 private:
@@ -58,6 +61,8 @@ void closeSubmissionDialog(Wt::DialogCode code);
 class ProblemDescriptionWidget : public Wt::WContainerWidget {
 public:
 ProblemDescriptionWidget(DBModel *dbmodel,ViewModels *viewModels);
+void login(Wt::Auth::Login& login);
+void logout();
 void setProblem(dbo::ptr<Problem> problemData);
 
 private:
@@ -69,6 +74,8 @@ OJProblemViewerWidget *problemViewer_;
 class ProblemSidemenuWidget : public Wt::WContainerWidget {
 public:
 ProblemSidemenuWidget(DBModel *dbmodel,ViewModels *viewModels);
+void login(Wt::Auth::Login& login);
+void logout();
 void setProblem(dbo::ptr<Problem> problemData);
 Wt::Signal<ProblemWidgetDialog>& showDialog() {
 	return showDialog_;
@@ -96,6 +103,8 @@ ViewModels *viewModels_;
 class ProblemStatisticsDialog : public Wt::WDialog {
 public:
 ProblemStatisticsDialog(DBModel *dbmodel,ViewModels *viewModels);
+void login(Wt::Auth::Login& login);
+void logout();
 void setProblem(dbo::ptr<Problem> problemData);
 
 private:
@@ -106,6 +115,8 @@ ViewModels *viewModels_;
 class ProblemSubmissionDialog : public Wt::WDialog {
 public:
 ProblemSubmissionDialog(DBModel *dbmodel,ViewModels *viewModels);
+void login(Wt::Auth::Login& login);
+void logout();
 void setProblem(dbo::ptr<Problem> problemData);
 std::string code();
 void setCode(std::string code);

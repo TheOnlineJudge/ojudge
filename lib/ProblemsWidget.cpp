@@ -64,6 +64,14 @@ ProblemsWidget::ProblemsWidget(ViewModels *viewModels) : viewModels_(viewModels)
 
 }
 
+void ProblemsWidget::login(Auth::Login& login) {
+
+}
+
+void ProblemsWidget::logout() {
+
+}
+
 void ProblemsWidget::categoryClicked(WModelIndex modelIndex, WMouseEvent mouseEvent) {
 
 	proxyModel_->setFilterRegExp(std::make_unique<std::regex>(asString(modelIndex.data(CategoryModel::CategoryIdRole),WString(".*#%d#.*")).toUTF8()));
@@ -78,6 +86,14 @@ void ProblemsWidget::problemClicked(WModelIndex modelIndex, WMouseEvent mouseEve
 }
 
 ProblemsWidget::ProblemDelegate::ProblemDelegate(ViewModels *viewModels) : viewModels_(viewModels) {
+
+}
+
+void ProblemsWidget::ProblemDelegate::login(Auth::Login& login) {
+
+}
+
+void ProblemsWidget::ProblemDelegate::logout() {
 
 }
 
