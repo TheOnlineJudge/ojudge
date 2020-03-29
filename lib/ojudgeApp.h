@@ -55,6 +55,8 @@ void authEvent();
 ViewModels *getViewModels();
 
 private:
+bool googleAnalytics_ = false;
+std::string googleAnalyticsId_;
 Wt::WMenu *mainMenu_;
 Wt::WMenu *mainFloatMenu_;
 Wt::WStackedWidget *mainStack_;

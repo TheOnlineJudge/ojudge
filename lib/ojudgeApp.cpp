@@ -58,8 +58,12 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 
 	enableUpdates(true);
 
-	if(dbmodel_->getSetting("googleAnalytics") != "")
-		require(std::string("https://www.googletagmanager.com/gtag/js?id=") + dbmodel_->getSetting("googleAnalytics"));
+	if(dbmodel_->getSetting("googleAnalytics") != "") {
+		googleAnalytics_ = true;
+		googleAnalyticsId_ = dbmodel_->getSetting("googleAnalytics");
+		require(std::string("https://www.googletagmanager.com/gtag/js?id=") + googleAnalyticsId_ );
+	}
+
 
 	setTitle(WString(dbmodel_->getSetting("siteTitle")));
 	instance()->styleSheet().addRule(":root", std::string("--ojcolor: ") + dbmodel_->getSetting("siteColor"));
@@ -303,11 +307,11 @@ void ojudgeApp::pathChanged(std::string newPath) {
 		}
 	}
 
-	if(dbmodel_->getSetting("googleAnalytics") != "") {
+	if(googleAnalytics_) {
 		doJavaScript(   "window.dataLayer = window.dataLayer || [];"
 		                "function gtag(){dataLayer.push(arguments);}"
 		                "gtag('js', new Date());"
-		                "gtag('config', '" + dbmodel_->getSetting("googleAnalytics") + "', {"
+		                "gtag('config', '" + googleAnalyticsId_ + "', {"
 		                "'page_path': '" + newPath + "'"
 		                "});");
 	}
