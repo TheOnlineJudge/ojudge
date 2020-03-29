@@ -196,6 +196,7 @@ body {
 
 .oj-problems-problems-item .oj-problems-problems-title {
   line-height:2;
+  font-weight:bold;
 }
 
 .oj-problems-problems-item .oj-problems-problems-stats {

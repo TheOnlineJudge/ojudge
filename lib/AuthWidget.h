@@ -19,7 +19,7 @@ class Session;
 class AuthWidget : public Auth::AuthWidget {
 public:
 AuthWidget(Session &session);
-//	virtual std::unique_ptr<WWidget> createRegistrationView(const Auth::Identity& id) override;
+virtual std::unique_ptr<WWidget> createRegistrationView(const Auth::Identity& id) override;
 void resetForm();
 
 private:

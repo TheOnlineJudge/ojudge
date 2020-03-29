@@ -22,7 +22,7 @@
 #include <Wt/WProgressBar.h>
 #include <Wt/WMenu.h>
 #include <Wt/WStackedWidget.h>
-#include "authmodel/Session.h"
+#include "dbmodel/DBModel.h"
 #include "widgets/OJColorPicker.h"
 #include "AdminWidget.h"
 
