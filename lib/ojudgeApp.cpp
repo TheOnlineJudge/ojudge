@@ -244,7 +244,7 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	loginSignal().connect(languagesWidget_,&LanguagesWidget::login);
 	logoutSignal().connect(languagesWidget_,&LanguagesWidget::logout);
 
-	profileWidget_ = mainStack_->addWidget(cpp14::make_unique<ProfileWidget>(session_));
+	profileWidget_ = mainStack_->addWidget(cpp14::make_unique<ProfileWidget>(session_,dbmodel_));
 	loginSignal().connect(profileWidget_,&ProfileWidget::login);
 	logoutSignal().connect(profileWidget_,&ProfileWidget::logout);
 

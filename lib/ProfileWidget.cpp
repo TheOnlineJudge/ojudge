@@ -21,7 +21,7 @@
 
 using namespace Wt;
 
-ProfileWidget::ProfileWidget(Session *session) : session_(session) {
+ProfileWidget::ProfileWidget(Session *session, DBModel *dbmodel) : session_(session), dbmodel_(dbmodel) {
 
 	auto mainLayout = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout->setContentsMargins(0,0,0,0);
@@ -37,15 +37,25 @@ ProfileWidget::ProfileWidget(Session *session) : session_(session) {
 	menuWidget->addStyleClass("flex-column");
 	menuWidget->setWidth(200);
 
+	auto accountWidget = cpp14::make_unique<AccountWidget>(session_,dbmodel_);
+	loginSignal().connect(accountWidget.get(),&AccountWidget::login);
+	logoutSignal().connect(accountWidget.get(),&AccountWidget::logout);
+	auto accountItem = menuWidget->addItem("Account",std::move(accountWidget));
 
-/*      auto accountItem = menuWidget->addItem("Account",cpp14::make_unique<AccountWidget>(session_));
-	// Signals
-        auto settingsItem = menuWidget->addItem("Security",cpp14::make_unique<SecurityWidget>(session_));
-	// Signals
-        auto notificationsItem = menuWidget->addItem("Notifications",cpp14::make_unique<NotificationsWidget>(session_));
-	// Signals
-*/
+	auto securityWidget = cpp14::make_unique<SecurityWidget>(session_,dbmodel_);
+	loginSignal().connect(securityWidget.get(),&SecurityWidget::login);
+	logoutSignal().connect(securityWidget.get(),&SecurityWidget::logout);
+	auto securityItem = menuWidget->addItem("Security",std::move(securityWidget));
 
+	auto notificationsWidget = cpp14::make_unique<NotificationsWidget>(session_,dbmodel_);
+	loginSignal().connect(notificationsWidget.get(),&NotificationsWidget::login);
+	logoutSignal().connect(notificationsWidget.get(),&NotificationsWidget::logout);
+	auto notificationsItem = menuWidget->addItem("Notifications",std::move(notificationsWidget));
+
+	auto editorWidget = cpp14::make_unique<EditorWidget>(session_,dbmodel_);
+	loginSignal().connect(editorWidget.get(),&EditorWidget::login);
+	logoutSignal().connect(editorWidget.get(),&EditorWidget::logout);
+	auto editorItem = menuWidget->addItem("Code Editor",std::move(editorWidget));
 }
 
 void ProfileWidget::login(Auth::Login& login) {
@@ -56,31 +66,31 @@ void ProfileWidget::logout() {
 	logoutSignal().emit();
 }
 
-AccountWidget::AccountWidget(Session *session) : session_(session) {
+ProfileWidget::AccountWidget::AccountWidget(Session *session, DBModel *dbmodel) : session_(session), dbmodel_(dbmodel) {
 
 	addWidget(cpp14::make_unique<WText>("Account"));
 
 	auto accountTable = addWidget(cpp14::make_unique<WTable>());
 
 	accountTable->elementAt(0,0)->addWidget(cpp14::make_unique<WText>("User ID"));
-	accountTable->elementAt(0,1)->addWidget(cpp14::make_unique<WText>(session_->login().user().id()));
+	//accountTable->elementAt(0,1)->addWidget(cpp14::make_unique<WText>(session_->login().user().id()));
 
 	accountTable->elementAt(1,0)->addWidget(cpp14::make_unique<WText>("Username"));
-	accountTable->elementAt(1,1)->addWidget(cpp14::make_unique<WText>(session_->login().user().identity("loginname")));
+	//accountTable->elementAt(1,1)->addWidget(cpp14::make_unique<WText>(session_->login().user().identity("loginname")));
 
 	accountTable->elementAt(2,0)->addWidget(cpp14::make_unique<WText>("eMail"));
-	accountTable->elementAt(2,1)->addWidget(cpp14::make_unique<WText>(session_->login().user().email()));
+	//accountTable->elementAt(2,1)->addWidget(cpp14::make_unique<WText>(session_->login().user().email()));
 }
 
-void AccountWidget::login(Auth::Login& login) {
-
-}
-
-void AccountWidget::logout() {
+void ProfileWidget::AccountWidget::login(Auth::Login& login) {
 
 }
 
-SecurityWidget::SecurityWidget(Session *session) : session_(session) {
+void ProfileWidget::AccountWidget::logout() {
+
+}
+
+ProfileWidget::SecurityWidget::SecurityWidget(Session *session, DBModel *dbmodel) : session_(session), dbmodel_(dbmodel) {
 
 	addWidget(cpp14::make_unique<WText>("Security"));
 
@@ -97,15 +107,15 @@ SecurityWidget::SecurityWidget(Session *session) : session_(session) {
 
 }
 
-void SecurityWidget::login(Auth::Login& login) {
+void ProfileWidget::SecurityWidget::login(Auth::Login& login) {
 
 }
 
-void SecurityWidget::logout() {
+void ProfileWidget::SecurityWidget::logout() {
 
 }
 
-NotificationsWidget::NotificationsWidget(Session *session) : session_(session) {
+ProfileWidget::NotificationsWidget::NotificationsWidget(Session *session, DBModel *dbmodel) : session_(session), dbmodel_(dbmodel) {
 
 	addWidget(cpp14::make_unique<WText>("Notifications"));
 
@@ -119,10 +129,24 @@ NotificationsWidget::NotificationsWidget(Session *session) : session_(session) {
 
 }
 
-void NotificationsWidget::login(Auth::Login& login) {
+void ProfileWidget::NotificationsWidget::login(Auth::Login& login) {
 
 }
 
-void NotificationsWidget::logout() {
+void ProfileWidget::NotificationsWidget::logout() {
+
+}
+
+ProfileWidget::EditorWidget::EditorWidget(Session *session, DBModel *dbmodel) : session_(session), dbmodel_(dbmodel) {
+
+	addWidget(cpp14::make_unique<WText>("Editor settings"));
+
+}
+
+void ProfileWidget::EditorWidget::login(Auth::Login& login) {
+
+}
+
+void ProfileWidget::EditorWidget::logout() {
 
 }

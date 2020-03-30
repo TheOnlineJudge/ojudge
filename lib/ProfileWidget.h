@@ -15,12 +15,13 @@
 
 class ProfileWidget : public Wt::WContainerWidget {
 public:
-ProfileWidget(Session *session);
+ProfileWidget(Session *session, DBModel *dbmodel);
 void login(Wt::Auth::Login& login);
 void logout();
 
 private:
 Session *session_;
+DBModel *dbmodel_;
 Wt::Signal<Wt::Auth::Login&>& loginSignal() {
         return loginSignal_;
 }
@@ -31,36 +32,50 @@ Wt::Signal<>& logoutSignal() {
 
 Wt::Signal<Wt::Auth::Login&> loginSignal_;
 Wt::Signal<> logoutSignal_;
-};
 
 class AccountWidget : public Wt::WContainerWidget {
 public:
-AccountWidget(Session *session);
+AccountWidget(Session *session, DBModel *dbmodel);
 void login(Wt::Auth::Login& login);
 void logout();
 
 private:
 Session *session_;
+DBModel *dbmodel_;
 };
 
 class SecurityWidget : public Wt::WContainerWidget {
 public:
-SecurityWidget(Session *session);
+SecurityWidget(Session *session, DBModel *dbmodel);
 void login(Wt::Auth::Login& login);
 void logout();
 
 private:
 Session *session_;
+DBModel *dbmodel_;
 };
 
 class NotificationsWidget : public Wt::WContainerWidget {
 public:
-NotificationsWidget(Session *session);
+NotificationsWidget(Session *session, DBModel *dbmodel);
 void login(Wt::Auth::Login& login);
 void logout();
 
 private:
 Session *session_;
+DBModel *dbmodel_;
 };
 
+class EditorWidget : public Wt::WContainerWidget {
+public:
+EditorWidget(Session *session, DBModel *dbmodel);
+void login(Wt::Auth::Login& login);
+void logout();
+
+private:
+Session *session_;
+DBModel *dbmodel_;
+};
+
+};
 #endif // PROFILEWIDGET_H

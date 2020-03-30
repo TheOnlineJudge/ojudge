@@ -68,7 +68,10 @@ void Session::createUserData(const Auth::User &newUser) {
 	dbo::ptr<User> userData = user(newUser);
 	userData.modify()->role = Role::Registered;
 	dbo::ptr<UserSettings> settings  = add(std::unique_ptr<UserSettings>(new UserSettings()));
+	dbo::ptr<UserAvatar> avatar = add(std::unique_ptr<UserAvatar>(new UserAvatar()));
+	avatar.modify()->useGravatar = false;
 	userData.modify()->settings = settings;
+	userData.modify()->avatar = avatar;
 }
 
 Auth::AbstractUserDatabase &Session::users() {
@@ -116,6 +119,7 @@ DBModel::DBModel(Session* session) : session_(session) {
 
 	session_->mapClass<User>("user");
 	session_->mapClass<UserSettings>("user_settings");
+	session_->mapClass<UserAvatar>("user_avatar");
 	session_->mapClass<Category>("category");
 	session_->mapClass<Problem>("problem");
 	session_->mapClass<Description>("description");
@@ -162,6 +166,7 @@ DBModel::DBModel(Session* session) : session_(session) {
 			std::cerr << "Creating user 'admin' with password 'admin' on first run" << std::endl;
 			newUser = tmpUsers->registerNew();
 			newUser.addIdentity(Auth::Identity::LoginName, "admin");
+			newUser.setEmail("dummy@address.here");
 			firstRun = true;
 		}
 	} catch (std::exception &e) {
@@ -176,7 +181,10 @@ DBModel::DBModel(Session* session) : session_(session) {
 		dbo::ptr<User> userData = session_->user(newUser);
 		userData.modify()->role = Role::Admin;
 		dbo::ptr<UserSettings> settings = session_->add(std::unique_ptr<UserSettings>(new UserSettings()));
+		dbo::ptr<UserAvatar> avatar = session_->add(std::unique_ptr<UserAvatar>(new UserAvatar()));
+		avatar.modify()->useGravatar = false;
 		userData.modify()->settings = settings;
+		userData.modify()->avatar = avatar;
 		session_->passwordAuth().updatePassword(newUser,"admin");
 	}
 }
