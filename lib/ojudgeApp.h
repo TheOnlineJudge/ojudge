@@ -27,7 +27,6 @@
 namespace xmlResources {
 // Common
 extern std::vector<const char *> form_templates_xml();
-extern std::vector<const char *> country_flags_xml();
 
 // English
 extern std::vector<const char *> messages_xml();

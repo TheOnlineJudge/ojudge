@@ -80,7 +80,6 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	messageResourceBundle().useBuiltin(xmlResources::form_templates_xml()[0]);
 	messageResourceBundle().useBuiltin(xmlResources::messages_xml()[0]);
 	messageResourceBundle().useBuiltin(xmlResources::country_names_xml()[0]);
-	messageResourceBundle().useBuiltin(xmlResources::country_flags_xml()[0]);
 
 	root()->setMargin(WLength(0));
 	root()->setPadding(WLength(0));

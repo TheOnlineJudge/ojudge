@@ -18,6 +18,7 @@
 #include <Wt/WContainerWidget.h>
 #include <Wt/WTable.h>
 #include <Wt/WComboBox.h>
+#include <Wt/WTableView.h>
 #include "viewmodels/CountryModel.h"
 #include "ProfileWidget.h"
 
@@ -69,9 +70,6 @@ void ProfileWidget::logout() {
 }
 
 ProfileWidget::AccountWidget::AccountWidget(Session *session, DBModel *dbmodel, const std::shared_ptr<CountryModel> countrymodel) : session_(session), dbmodel_(dbmodel), countrymodel_(countrymodel) {
-
-	auto countryCombo = addWidget(cpp14::make_unique<WComboBox>());
-	countryCombo->setModel(countrymodel_);
 
 	addWidget(cpp14::make_unique<WText>("Account"));
 

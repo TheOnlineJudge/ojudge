@@ -310,6 +310,10 @@ body {
   overflow:unset !important;
 }
 
+.oj-country-table-item .icon {
+  width:18px;
+}
+
 @media (min-width: 768px) {
   .oj-navbar {
     border-color: transparent !important;

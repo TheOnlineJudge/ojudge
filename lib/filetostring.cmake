@@ -4,8 +4,7 @@ SET( f4 "// This is automatically generated code -- do not edit!\n// Generated f
 SET( idx 0 )
 
 # Max size for MSVC is 65K, but we're adding CRLFs here too.
-# SET( chunklength 55000)
-SET( chunklength 4194304)
+SET( chunklength 55000)
 
 WHILE( f0_LEN GREATER 0 )
   MATH( EXPR idx "${idx} + 1" )

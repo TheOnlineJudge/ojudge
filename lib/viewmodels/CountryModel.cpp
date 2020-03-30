@@ -7,6 +7,7 @@
 * Read the LICENSE file for information on license terms
 *********************************************************************/
 
+#include <Wt/WLink.h>
 #include "../datastore/CountryStore.h"
 
 #include "CountryModel.h"
@@ -34,7 +35,7 @@ cpp17::any CountryModel::data(const WModelIndex& index, ItemDataRole role) const
 		}
 	} else if(role == ItemDataRole::Decoration) {
                 if(index.column()==0) {
-                        return countryStore_->countryFlag(countryStore_->getCountry(index.row()))->url();
+                        return std::string("images/flags/" + countryStore_->getCountry(index.row()) + ".svg");
                 }
         } else if(role == ItemDataRole::StyleClass) {
 		if(index.column()==0) {

@@ -19,7 +19,6 @@ CountryStore();
 const std::vector<std::string> countryCodes();
 const std::string getCountry(const int row);
 const std::string countryName(const std::string& countryCode);
-const std::shared_ptr<Wt::WMemoryResource> countryFlag(const std::string& countryCode);
 
 private:
 std::vector<std::string> countryCodes_;

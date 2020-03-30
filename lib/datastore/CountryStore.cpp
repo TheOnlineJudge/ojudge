@@ -288,16 +288,3 @@ const std::string CountryStore::countryName(const std::string& countryCode) {
 
 	return WString::tr("country_name_" + countryCode).toUTF8();
 }
-
-const std::shared_ptr<WMemoryResource> CountryStore::countryFlag(const std::string& countryCode) {
-
-	std::string flag;
-
-	if(countryCode == "00") {
-		flag = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1\" height=\"1\"/>";
-	} else {
-		flag = WString::tr("country_flag_" + countryCode).toUTF8();
-	}
-
-	return std::make_shared<WMemoryResource>("image/svg+xml",std::vector<unsigned char>(flag.begin(),flag.end()));
-}
