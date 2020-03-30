@@ -27,6 +27,7 @@
 namespace xmlResources {
 // Common
 extern const char *form_templates_xml1;
+extern const char *countries_xml1;
 
 // English
 extern const char *messages_xml1;

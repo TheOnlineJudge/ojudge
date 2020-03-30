@@ -19,6 +19,7 @@ form_templates_xml.cpp
 messages_xml.cpp
 countries_xml.cpp
 datastore/CategoryStore.cpp
+datastore/CountryStore.cpp
 datastore/DataStore.cpp
 datastore/LanguageStore.cpp
 datastore/ProblemStore.cpp
