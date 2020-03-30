@@ -13,6 +13,7 @@
 ViewModels::ViewModels(DataStore *dataStore) : dataStore_(dataStore) {
 
 	categoryModel_ = std::make_shared<CategoryModel>(dataStore_->getCategoryStore());
+	countryModel_ = std::make_shared<CountryModel>(dataStore_->getCountryStore());
 	languageModel_ = std::make_shared<LanguageModel>(dataStore_->getLanguageStore());
 	problemModel_ = std::make_shared<ProblemModel>(dataStore_->getProblemStore(),categoryModel_);
 
@@ -20,6 +21,10 @@ ViewModels::ViewModels(DataStore *dataStore) : dataStore_(dataStore) {
 
 const std::shared_ptr<CategoryModel> ViewModels::getCategoryModel() {
 	return categoryModel_;
+}
+
+const std::shared_ptr<CountryModel> ViewModels::getCountryModel() {
+	return countryModel_;
 }
 
 const std::shared_ptr<LanguageModel> ViewModels::getLanguageModel() {

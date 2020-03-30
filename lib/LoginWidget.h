@@ -12,6 +12,7 @@
 
 #include <Wt/WContainerWidget.h>
 #include <Wt/Auth/AuthModel.h>
+#include <Wt/Auth/Login.h>
 #include "AuthWidget.h"
 
 class Session;
@@ -19,6 +20,8 @@ class Session;
 class LoginWidget : public Wt::WContainerWidget {
 public:
 LoginWidget(Session *session);
+void login(Wt::Auth::Login& login);
+void logout();
 
 private:
 Session *session_;

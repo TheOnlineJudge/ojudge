@@ -24,3 +24,11 @@ RankingsWidget::RankingsWidget() {
 	auto mainWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
 
 }
+
+void RankingsWidget::login(Auth::Login& login) {
+
+}
+
+void RankingsWidget::logout() {
+
+}

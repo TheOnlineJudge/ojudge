@@ -33,18 +33,20 @@ ProblemWidget::ProblemWidget(DBModel *dbmodel, ViewModels *viewModels) : dbmodel
 	menuLayout->setContentsMargins(0,0,0,0);
 
 	descriptionWidget_ = menuLayout->addWidget(cpp14::make_unique<ProblemDescriptionWidget>(dbmodel_,viewModels_),1);
+	loginSignal().connect(descriptionWidget_,&ProblemDescriptionWidget::login);
+	logoutSignal().connect(descriptionWidget_,&ProblemDescriptionWidget::logout);
 
 	menuWidget_ = menuLayout->addWidget(cpp14::make_unique<ProblemSidemenuWidget>(dbmodel_,viewModels_),0);
+	loginSignal().connect(menuWidget_,&ProblemSidemenuWidget::login);
+	logoutSignal().connect(menuWidget_,&ProblemSidemenuWidget::logout);
 	menuWidget_->setWidth(350);
 
 	statisticsDialog_ = addChild(cpp14::make_unique<ProblemStatisticsDialog>(dbmodel_,viewModels_));
-// Not for milestone 1.0.0	discussionDialog_ = addChild(cpp14::make_unique<ProblemDiscussionDialog>(dbmodel_,viewModels_));
+	loginSignal().connect(statisticsDialog_,&ProblemStatisticsDialog::login);
+	logoutSignal().connect(statisticsDialog_,&ProblemStatisticsDialog::logout);
 
 	menuWidget_->showDialog().connect( [=] (ProblemWidgetDialog dialog) {
 		switch(dialog) {
-/* Not for milestone 1.0.0		case ProblemWidgetDialog::Discussion:
-			showDiscussionDialog();
-			break;*/
 		case ProblemWidgetDialog::Submission:
 			showSubmissionDialog();
 			break;
@@ -54,6 +56,14 @@ ProblemWidget::ProblemWidget(DBModel *dbmodel, ViewModels *viewModels) : dbmodel
 		}
 	});
 
+}
+
+void ProblemWidget::login(Auth::Login& login) {
+	loginSignal().emit(login);
+}
+
+void ProblemWidget::logout() {
+	logoutSignal().emit();
 }
 
 void ProblemWidget::setProblem(long long id) {
@@ -134,6 +144,14 @@ ProblemDescriptionWidget::ProblemDescriptionWidget(DBModel *dbmodel, ViewModels 
 	
 }
 
+void ProblemDescriptionWidget::login(Auth::Login& login) {
+
+}
+
+void ProblemDescriptionWidget::logout() {
+
+}
+
 void ProblemDescriptionWidget::setProblem(dbo::ptr<Problem> problemData) {
 
 	Dbo::Transaction transaction = dbmodel_->startTransaction();
@@ -199,6 +217,14 @@ ProblemSidemenuWidget::ProblemSidemenuWidget(DBModel *dbmodel, ViewModels *viewM
 	mainLayout->addStretch(1);
 }
 
+void ProblemSidemenuWidget::login(Auth::Login& login) {
+
+}
+
+void ProblemSidemenuWidget::logout() {
+
+}
+
 void ProblemSidemenuWidget::setProblem(dbo::ptr<Problem> problemData) {
 
 	PdfResource *tmpPdfRes = (PdfResource*)downloadButton_->link().resource().get();
@@ -223,6 +249,14 @@ ProblemStatisticsDialog::ProblemStatisticsDialog(DBModel *dbmodel, ViewModels *v
 	contents()->addWidget(cpp14::make_unique<WText>("Statistics stuff"));
 }
 
+void ProblemStatisticsDialog::login(Auth::Login& login) {
+
+}
+
+void ProblemStatisticsDialog::logout() {
+
+}
+
 void ProblemStatisticsDialog::setProblem(dbo::ptr<Problem> problemData) {
 
 }
@@ -240,6 +274,14 @@ ProblemSubmissionDialog::ProblemSubmissionDialog(DBModel *dbmodel, ViewModels *v
 
 	submit->clicked().connect(this,&WDialog::accept);
 	cancel->clicked().connect(this,&WDialog::reject);
+}
+
+void ProblemSubmissionDialog::login(Auth::Login& login) {
+
+}
+
+void ProblemSubmissionDialog::logout() {
+
 }
 
 void ProblemSubmissionDialog::setProblem(dbo::ptr<Problem> problemData) {

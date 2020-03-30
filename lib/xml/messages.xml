@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<messages xmlns:if="Wt.WTemplate.conditions">
+<messages>
 	<message id="siteTitle">Site Title</message>
 	<message id="siteLogo">Logo</message>
 	<message id="siteColor">Main color</message>

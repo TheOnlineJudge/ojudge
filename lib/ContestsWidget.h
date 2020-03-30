@@ -11,10 +11,13 @@
 #define CONTESTSWIDGET_H
 
 #include <Wt/WContainerWidget.h>
+#include <Wt/Auth/Login.h>
 
 class ContestsWidget : public Wt::WContainerWidget {
 public:
 ContestsWidget();
+void login(Wt::Auth::Login& login);
+void logout();
 
 };
 

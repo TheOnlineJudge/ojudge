@@ -24,3 +24,11 @@ TeamWidget::TeamWidget() {
 	auto mainWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
 
 }
+
+void TeamWidget::login(Auth::Login& login) {
+
+}
+
+void TeamWidget::logout() {
+
+}

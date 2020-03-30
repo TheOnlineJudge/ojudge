@@ -36,6 +36,7 @@ enum class Role {
 
 class User;
 class UserSettings;
+class UserAvatar;
 class Category;
 class Problem;
 class Description;
@@ -94,6 +95,18 @@ struct dbo_traits<UserSettings> : public dbo_default_traits {
 	}
 };
 
+template<>
+struct dbo_traits<UserAvatar> : public dbo_default_traits {
+	typedef ptr<User> IdType;
+
+	static IdType invalidId() {
+		return ptr<User>{};
+	}
+	static const char *surrogateIdField() {
+		return 0;
+	}
+};
+
 }
 }
 
@@ -129,6 +142,14 @@ class User {
 public:
 dbo::weak_ptr<AuthInfo> authInfo;
 Role role;
+std::optional<std::string> firstName;
+std::optional<std::string> lastName;
+std::optional<Wt::WDate> birthday;
+std::optional<std::string> institution;
+std::optional<std::string> country;
+dbo::weak_ptr<UserAvatar> avatar;
+std::optional<std::string> uvaID;
+std::optional<bool> firstlogin;
 Submissions submissions;
 dbo::weak_ptr<UserSettings> settings;
 
@@ -137,6 +158,14 @@ void persist(Action& a)
 {
 	dbo::hasOne(a, authInfo, "user");
 	dbo::field(a, role, "role");
+	dbo::field(a, firstName, "firstname");
+	dbo::field(a, lastName, "lastname");
+	dbo::field(a, birthday, "birthday");
+	dbo::field(a, institution, "institution");
+	dbo::field(a, country, "country");
+	dbo::hasOne(a, avatar, "user");
+	dbo::field(a, uvaID, "uvaid");
+	dbo::field(a, firstlogin, "firstlogin");
 	dbo::hasMany(a, submissions, dbo::ManyToOne, "user");
 	dbo::hasOne(a, settings, "user");
 }
@@ -149,6 +178,13 @@ std::optional<int> editor_fontsize;
 std::optional<int> editor_indent;
 std::optional<bool> editor_wrap;
 std::optional<std::string> editor_theme;
+std::optional<bool> notifications_email_results;
+std::optional<bool> notifications_email_contests;
+std::optional<bool> notifications_email_general;
+std::optional<bool> notifications_browser_results;
+std::optional<bool> notifications_browser_contests;
+std::optional<bool> notifications_browser_general;
+std::optional<bool> security_2fa;
 
 template<class Action>
 void persist(Action& a) {
@@ -157,6 +193,27 @@ void persist(Action& a) {
 	dbo::field(a, editor_indent, "editor_indent");
 	dbo::field(a, editor_wrap, "editor_wrap");
 	dbo::field(a, editor_theme, "editor_theme");
+	dbo::field(a, notifications_email_results, "notifications_email_results");
+	dbo::field(a, notifications_email_contests, "notifications_email_contests");
+	dbo::field(a, notifications_email_general, "notifications_email_general");
+	dbo::field(a, notifications_browser_results, "notifications_browser_results");
+	dbo::field(a, notifications_browser_contests, "notifications_browser_contests");
+	dbo::field(a, notifications_browser_general, "notifications_browser_general");
+	dbo::field(a, security_2fa, "security_2fa");
+}
+};
+
+class UserAvatar {
+public:
+dbo::ptr<User> user;
+std::optional<bool> useGravatar;
+std::optional<std::vector<unsigned char> > avatar;
+
+template<class Action>
+void persist(Action& a) {
+	dbo::id(a, user, "user", dbo::NotNull|dbo::OnDeleteCascade);
+	dbo::field(a, useGravatar, "usegravatar");
+	dbo::field(a, avatar, "avatar");
 }
 };
 

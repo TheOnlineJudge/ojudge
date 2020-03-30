@@ -40,13 +40,44 @@ AdminWidget::AdminWidget(Session *session,ViewModels *viewModels,DBModel *dbmode
 
 	WTabWidget *tabWidget = mainWidget->addNew<WTabWidget>();
 
-	tabWidget->addTab(cpp14::make_unique<AdminProblemWidget>(viewModels_,dbmodel_),"Problems",ContentLoading::Lazy);
-	tabWidget->addTab(cpp14::make_unique<AdminCategoryWidget>(viewModels_->getCategoryModel()),"Categories",ContentLoading::Lazy);
-	tabWidget->addTab(cpp14::make_unique<AdminContestWidget>(),"Contests",ContentLoading::Lazy);
-	tabWidget->addTab(cpp14::make_unique<AdminUserWidget>(),"Users",ContentLoading::Lazy);
-	tabWidget->addTab(cpp14::make_unique<AdminLanguageWidget>(),"Languages",ContentLoading::Lazy);
-	tabWidget->addTab(cpp14::make_unique<AdminSettingsWidget>(dbmodel_),"Settings",ContentLoading::Lazy);
+	auto adminProblemWidget = cpp14::make_unique<AdminProblemWidget>(viewModels_,dbmodel_);
+	loginSignal().connect(adminProblemWidget.get(),&AdminProblemWidget::login);
+	logoutSignal().connect(adminProblemWidget.get(),&AdminProblemWidget::logout);
+	tabWidget->addTab(std::move(adminProblemWidget),"Problems",ContentLoading::Lazy);
 
+	auto adminCategoryWidget = cpp14::make_unique<AdminCategoryWidget>(viewModels_->getCategoryModel());
+	loginSignal().connect(adminCategoryWidget.get(),&AdminCategoryWidget::login);
+	logoutSignal().connect(adminCategoryWidget.get(),&AdminCategoryWidget::logout);
+	tabWidget->addTab(std::move(adminCategoryWidget),"Categories",ContentLoading::Lazy);
+
+	auto adminContestWidget = cpp14::make_unique<AdminContestWidget>();
+	loginSignal().connect(adminContestWidget.get(),&AdminContestWidget::login);
+	logoutSignal().connect(adminContestWidget.get(),&AdminContestWidget::logout);
+	tabWidget->addTab(std::move(adminContestWidget),"Contests",ContentLoading::Lazy);
+
+	auto adminUserWidget = cpp14::make_unique<AdminUserWidget>();
+	loginSignal().connect(adminUserWidget.get(),&AdminUserWidget::login);
+	logoutSignal().connect(adminUserWidget.get(),&AdminUserWidget::logout);
+	tabWidget->addTab(std::move(adminUserWidget),"Users",ContentLoading::Lazy);
+
+	auto adminLanguageWidget = cpp14::make_unique<AdminLanguageWidget>();
+	loginSignal().connect(adminLanguageWidget.get(),&AdminLanguageWidget::login);
+	logoutSignal().connect(adminLanguageWidget.get(),&AdminLanguageWidget::logout);
+	tabWidget->addTab(std::move(adminLanguageWidget),"Languages",ContentLoading::Lazy);
+
+	auto adminSettingsWidget = cpp14::make_unique<AdminSettingsWidget>(dbmodel_);
+	loginSignal().connect(adminSettingsWidget.get(),&AdminSettingsWidget::login);
+	logoutSignal().connect(adminSettingsWidget.get(),&AdminSettingsWidget::logout);
+	tabWidget->addTab(std::move(adminSettingsWidget),"Settings",ContentLoading::Lazy);
+
+}
+
+void AdminWidget::login(Auth::Login& login) {
+	loginSignal().emit(login);
+}
+
+void AdminWidget::logout() {
+	logoutSignal().emit();
 }
 
 AdminWidget::AdminCategoryWidget::AdminCategoryWidget(const std::shared_ptr<CategoryModel> catmodel) : catmodel_(catmodel) {
@@ -77,6 +108,14 @@ AdminWidget::AdminCategoryWidget::AdminCategoryWidget(const std::shared_ptr<Cate
 	adminActionsDelegate->editCategory().connect(this,&AdminCategoryWidget::showAddEditDialog);
 	treeWidget_->setItemDelegateForColumn(3,adminActionsDelegate);
 	treeWidget_->addStyleClass("oj-admin-category-tree");
+}
+
+void AdminWidget::AdminCategoryWidget::login(Auth::Login& login) {
+
+}
+
+void AdminWidget::AdminCategoryWidget::logout() {
+
 }
 
 void AdminWidget::AdminCategoryWidget::showAddEditDialog(const WModelIndex& index) {
@@ -167,6 +206,14 @@ AdminWidget::AdminCategoryWidget::AdminActionsDelegate::AdminActionsDelegate() {
 
 }
 
+void AdminWidget::AdminCategoryWidget::AdminActionsDelegate::login(Auth::Login& login) {
+
+}
+
+void AdminWidget::AdminCategoryWidget::AdminActionsDelegate::logout() {
+
+}
+
 std::unique_ptr<WWidget> AdminWidget::AdminCategoryWidget::AdminActionsDelegate::update(WWidget *widget, const WModelIndex& index, WFlags<ViewItemRenderFlag> flags) {
 
 	WidgetRef widgetRef(widget);
@@ -231,6 +278,14 @@ AdminWidget::AdminContestWidget::AdminContestWidget() {
 	addButton->setToolTip(WString("Add new contest"));
 }
 
+void AdminWidget::AdminContestWidget::login(Auth::Login& login) {
+
+}
+
+void AdminWidget::AdminContestWidget::logout() {
+
+}
+
 AdminWidget::AdminLanguageWidget::AdminLanguageWidget() {
 
 	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
@@ -245,6 +300,14 @@ AdminWidget::AdminLanguageWidget::AdminLanguageWidget() {
 	addButton->setHeight(WLength(32));
 	addButton->decorationStyle().setCursor(Cursor::PointingHand);
 	addButton->setToolTip(WString("Add new language"));
+}
+
+void AdminWidget::AdminLanguageWidget::login(Auth::Login& login) {
+
+}
+
+void AdminWidget::AdminLanguageWidget::logout() {
+
 }
 
 AdminWidget::AdminProblemWidget::AdminProblemWidget(ViewModels *viewModels, DBModel *dbmodel) : viewModels_(viewModels), dbmodel_(dbmodel) {
@@ -303,6 +366,14 @@ AdminWidget::AdminProblemWidget::AdminProblemWidget(ViewModels *viewModels, DBMo
 	adminActionsDelegate->editProblem().connect(this,&AdminProblemWidget::showAddEditDialog);
 	tableWidget_->setItemDelegateForColumn(2,adminActionsDelegate);
 	tableWidget_->addStyleClass("oj-admin-problem-table");
+}
+
+void AdminWidget::AdminProblemWidget::login(Auth::Login& login) {
+
+}
+
+void AdminWidget::AdminProblemWidget::logout() {
+
 }
 
 void AdminWidget::AdminProblemWidget::problemSelectorSlot() {
@@ -418,6 +489,14 @@ AdminWidget::AdminProblemWidget::AdminActionsDelegate::AdminActionsDelegate() {
 
 }
 
+void AdminWidget::AdminProblemWidget::AdminActionsDelegate::login(Auth::Login& login) {
+
+}
+
+void AdminWidget::AdminProblemWidget::AdminActionsDelegate::logout() {
+
+}
+
 std::unique_ptr<WWidget> AdminWidget::AdminProblemWidget::AdminActionsDelegate::update(WWidget *widget, const WModelIndex& index, WFlags<ViewItemRenderFlag> flags) {
 
 	WidgetRef widgetRef(widget);
@@ -494,8 +573,24 @@ AdminWidget::AdminSettingsWidget::AdminSettingsWidget(DBModel *dbmodel) : dbmode
 	auto footerSettingsMenu = leftMenu->addItem("Footer",cpp14::make_unique<WContainerWidget>());
 }
 
+void AdminWidget::AdminSettingsWidget::login(Auth::Login& login) {
+
+}
+
+void AdminWidget::AdminSettingsWidget::logout() {
+
+}
+
 AdminWidget::AdminUserWidget::AdminUserWidget() {
 
 	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout_->setContentsMargins(0,0,0,0);
+}
+
+void AdminWidget::AdminUserWidget::login(Auth::Login& login) {
+
+}
+
+void AdminWidget::AdminUserWidget::logout() {
+
 }

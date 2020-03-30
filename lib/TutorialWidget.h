@@ -11,10 +11,14 @@
 #define TUTORIALWIDGET_H
 
 #include <Wt/WContainerWidget.h>
+#include <Wt/Auth/Login.h>
 
 class TutorialWidget : public Wt::WContainerWidget {
 public:
 TutorialWidget();
+void login(Wt::Auth::Login& login);
+void logout();
+
 };
 
 #endif // TUTORIALWIDGET_H

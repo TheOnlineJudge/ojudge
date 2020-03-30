@@ -24,3 +24,11 @@ AboutWidget::AboutWidget() {
 	auto mainWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
 
 }
+
+void AboutWidget::login(Auth::Login& login) {
+
+}
+
+void AboutWidget::logout() {
+
+}

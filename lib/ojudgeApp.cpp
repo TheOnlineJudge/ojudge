@@ -42,6 +42,7 @@
 #include "LanguagesWidget.h"
 #include "LoginWidget.h"
 #include "ProblemsWidget.h"
+#include "ProblemWidget.h"
 #include "ProfileWidget.h"
 #include "RankingsWidget.h"
 #include "SponsorsWidget.h"
@@ -57,8 +58,12 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 
 	enableUpdates(true);
 
-	if(dbmodel_->getSetting("googleAnalytics") != "")
-		require(std::string("https://www.googletagmanager.com/gtag/js?id=") + dbmodel_->getSetting("googleAnalytics"));
+	if(dbmodel_->getSetting("googleAnalytics") != "") {
+		googleAnalytics_ = true;
+		googleAnalyticsId_ = dbmodel_->getSetting("googleAnalytics");
+		require(std::string("https://www.googletagmanager.com/gtag/js?id=") + googleAnalyticsId_ );
+	}
+
 
 	setTitle(WString(dbmodel_->getSetting("siteTitle")));
 	instance()->styleSheet().addRule(":root", std::string("--ojcolor: ") + dbmodel_->getSetting("siteColor"));
@@ -72,8 +77,9 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	setTheme(bootstrapTheme);
 
 	useStyleSheet("resources/themes/bootstrap/3/bootstrap-theme.min.css");
-	messageResourceBundle().useBuiltin(xmlResources::form_templates_xml1);
-	messageResourceBundle().useBuiltin(xmlResources::messages_xml1);
+	messageResourceBundle().useBuiltin(xmlResources::form_templates_xml()[0]);
+	messageResourceBundle().useBuiltin(xmlResources::messages_xml()[0]);
+	messageResourceBundle().useBuiltin(xmlResources::country_names_xml()[0]);
 
 	root()->setMargin(WLength(0));
 	root()->setPadding(WLength(0));
@@ -109,6 +115,8 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	mainStack_->addStyleClass("oj-maincontent");
 
 	auto footerWidget = stackContainer->addWidget(std::move(cpp14::make_unique<FooterWidget>(dbmodel_)));
+	loginSignal().connect(footerWidget,&FooterWidget::login);
+	logoutSignal().connect(footerWidget,&FooterWidget::logout);
 	footerWidget->addStyleClass("center");
 
 	auto logo = cpp14::make_unique<WImage>(dbmodel_->getSetting("siteLogo"));
@@ -134,30 +142,47 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	WLink homeFloatMenuLink(LinkType::InternalPath,"/home");
 	homeFloatMenu->setLink(homeFloatMenuLink);
 
-	auto problemsMenu = mainMenu_->addItem(WString("Problems"),std::move(cpp14::make_unique<ProblemsWidget>(viewModels_)));
+	auto problemsWidget = cpp14::make_unique<ProblemsWidget>(viewModels_);
+	loginSignal().connect(problemsWidget.get(),&ProblemsWidget::login);
+	logoutSignal().connect(problemsWidget.get(),&ProblemsWidget::logout);
+	auto problemsMenu = mainMenu_->addItem(WString("Problems"),std::move(problemsWidget));
 	auto problemsFloatMenu = mainFloatMenu_->addItem(WString("Problems"));
 	WLink problemsFloatMenuLink(LinkType::InternalPath,"/problems");
 	problemsFloatMenu->setLink(problemsFloatMenuLink);
 
-	auto submissionsMenu = mainMenu_->addItem(WString("Submissions"),std::move(cpp14::make_unique<SubmissionsWidget>()));
+	auto submissionsWidget = cpp14::make_unique<SubmissionsWidget>();
+	loginSignal().connect(submissionsWidget.get(),&SubmissionsWidget::login);
+	logoutSignal().connect(submissionsWidget.get(),&SubmissionsWidget::logout);
+	auto submissionsMenu = mainMenu_->addItem(WString("Submissions"),std::move(submissionsWidget));
 	auto submissionsFloatMenu = mainFloatMenu_->addItem(WString("Submissions"));
 	WLink submissionsFloatMenuLink(LinkType::InternalPath,"/submissions");
 	submissionsFloatMenu->setLink(submissionsFloatMenuLink);
 
-	auto rankingsMenu = mainMenu_->addItem(WString("Rankings"),std::move(cpp14::make_unique<RankingsWidget>()));
+	auto rankingsWidget = cpp14::make_unique<RankingsWidget>();
+	loginSignal().connect(rankingsWidget.get(),&RankingsWidget::login);
+	logoutSignal().connect(rankingsWidget.get(),&RankingsWidget::logout);
+	auto rankingsMenu = mainMenu_->addItem(WString("Rankings"),std::move(rankingsWidget));
 	auto rankingsFloatMenu = mainFloatMenu_->addItem(WString("Rankings"));
 	WLink rankingsFloatMenuLink(LinkType::InternalPath,"/rankings");
 	rankingsFloatMenu->setLink(rankingsFloatMenuLink);
 
-	auto contestsMenu = mainMenu_->addItem(WString("Contests"),std::move(cpp14::make_unique<ContestsWidget>()));
+	auto contestsWidget = cpp14::make_unique<ContestsWidget>();
+	loginSignal().connect(contestsWidget.get(),&ContestsWidget::login);
+	logoutSignal().connect(contestsWidget.get(),&ContestsWidget::logout);
+	auto contestsMenu = mainMenu_->addItem(WString("Contests"),std::move(contestsWidget));
 	auto contestsFloatMenu = mainFloatMenu_->addItem(WString("Contests"));
 	WLink contestsFloatMenuLink(LinkType::InternalPath,"/contests");
 	contestsFloatMenu->setLink(contestsFloatMenuLink);
 
-	dashboardMenu_ = mainMenu_->addItem(WString("Dashboard"),std::move(cpp14::make_unique<DashboardWidget>()));
+	auto dashboardWidget = cpp14::make_unique<DashboardWidget>();
+	loginSignal().connect(dashboardWidget.get(),&DashboardWidget::login);
+	logoutSignal().connect(dashboardWidget.get(),&DashboardWidget::logout);
+	dashboardMenu_ = mainMenu_->addItem(WString("Dashboard"),std::move(dashboardWidget));
 	dashboardFloatMenu_ = mainFloatMenu_->addItem(WString("Dashboard"));
 
 	loginWidget_ = cpp14::make_unique<LoginWidget>(session_);
+	loginSignal().connect(loginWidget_.get(),&LoginWidget::login);
+	logoutSignal().connect(loginWidget_.get(),&LoginWidget::logout);
 
 	loginMenu_ = mainMenu_->addItem(WString("Login"),std::move(loginWidget_));
 	loginFloatMenu_ = mainFloatMenu_->addItem(WString("Login"));
@@ -193,16 +218,48 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	profileFloatMenu_ = mainFloatMenu_->addItem(std::move(item));
 
 	problemWidget_ = mainStack_->addWidget(cpp14::make_unique<ProblemWidget>(dbmodel_,viewModels_));
+	loginSignal().connect(problemWidget_,&ProblemWidget::login);
+	logoutSignal().connect(problemWidget_,&ProblemWidget::logout);
+
 	aboutWidget_ = mainStack_->addWidget(cpp14::make_unique<AboutWidget>());
+	loginSignal().connect(aboutWidget_,&AboutWidget::login);
+	logoutSignal().connect(aboutWidget_,&AboutWidget::logout);
+
 	adminWidget_ = mainStack_->addWidget(cpp14::make_unique<AdminWidget>(session_,viewModels_,dbmodel_));
+	loginSignal().connect(adminWidget_,&AdminWidget::login);
+	logoutSignal().connect(adminWidget_,&AdminWidget::logout);
+
 	contactWidget_ = mainStack_->addWidget(cpp14::make_unique<ContactWidget>());
+	loginSignal().connect(contactWidget_,&ContactWidget::login);
+	logoutSignal().connect(contactWidget_,&ContactWidget::logout);
+
 	contributeWidget_ = mainStack_->addWidget(cpp14::make_unique<ContributeWidget>());
+	loginSignal().connect(contributeWidget_,&ContributeWidget::login);
+	logoutSignal().connect(contributeWidget_,&ContributeWidget::logout);
+
 	factsWidget_ = mainStack_->addWidget(cpp14::make_unique<FactsWidget>());
+	loginSignal().connect(factsWidget_,&FactsWidget::login);
+	logoutSignal().connect(factsWidget_,&FactsWidget::logout);
+
 	languagesWidget_ = mainStack_->addWidget(cpp14::make_unique<LanguagesWidget>());
-	profileWidget_ = mainStack_->addWidget(cpp14::make_unique<ProfileWidget>(session_));
+	loginSignal().connect(languagesWidget_,&LanguagesWidget::login);
+	logoutSignal().connect(languagesWidget_,&LanguagesWidget::logout);
+
+	profileWidget_ = mainStack_->addWidget(cpp14::make_unique<ProfileWidget>(session_,dbmodel_,viewModels_->getCountryModel()));
+	loginSignal().connect(profileWidget_,&ProfileWidget::login);
+	logoutSignal().connect(profileWidget_,&ProfileWidget::logout);
+
 	sponsorsWidget_ = mainStack_->addWidget(cpp14::make_unique<SponsorsWidget>());
+	loginSignal().connect(sponsorsWidget_,&SponsorsWidget::login);
+	logoutSignal().connect(sponsorsWidget_,&SponsorsWidget::logout);
+
 	teamWidget_ = mainStack_->addWidget(cpp14::make_unique<TeamWidget>());
+	loginSignal().connect(teamWidget_,&TeamWidget::login);
+	logoutSignal().connect(teamWidget_,&TeamWidget::logout);
+
 	tutorialWidget_ = mainStack_->addWidget(cpp14::make_unique<TutorialWidget>());
+	loginSignal().connect(tutorialWidget_,&TutorialWidget::login);
+	logoutSignal().connect(tutorialWidget_,&TutorialWidget::logout);
 
 	authEvent();
 	session_->login().changed().connect(this, &ojudgeApp::authEvent);
@@ -220,10 +277,6 @@ ViewModels *ojudgeApp::getViewModels() {
 
 void ojudgeApp::authEvent() {
 	if(session_->login().loggedIn()) {
-//              log("notice") << "User " << session_.login().user().id() << " logged in.";
-//              Dbo::Transaction t(*session_);
-//              dbo::ptr<User> user = session_->user();
-//              log("notice") << "(Favourite pet: " << user->favouritePet << ")";
 		dashboardMenu_->show();
 		dashboardFloatMenu_->show();
 		loginMenu_->hide();
@@ -232,6 +285,8 @@ void ojudgeApp::authEvent() {
 		profileFloatMenu_->setText(session_->login().user().identity("loginname"));
 		profileMenu_->show();
 		profileFloatMenu_->show();
+
+		loginSignal().emit(session_->login());
 	} else {
 		dashboardMenu_->hide();
 		dashboardFloatMenu_->hide();
@@ -239,7 +294,8 @@ void ojudgeApp::authEvent() {
 		profileFloatMenu_->hide();
 		loginMenu_->show();
 		loginFloatMenu_->show();
-//              log("notice") << "User logged out.";
+
+		logoutSignal().emit();
 	}
 }
 
@@ -252,11 +308,11 @@ void ojudgeApp::pathChanged(std::string newPath) {
 		}
 	}
 
-	if(dbmodel_->getSetting("googleAnalytics") != "") {
+	if(googleAnalytics_) {
 		doJavaScript(   "window.dataLayer = window.dataLayer || [];"
 		                "function gtag(){dataLayer.push(arguments);}"
 		                "gtag('js', new Date());"
-		                "gtag('config', '" + dbmodel_->getSetting("googleAnalytics") + "', {"
+		                "gtag('config', '" + googleAnalyticsId_ + "', {"
 		                "'page_path': '" + newPath + "'"
 		                "});");
 	}

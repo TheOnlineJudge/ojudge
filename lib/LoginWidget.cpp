@@ -41,3 +41,11 @@ LoginWidget::LoginWidget(Session *session) : session_(session) {
 	wrapLayout->addWidget(std::move(authWidget_),LayoutPosition::Center);
 
 }
+
+void LoginWidget::login(Auth::Login& login) {
+
+}
+
+void LoginWidget::logout() {
+
+}

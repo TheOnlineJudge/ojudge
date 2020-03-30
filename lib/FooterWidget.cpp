@@ -91,3 +91,11 @@ FooterWidget::FooterWidget(DBModel *dbmodel) : dbmodel_(dbmodel) {
 	versionText->decorationStyle().setForegroundColor(WColor("white"));
 
 }
+
+void FooterWidget::login(Auth::Login& login) {
+
+}
+
+void FooterWidget::logout() {
+
+}

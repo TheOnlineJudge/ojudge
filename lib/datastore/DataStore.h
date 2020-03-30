@@ -13,6 +13,7 @@
 class DBModel;
 
 class CategoryStore;
+class CountryStore;
 class ProblemStore;
 class LanguageStore;
 
@@ -20,12 +21,14 @@ class DataStore {
 public:
 DataStore(DBModel *dbModel);
 CategoryStore *getCategoryStore();
+CountryStore *getCountryStore();
 ProblemStore *getProblemStore();
 LanguageStore *getLanguageStore();
 
 private:
 DBModel *dbModel_;
 CategoryStore *categoryStore_;
+CountryStore *countryStore_;
 ProblemStore *problemStore_;
 LanguageStore *languageStore_;
 };

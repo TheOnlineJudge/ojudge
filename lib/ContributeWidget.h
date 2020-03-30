@@ -11,10 +11,13 @@
 #define CONTRIBUTEWIDGET_H
 
 #include <Wt/WContainerWidget.h>
+#include <Wt/Auth/Login.h>
 
 class ContributeWidget : public Wt::WContainerWidget {
 public:
 ContributeWidget();
+void login(Wt::Auth::Login& login);
+void logout();
 
 };
 

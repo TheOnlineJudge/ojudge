@@ -17,6 +17,14 @@ RegistrationView::RegistrationView(Session &session,Auth::AuthWidget *authWidget
 	setTemplateText(tr("template.registration"));
 }
 
+void RegistrationView::login(Auth::Login& login) {
+
+}
+
+void RegistrationView::logout() {
+
+}
+
 std::unique_ptr<WWidget> RegistrationView::createFormWidget(WFormModel::Field field) {
 	return Auth::RegistrationWidget::createFormWidget(field);
 }

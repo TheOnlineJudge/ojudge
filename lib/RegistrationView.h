@@ -11,6 +11,7 @@
 #define REGISTRATIONVIEW_H
 
 #include <Wt/Auth/RegistrationWidget.h>
+#include <Wt/Auth/Login.h>
 
 using namespace Wt;
 
@@ -19,6 +20,8 @@ class Session;
 class RegistrationView : public Auth::RegistrationWidget {
 public:
 RegistrationView(Session &session, Auth::AuthWidget *authWidget = 0);
+void login(Wt::Auth::Login& login);
+void logout();
 virtual std::unique_ptr<WWidget> createFormWidget(WFormModel::Field field);
 
 protected:

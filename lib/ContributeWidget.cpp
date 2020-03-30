@@ -24,3 +24,11 @@ ContributeWidget::ContributeWidget() {
 	auto mainWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
 
 }
+
+void ContributeWidget::login(Auth::Login& login) {
+
+}
+
+void ContributeWidget::logout() {
+
+}

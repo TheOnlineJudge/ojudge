@@ -11,10 +11,13 @@
 #define DASHBOARDWIDGET_H
 
 #include <Wt/WContainerWidget.h>
+#include <Wt/Auth/Login.h>
 
 class DashboardWidget : public Wt::WContainerWidget {
 public:
 DashboardWidget();
+void login(Wt::Auth::Login& login);
+void logout();
 
 };
 

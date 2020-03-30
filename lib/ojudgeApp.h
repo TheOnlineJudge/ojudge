@@ -18,21 +18,35 @@
 #include <Wt/WNavigationBar.h>
 #include <Wt/Auth/AuthModel.h>
 #include <Wt/WAbstractItemModel.h>
+#include <Wt/Auth/Login.h>
+#include <Wt/WSignal.h>
 #include <boost/program_options.hpp>
 #include "viewmodels/ViewModels.h"
 #include "LoginWidget.h"
-#include "ProblemWidget.h"
 
 namespace xmlResources {
 // Common
-extern const char *form_templates_xml1;
+extern std::vector<const char *> form_templates_xml();
 
 // English
-extern const char *messages_xml1;
+extern std::vector<const char *> messages_xml();
+extern std::vector<const char *> country_names_xml();
 }
 
 class Session;
 class DBModel;
+
+class ProblemWidget;
+class AboutWidget;
+class AdminWidget;
+class ContactWidget;
+class ContributeWidget;
+class FactsWidget;
+class LanguagesWidget;
+class ProfileWidget;
+class SponsorsWidget;
+class TeamWidget;
+class TutorialWidget;
 
 class ojudgeApp : public Wt::WApplication {
 
@@ -42,20 +56,22 @@ void authEvent();
 ViewModels *getViewModels();
 
 private:
+bool googleAnalytics_ = false;
+std::string googleAnalyticsId_;
 Wt::WMenu *mainMenu_;
 Wt::WMenu *mainFloatMenu_;
 Wt::WStackedWidget *mainStack_;
 ProblemWidget *problemWidget_;
-Wt::WContainerWidget *aboutWidget_;
-Wt::WContainerWidget *adminWidget_;
-Wt::WContainerWidget *contactWidget_;
-Wt::WContainerWidget *contributeWidget_;
-Wt::WContainerWidget *factsWidget_;
-Wt::WContainerWidget *languagesWidget_;
-Wt::WContainerWidget *profileWidget_;
-Wt::WContainerWidget *sponsorsWidget_;
-Wt::WContainerWidget *teamWidget_;
-Wt::WContainerWidget *tutorialWidget_;
+AboutWidget *aboutWidget_;
+AdminWidget *adminWidget_;
+ContactWidget *contactWidget_;
+ContributeWidget *contributeWidget_;
+FactsWidget *factsWidget_;
+LanguagesWidget *languagesWidget_;
+ProfileWidget *profileWidget_;
+SponsorsWidget *sponsorsWidget_;
+TeamWidget *teamWidget_;
+TutorialWidget *tutorialWidget_;
 Wt::WMenuItem *dashboardMenu_;
 Wt::WMenuItem *dashboardFloatMenu_;
 Wt::WMenuItem *loginMenu_;
@@ -65,6 +81,16 @@ Wt::WMenuItem *profileFloatMenu_;
 Wt::WNavigationBar *floatNavBar_;
 Wt::Auth::AuthModel *authModel_;
 std::unique_ptr<LoginWidget> loginWidget_;
+
+Wt::Signal<Wt::Auth::Login&>& loginSignal() {
+	return loginSignal_;
+}
+Wt::Signal<>& logoutSignal() {
+	return logoutSignal_;
+}
+
+Wt::Signal<Wt::Auth::Login&> loginSignal_;
+Wt::Signal<> logoutSignal_;
 
 void pathChanged(std::string newPath);
 void switchNavbar(bool visible);

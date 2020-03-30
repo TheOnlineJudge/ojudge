@@ -11,10 +11,13 @@
 #define ABOUTWIDGET_H
 
 #include <Wt/WContainerWidget.h>
+#include <Wt/Auth/Login.h>
 
 class AboutWidget : public Wt::WContainerWidget {
 public:
 AboutWidget();
+void login(Wt::Auth::Login& login);
+void logout();
 };
 
 #endif // ABOUTWIDGET_H

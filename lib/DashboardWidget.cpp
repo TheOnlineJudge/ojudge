@@ -24,3 +24,11 @@ DashboardWidget::DashboardWidget() {
 	auto mainWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
 
 }
+
+void DashboardWidget::login(Auth::Login& login) {
+
+}
+
+void DashboardWidget::logout() {
+
+}

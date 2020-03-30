@@ -24,3 +24,11 @@ LanguagesWidget::LanguagesWidget() {
 	auto mainWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
 
 }
+
+void LanguagesWidget::login(Auth::Login& login) {
+
+}
+
+void LanguagesWidget::logout() {
+
+}

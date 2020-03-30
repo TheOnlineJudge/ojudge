@@ -12,7 +12,6 @@
 
 	foreach($countries as $key => $val) {
 		printf("<message id=\"country_name_%s\">%s</message>\n",strtolower($key),$val);
-		printf("<message id=\"country_flag_%s\">%s</message>\n",strtolower($key),file_get_contents("svg/".strtolower($key).".svg"));
 	}
 
 	echo "</messages>\n";
