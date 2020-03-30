@@ -11,14 +11,18 @@
 #define COUNTRYSTORE_H
 
 #include<unordered_set>
+#include<Wt/WMemoryResource.h>
 
 class CountryStore {
 public:
 CountryStore();
-const std::unordered_set<std::string> countryCodes();
+const std::vector<std::string> countryCodes();
+const std::string getCountry(const int row);
+const std::string countryName(const std::string& countryCode);
+const std::shared_ptr<Wt::WMemoryResource> countryFlag(const std::string& countryCode);
 
 private:
-std::unordered_set<std::string> countryCodes_;
+std::vector<std::string> countryCodes_;
 };
 
 #endif // COUNTRYSTORE_H

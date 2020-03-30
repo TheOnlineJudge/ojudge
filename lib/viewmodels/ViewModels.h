@@ -11,6 +11,7 @@
 #define VIEWMODELS_H
 
 #include "CategoryModel.h"
+#include "CountryModel.h"
 #include "LanguageModel.h"
 #include "ProblemModel.h"
 
@@ -20,12 +21,14 @@ class ViewModels {
 public:
 ViewModels(DataStore *dataStore);
 const std::shared_ptr<CategoryModel> getCategoryModel();
+const std::shared_ptr<CountryModel> getCountryModel();
 const std::shared_ptr<ProblemModel> getProblemModel();
 const std::shared_ptr<LanguageModel> getLanguageModel();
 
 private:
 DataStore *dataStore_;
 std::shared_ptr<CategoryModel> categoryModel_;
+std::shared_ptr<CountryModel> countryModel_;
 std::shared_ptr<ProblemModel> problemModel_;
 std::shared_ptr<LanguageModel> languageModel_;
 };

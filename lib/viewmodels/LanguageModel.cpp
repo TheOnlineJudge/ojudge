@@ -53,7 +53,7 @@ cpp17::any LanguageModel::data(const WModelIndex& index, ItemDataRole role) cons
 		}
 	} else if(role == ItemDataRole::StyleClass) {
 		if(index.column()==0) {
-			return std::string("myAdminLanguageTable");
+			return std::string("oj-admin-language-table");
 		}
 	} else if(role == LanguageRowRole) {
 		return index.row();

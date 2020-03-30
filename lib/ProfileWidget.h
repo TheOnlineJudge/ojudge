@@ -12,16 +12,18 @@
 
 #include <Wt/WContainerWidget.h>
 #include "dbmodel/DBModel.h"
+#include "viewmodels/CountryModel.h"
 
 class ProfileWidget : public Wt::WContainerWidget {
 public:
-ProfileWidget(Session *session, DBModel *dbmodel);
+ProfileWidget(Session *session, DBModel *dbmodel, const std::shared_ptr<CountryModel> countrymodel);
 void login(Wt::Auth::Login& login);
 void logout();
 
 private:
 Session *session_;
 DBModel *dbmodel_;
+const std::shared_ptr<CountryModel> countrymodel_;
 Wt::Signal<Wt::Auth::Login&>& loginSignal() {
         return loginSignal_;
 }
@@ -35,13 +37,14 @@ Wt::Signal<> logoutSignal_;
 
 class AccountWidget : public Wt::WContainerWidget {
 public:
-AccountWidget(Session *session, DBModel *dbmodel);
+AccountWidget(Session *session, DBModel *dbmodel, const std::shared_ptr<CountryModel> countrymodel);
 void login(Wt::Auth::Login& login);
 void logout();
 
 private:
 Session *session_;
 DBModel *dbmodel_;
+const std::shared_ptr<CountryModel> countrymodel_;
 };
 
 class SecurityWidget : public Wt::WContainerWidget {

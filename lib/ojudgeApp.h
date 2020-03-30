@@ -26,11 +26,12 @@
 
 namespace xmlResources {
 // Common
-extern const char *form_templates_xml1;
-extern const char *countries_xml1;
+extern std::vector<const char *> form_templates_xml();
+extern std::vector<const char *> country_flags_xml();
 
 // English
-extern const char *messages_xml1;
+extern std::vector<const char *> messages_xml();
+extern std::vector<const char *> country_names_xml();
 }
 
 class Session;

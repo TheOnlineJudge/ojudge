@@ -17,11 +17,13 @@
 #include <Wt/WStackedWidget.h>
 #include <Wt/WContainerWidget.h>
 #include <Wt/WTable.h>
+#include <Wt/WComboBox.h>
+#include "viewmodels/CountryModel.h"
 #include "ProfileWidget.h"
 
 using namespace Wt;
 
-ProfileWidget::ProfileWidget(Session *session, DBModel *dbmodel) : session_(session), dbmodel_(dbmodel) {
+ProfileWidget::ProfileWidget(Session *session, DBModel *dbmodel, const std::shared_ptr<CountryModel> countrymodel) : session_(session), dbmodel_(dbmodel), countrymodel_(countrymodel) {
 
 	auto mainLayout = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout->setContentsMargins(0,0,0,0);
@@ -37,7 +39,7 @@ ProfileWidget::ProfileWidget(Session *session, DBModel *dbmodel) : session_(sess
 	menuWidget->addStyleClass("flex-column");
 	menuWidget->setWidth(200);
 
-	auto accountWidget = cpp14::make_unique<AccountWidget>(session_,dbmodel_);
+	auto accountWidget = cpp14::make_unique<AccountWidget>(session_,dbmodel_,countrymodel_);
 	loginSignal().connect(accountWidget.get(),&AccountWidget::login);
 	logoutSignal().connect(accountWidget.get(),&AccountWidget::logout);
 	auto accountItem = menuWidget->addItem("Account",std::move(accountWidget));
@@ -66,7 +68,10 @@ void ProfileWidget::logout() {
 	logoutSignal().emit();
 }
 
-ProfileWidget::AccountWidget::AccountWidget(Session *session, DBModel *dbmodel) : session_(session), dbmodel_(dbmodel) {
+ProfileWidget::AccountWidget::AccountWidget(Session *session, DBModel *dbmodel, const std::shared_ptr<CountryModel> countrymodel) : session_(session), dbmodel_(dbmodel), countrymodel_(countrymodel) {
+
+	auto countryCombo = addWidget(cpp14::make_unique<WComboBox>());
+	countryCombo->setModel(countrymodel_);
 
 	addWidget(cpp14::make_unique<WText>("Account"));
 

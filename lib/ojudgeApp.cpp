@@ -77,9 +77,10 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	setTheme(bootstrapTheme);
 
 	useStyleSheet("resources/themes/bootstrap/3/bootstrap-theme.min.css");
-	messageResourceBundle().useBuiltin(xmlResources::form_templates_xml1);
-	messageResourceBundle().useBuiltin(xmlResources::messages_xml1);
-	messageResourceBundle().useBuiltin(xmlResources::countries_xml1);
+	messageResourceBundle().useBuiltin(xmlResources::form_templates_xml()[0]);
+	messageResourceBundle().useBuiltin(xmlResources::messages_xml()[0]);
+	messageResourceBundle().useBuiltin(xmlResources::country_names_xml()[0]);
+	messageResourceBundle().useBuiltin(xmlResources::country_flags_xml()[0]);
 
 	root()->setMargin(WLength(0));
 	root()->setPadding(WLength(0));
@@ -245,7 +246,7 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	loginSignal().connect(languagesWidget_,&LanguagesWidget::login);
 	logoutSignal().connect(languagesWidget_,&LanguagesWidget::logout);
 
-	profileWidget_ = mainStack_->addWidget(cpp14::make_unique<ProfileWidget>(session_,dbmodel_));
+	profileWidget_ = mainStack_->addWidget(cpp14::make_unique<ProfileWidget>(session_,dbmodel_,viewModels_->getCountryModel()));
 	loginSignal().connect(profileWidget_,&ProfileWidget::login);
 	logoutSignal().connect(profileWidget_,&ProfileWidget::logout);
 
