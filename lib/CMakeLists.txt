@@ -12,10 +12,12 @@ ENDMACRO (FILE_TO_STRING)
 
 FILE_TO_STRING(form_templates.xml form_templates_xml.cpp form_templates_xml)
 FILE_TO_STRING(messages.xml messages_xml.cpp messages_xml)
+FILE_TO_STRING(countries.xml countries_xml.cpp countries_xml)
 
 SET (ojudge_lib
 form_templates_xml.cpp
 messages_xml.cpp
+countries_xml.cpp
 datastore/CategoryStore.cpp
 datastore/DataStore.cpp
 datastore/LanguageStore.cpp
