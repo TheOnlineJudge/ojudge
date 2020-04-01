@@ -35,7 +35,7 @@ FooterWidget::FooterWidget(DBModel *dbmodel) : dbmodel_(dbmodel) {
 	auto aboutWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>());
 	auto aboutLayout = aboutWidget->setLayout(cpp14::make_unique<WVBoxLayout>());
 	aboutLayout->setContentsMargins(0,0,0,0);
-	auto aboutTitle = aboutLayout->addWidget(cpp14::make_unique<WText>(dbmodel_->getSetting("siteTitle")));
+	auto aboutTitle = aboutLayout->addWidget(cpp14::make_unique<WText>(dbmodel_->getSiteSetting("sitetitle")));
 	aboutTitle->addStyleClass(WString("oj-footer-head"));
 
 	aboutLayout->addWidget(cpp14::make_unique<WAnchor>(WLink(LinkType::InternalPath,"/about"),"About"));

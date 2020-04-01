@@ -29,8 +29,7 @@ int CountryModel::rowCount(const WModelIndex& parent) const {
 cpp17::any CountryModel::data(const WModelIndex& index, ItemDataRole role) const {
 
 	if(role == ItemDataRole::Display) {
-		switch(index.column()) {
-		case 0:
+		if(index.column()==0) {
 			return countryStore_->countryName(countryStore_->getCountry(index.row()));
 		}
 	} else if(role == ItemDataRole::Decoration) {
@@ -40,6 +39,10 @@ cpp17::any CountryModel::data(const WModelIndex& index, ItemDataRole role) const
         } else if(role == ItemDataRole::StyleClass) {
 		if(index.column()==0) {
 			return std::string("oj-country-table-item");
+		}
+	} else if(role == CountryModel::CountryCodeRole) {
+		if(index.column()==0) {
+			return std::string(countryStore_->getCountry(index.row()));
 		}
 	}
 

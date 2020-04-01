@@ -34,11 +34,6 @@
           </label>
           ${email}
         ${</if:email>}
-
-	<label for="${id:favourite-pet}">Favourite pet:
-	  ${favourite-pet-info class="Wt-info"}
-	</label>
-	${favourite-pet}
       </div>
 
       ${<if:oauth>}
@@ -70,6 +65,51 @@
         ${combo}
       </div>
     </div>
+  </message>
+  <message id="settingsField-template">
+    <div class="form-inline oj-form-inline">
+      <div class="form-group oj-settings-group">
+        <label for="${id:{1}-setting}">${tr:{1}-label}</label>
+        ${{1}-setting}
+      </div>
+    </div>
+  </message>
+  <message id="admin-settings-general">
+    ${block:settingsField-template sitetitle}
+    ${block:settingsField-template sitelogo}
+    ${block:settingsField-template sitecolor}
+    ${block:settingsField-template googleanalytics}
+    <div class="oj-settings-buttons">${apply-button} ${reset-button}</div>
+  </message>
+  <message id="settings-account">
+    ${block:settingsField-template avatar}
+    ${block:settingsField-template username}
+    ${block:settingsField-template email}
+    ${block:settingsField-template firstname}
+    ${block:settingsField-template lastname}
+    ${block:settingsField-template birthday}
+    <div class="form-inline oj-form-inline">
+      <div class="form-group oj-settings-group">
+        <label for="${id:country-setting}">${tr:country-label}</label>
+        ${country-setting} ${country-flag}
+      </div>
+    </div>
+    ${block:settingsField-template institution}
+    ${block:settingsField-template uvaid}
+    <div class="oj-settings-buttons">${apply-button} ${reset-button}</div>
+  </message>
+  <message id="settings-security">
+    ${block:settingsField-template newpassword}
+    ${block:settingsField-template repeatpassword}
+    ${block:settingsField-template twofa}
+    <div class="oj-settings-buttons">${apply-button} ${reset-button}</div>
+  </message>
+  <message id="settings-codeeditor">
+    ${block:settingsField-template fontsize}
+    ${block:settingsField-template indent}
+    ${block:settingsField-template wrap}
+    ${block:settingsField-template theme}
+    <div class="oj-settings-buttons">${apply-button} ${reset-button}</div>
   </message>
   <message id="addCategory-template">
     <div class="form-group">

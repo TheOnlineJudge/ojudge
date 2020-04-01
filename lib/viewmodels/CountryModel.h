@@ -16,6 +16,9 @@ class CountryStore;
 
 class CountryModel : public Wt::WAbstractTableModel {
 public:
+
+static constexpr Wt::ItemDataRole CountryCodeRole = Wt::ItemDataRole::User + 1;
+
 CountryModel(CountryStore *countryStore);
 virtual int columnCount(const Wt::WModelIndex& parent = Wt::WModelIndex()) const override;
 virtual int rowCount(const Wt::WModelIndex& parent = Wt::WModelIndex()) const override;
@@ -25,5 +28,7 @@ virtual Wt::cpp17::any headerData(int section, Wt::Orientation orientation = Wt:
 private:
 CountryStore *countryStore_;
 };
+
+constexpr Wt::ItemDataRole CountryModel::CountryCodeRole;
 
 #endif // COUNTRYMODEL_H
