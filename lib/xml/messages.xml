@@ -1,7 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <messages>
-	<message id="siteTitle">Site Title</message>
-	<message id="siteLogo">Logo</message>
-	<message id="siteColor">Main color</message>
-	<message id="googleAnalytics">Google Analytics ID</message>
+  <message id="sitetitle-label">Site Title</message>
+  <message id="sitelogo-label">Logo</message>
+  <message id="sitecolor-label">Main Color</message>
+  <message id="googleanalytics-label">Google Analytics ID</message>
+
+  <message id="avatar-label">Avatar</message>
+  <message id="username-label">Username</message>
+  <message id="email-label">eMail</message>
+  <message id="firstname-label">First Name</message>
+  <message id="lastname-label">Last Name</message>
+  <message id="birthday-label">Birthday</message>
+  <message id="country-label">Country</message>
+  <message id="institution-label">Institution / Company</message>
+  <message id="uvaid-label">UVa ID</message>
+
+  <message id="newpassword-label">New Password</message>
+  <message id="repeatpassword-label">Repeat Password</message>
+  <message id="twofa-label">Two-Factor Authentication</message>
+
+  <message id="fontsize-label">Font Size</message>
+  <message id="indent-label">Indent</message>
+  <message id="wrap-label">Word Wrap</message>
+  <message id="theme-label">Theme</message>
 </messages>

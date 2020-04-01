@@ -179,6 +179,56 @@ void logout();
 
 private:
 DBModel *dbmodel_;
+Wt::Signal<Wt::Auth::Login&>& loginSignal() {
+        return loginSignal_;
+}
+Wt::Signal<>& logoutSignal() {
+        return logoutSignal_;
+}
+
+Wt::Signal<Wt::Auth::Login&> loginSignal_;
+Wt::Signal<> logoutSignal_;
+
+class AdminGeneralSettingsWidget : public Wt::WTemplate {
+public:
+AdminGeneralSettingsWidget(DBModel *dbmodel);
+void login(Wt::Auth::Login& login);
+void logout();
+
+private:
+DBModel *dbmodel_;
+};
+
+class AdminMailSettingsWidget : public Wt::WTemplate {
+public:
+AdminMailSettingsWidget(DBModel *dbmodel);
+void login(Wt::Auth::Login& login);
+void logout();
+
+private:
+DBModel *dbmodel_;
+};
+
+class AdminContactSettingsWidget : public Wt::WTemplate {
+public:
+AdminContactSettingsWidget(DBModel *dbmodel);
+void login(Wt::Auth::Login& login);
+void logout();
+
+private:
+DBModel *dbmodel_;
+};
+
+class AdminFooterSettingsWidget : public Wt::WContainerWidget {
+public:
+AdminFooterSettingsWidget(DBModel *dbmodel);
+void login(Wt::Auth::Login& login);
+void logout();
+
+private:
+DBModel *dbmodel_;
+};
+
 };
 
 class AdminUserWidget : public Wt::WContainerWidget {

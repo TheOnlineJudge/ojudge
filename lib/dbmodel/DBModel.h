@@ -11,6 +11,10 @@
 #define DBMODEL_H
 
 #include <Wt/Auth/Login.h>
+#include <Wt/Auth/AuthService.h>
+#include <Wt/Auth/PasswordService.h>
+#include <Wt/Auth/GoogleService.h>
+#include <Wt/Auth/FacebookService.h>
 #include <Wt/Dbo/Dbo.h>
 #include <Wt/Dbo/WtSqlTraits.h>
 #include <Wt/Dbo/Session.h>
@@ -24,6 +28,12 @@
 using namespace Wt;
 
 namespace dbo = Wt::Dbo;
+
+namespace {
+Auth::AuthService myAuthService;
+Auth::PasswordService myPasswordService(myAuthService);
+std::vector<std::unique_ptr<Auth::OAuthService> > myOAuthServices;
+}
 
 enum class Role {
 	Visitor = 0,
@@ -407,8 +417,7 @@ dbo::ptr<Problem> addProblem(long long id, std::string title);
 void setProblemCategories(long long id, std::set<int> categories);
 void updateDescription(long long problemId, std::optional<std::string> htmlData, std::optional<std::vector<unsigned char> > pdfData);
 
-Settings getSettings();
-std::string getSetting(std::string settingName);
+std::string getSiteSetting(std::string settingName);
 
 Languages getLanguages();
 

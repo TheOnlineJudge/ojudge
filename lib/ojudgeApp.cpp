@@ -58,15 +58,15 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 
 	enableUpdates(true);
 
-	if(dbmodel_->getSetting("googleAnalytics") != "") {
+	if(dbmodel_->getSiteSetting("googleanalytics") != "") {
 		googleAnalytics_ = true;
-		googleAnalyticsId_ = dbmodel_->getSetting("googleAnalytics");
+		googleAnalyticsId_ = dbmodel_->getSiteSetting("googleanalytics");
 		require(std::string("https://www.googletagmanager.com/gtag/js?id=") + googleAnalyticsId_ );
 	}
 
 
-	setTitle(WString(dbmodel_->getSetting("siteTitle")));
-	instance()->styleSheet().addRule(":root", std::string("--ojcolor: ") + dbmodel_->getSetting("siteColor"));
+	setTitle(WString(dbmodel_->getSiteSetting("sitetitle")));
+	instance()->styleSheet().addRule(":root", std::string("--ojcolor: ") + dbmodel_->getSiteSetting("sitecolor"));
 	useStyleSheet("css/ojudge.css");
 	useStyleSheet("css/oj-problem-viewer.css");
 	setLoadingIndicator(cpp14::make_unique<WOverlayLoadingIndicator>());
@@ -119,15 +119,15 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	logoutSignal().connect(footerWidget,&FooterWidget::logout);
 	footerWidget->addStyleClass("center");
 
-	auto logo = cpp14::make_unique<WImage>(dbmodel_->getSetting("siteLogo"));
+	auto logo = cpp14::make_unique<WImage>(dbmodel_->getSiteSetting("sitelogo"));
 	logo->setHeight(WLength(90));
 	navigationBar->addWidget(std::move(logo));
 
-	auto title = cpp14::make_unique<WText>(dbmodel_->getSetting("siteTitle"));
+	auto title = cpp14::make_unique<WText>(dbmodel_->getSiteSetting("sitetitle"));
 	title->addStyleClass("oj-title");
 	navigationBar->addWidget(std::move(title));
 
-	auto floattitle = cpp14::make_unique<WText>(dbmodel_->getSetting("siteTitle"));
+	auto floattitle = cpp14::make_unique<WText>(dbmodel_->getSiteSetting("sitetitle"));
 	floattitle->addStyleClass("oj-float-title");
 	floattitle->setHeight(WLength(50));
 	floatNavBar_->addWidget(std::move(floattitle));

@@ -537,9 +537,6 @@ std::unique_ptr<WWidget> AdminWidget::AdminProblemWidget::AdminActionsDelegate::
 
 AdminWidget::AdminSettingsWidget::AdminSettingsWidget(DBModel *dbmodel) : dbmodel_(dbmodel) {
 
-	Settings settings = dbmodel_->getSettings();
-	Dbo::Transaction transaction = dbmodel_->startTransaction();
-
 	auto mainLayout = setLayout(cpp14::make_unique<WHBoxLayout>());
 
 	auto mainStack = mainLayout->addWidget(cpp14::make_unique<WStackedWidget>(),1);
@@ -547,25 +544,9 @@ AdminWidget::AdminSettingsWidget::AdminSettingsWidget(DBModel *dbmodel) : dbmode
 	leftMenu->addStyleClass("flex-column");
 	leftMenu->setWidth(200);
 
-	auto generalSettings = cpp14::make_unique<WContainerWidget>();
-
-	for(Settings::const_iterator i = settings.begin(); i != settings.end(); i++) {
-		dbo::ptr<Setting> setting = *i;
-		auto result = generalSettings->addWidget(cpp14::make_unique<WTemplate>(WString::tr("lineEdit-template")));
-		result->addFunction("id",&WTemplate::Functions::id);
-
-		std::unique_ptr<WWidget> edit;
-
-		if(setting->settingName == "siteColor") {
-			edit = cpp14::make_unique<OJColorPicker>(WColor(setting->settingValue));
-			edit->setWidth(50);
-		} else {
-			edit = cpp14::make_unique<WLineEdit>(setting->settingValue);
-		}
-
-		result->bindString("label",WString::tr(setting->settingName));
-		result->bindWidget("edit", std::move(edit));
-	}
+	auto generalSettings = cpp14::make_unique<AdminGeneralSettingsWidget>(dbmodel_);
+	loginSignal().connect(generalSettings.get(),&AdminGeneralSettingsWidget::login);
+	logoutSignal().connect(generalSettings.get(),&AdminGeneralSettingsWidget::logout);
 
 	auto generalSettingsMenu = leftMenu->addItem("General",std::move(generalSettings));
 	auto mailSettingsMenu = leftMenu->addItem("Mail",cpp14::make_unique<WContainerWidget>());
@@ -575,9 +556,48 @@ AdminWidget::AdminSettingsWidget::AdminSettingsWidget(DBModel *dbmodel) : dbmode
 
 void AdminWidget::AdminSettingsWidget::login(Auth::Login& login) {
 
+	loginSignal().emit(login);
 }
 
 void AdminWidget::AdminSettingsWidget::logout() {
+
+	logoutSignal().emit();
+}
+
+AdminWidget::AdminSettingsWidget::AdminGeneralSettingsWidget::AdminGeneralSettingsWidget(DBModel *dbmodel) : dbmodel_(dbmodel) {
+
+	setTemplateText(WString::tr("admin-settings-general"));
+
+        addFunction("block",&WTemplate::Functions::block);
+        addFunction("tr",&WTemplate::Functions::tr);
+        addFunction("id",&WTemplate::Functions::id);
+
+        auto siteTitle = cpp14::make_unique<WLineEdit>(dbmodel_->getSiteSetting("sitetitle"));
+        bindWidget("sitetitle-setting",std::move(siteTitle));
+
+        auto siteLogo = cpp14::make_unique<WLineEdit>(dbmodel_->getSiteSetting("sitelogo"));
+        bindWidget("sitelogo-setting",std::move(siteLogo));
+
+        auto siteColor = cpp14::make_unique<OJColorPicker>(WColor(dbmodel_->getSiteSetting("sitecolor")));
+        siteColor->setWidth(50);
+        bindWidget("sitecolor-setting",std::move(siteColor));
+
+        auto googleAnalytics = cpp14::make_unique<WLineEdit>(dbmodel_->getSiteSetting("googleanalytics"));
+        bindWidget("googleanalytics-setting",std::move(googleAnalytics));
+
+	auto applyButton = cpp14::make_unique<WPushButton>("Apply");
+	applyButton->addStyleClass("btn-primary");
+	bindWidget("apply-button",std::move(applyButton));
+
+	auto resetButton = cpp14::make_unique<WPushButton>("Reset");
+	bindWidget("reset-button",std::move(resetButton));
+}
+
+void AdminWidget::AdminSettingsWidget::AdminGeneralSettingsWidget::login(Auth::Login& login) {
+
+}
+
+void AdminWidget::AdminSettingsWidget::AdminGeneralSettingsWidget::logout() {
 
 }
 

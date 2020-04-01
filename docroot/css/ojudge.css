@@ -125,6 +125,23 @@ body {
   background-color:yellow;
 }
 
+.oj-form-inline {
+  margin-bottom:2px;
+}
+
+.oj-settings-group > label {
+  width:175px;
+  text-align:right;
+}
+
+.oj-settings-group > input[type=text] {
+  width:200px;
+}
+
+.oj-settings-buttons {
+  margin-top:50px;
+}
+
 .oj-admin-category-tree,
 .oj-admin-problem-table {
   border:0px;
@@ -312,6 +329,11 @@ body {
 
 .oj-country-table-item .icon {
   width:18px;
+}
+
+.oj-country-flag {
+  height:34px;
+  border:1px solid #ccc;
 }
 
 @media (min-width: 768px) {

@@ -7,25 +7,15 @@
 * Read the LICENSE file for information on license terms
 *********************************************************************/
 
-#include <Wt/Auth/AuthService.h>
 #include <Wt/Auth/HashFunction.h>
-#include <Wt/Auth/PasswordService.h>
 #include <Wt/Auth/PasswordStrengthValidator.h>
 #include <Wt/Auth/PasswordVerifier.h>
-#include <Wt/Auth/GoogleService.h>
-#include <Wt/Auth/FacebookService.h>
 #include <Wt/Auth/Dbo/AuthInfo.h>
 #include <Wt/Auth/Dbo/UserDatabase.h>
 #include <Wt/Dbo/backend/Postgres.h>
 #include <Wt/Dbo/Impl.h>
 
 #include "DBModel.h"
-
-namespace {
-Auth::AuthService myAuthService;
-Auth::PasswordService myPasswordService(myAuthService);
-std::vector<std::unique_ptr<Auth::OAuthService> > myOAuthServices;
-}
 
 void Session::configureAuth() {
 	myAuthService.setAuthTokensEnabled(true, "logincookie");
@@ -149,10 +139,10 @@ DBModel::DBModel(Session* session) : session_(session) {
 
 			std::vector< std::pair<std::string,std::string> > defaultSettings;
 
-			defaultSettings.push_back(std::make_pair("siteTitle","OJudge"));
-			defaultSettings.push_back(std::make_pair("siteLogo", "images/logo.svg"));
-			defaultSettings.push_back(std::make_pair("siteColor", "#0055ff"));
-			defaultSettings.push_back(std::make_pair("googleAnalytics", ""));
+			defaultSettings.push_back(std::make_pair("sitetitle","OJudge"));
+			defaultSettings.push_back(std::make_pair("sitelogo", "images/logo.svg"));
+			defaultSettings.push_back(std::make_pair("sitecolor", "#0055ff"));
+			defaultSettings.push_back(std::make_pair("googleanalytics", ""));
 
 			for(const std::pair<std::string, std::string> &i : defaultSettings) {
 				std::unique_ptr<Setting> setting(new Setting());
@@ -259,13 +249,7 @@ void DBModel::updateDescription(long long problemId, std::optional<std::string> 
 	problem.modify()->description = description;
 }
 
-Settings DBModel::getSettings() {
-
-	dbo::Transaction t = startTransaction();
-	return session_->find<Setting>();
-}
-
-std::string DBModel::getSetting(std::string settingName) {
+std::string DBModel::getSiteSetting(std::string settingName) {
 
 	dbo::Transaction t = startTransaction();
 	dbo::ptr<Setting> setting = session_->find<Setting>().where("settingname = ?").bind(settingName);
