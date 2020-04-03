@@ -20,6 +20,13 @@
 #include <Wt/Json/Object.h>
 #include <Wt/Json/Array.h>
 
+struct OJCodeEditorSettings {
+	int fontsize;
+	int indent;
+	bool wrap;
+	std::string theme;
+};
+
 class OJCodeEditorWidget : public Wt::WCompositeWidget {
 public:
 OJCodeEditorWidget();
@@ -27,6 +34,10 @@ std::string code();
 void setCode(const std::string& code);
 void loadCodeFromSession(const std::string& key);
 void setLengthLimit(int limit);
+void setSettings(OJCodeEditorSettings& settings);
+Wt::Signal<OJCodeEditorSettings&>& settingsChanged() {
+	return settingsChanged_;
+}
 
 private:
 class OJCodeEditorProgress : public Wt::WProgressBar {
@@ -55,15 +66,18 @@ OJCodeEditorProgress *codeLengthProgress_;
 Wt::WComboBox *editorTheme_;
 void editorFocus();
 void ensureEditor();
+void saveSettings();
 bool isRendered_ = false;
 int lengthLimit_ = 1024*40;
 int tabSize_ = 4;
 int fontSize_ = 16;
 bool wordWrap_ = true;
+std::string theme_ = "textmate";
 Wt::JSignal<std::string> editorCodeSignal_;
 Wt::JSignal<std::string> aceThemesSignal_;
 Wt::Json::Array aceThemes_;
 void themeChanged(int index);
+Wt::Signal<OJCodeEditorSettings&> settingsChanged_;
 };
 
 #endif // OJCODEEDITORWIDGET_H

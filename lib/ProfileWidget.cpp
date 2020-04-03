@@ -17,6 +17,7 @@
 #include <Wt/WContainerWidget.h>
 #include <Wt/WPushButton.h>
 #include <Wt/WMessageBox.h>
+#include <Wt/WTable.h>
 #include "viewmodels/CountryModel.h"
 #include "ProfileWidget.h"
 
@@ -52,11 +53,6 @@ ProfileWidget::ProfileWidget(Session *session, DBModel *dbmodel, const std::shar
 	loginSignal().connect(notificationsWidget.get(),&NotificationsWidget::login);
 	logoutSignal().connect(notificationsWidget.get(),&NotificationsWidget::logout);
 	auto notificationsItem = menuWidget->addItem("Notifications",std::move(notificationsWidget));
-
-	auto editorWidget = cpp14::make_unique<EditorWidget>(session_,dbmodel_);
-	loginSignal().connect(editorWidget.get(),&EditorWidget::login);
-	logoutSignal().connect(editorWidget.get(),&EditorWidget::logout);
-	auto editorItem = menuWidget->addItem("Code Editor",std::move(editorWidget));
 }
 
 void ProfileWidget::login(Auth::Login& login) {
@@ -145,7 +141,6 @@ void ProfileWidget::AccountWidget::logout() {
 void ProfileWidget::AccountWidget::reset() {
 
 	Dbo::Transaction transaction = dbmodel_->startTransaction();
-
 	dbo::ptr<User> userData = session_->user(login_->user());
 
 	username_->setText(login_->user().identity("loginname"));
@@ -252,46 +247,139 @@ void ProfileWidget::SecurityWidget::logout() {
 
 ProfileWidget::NotificationsWidget::NotificationsWidget(Session *session, DBModel *dbmodel) : session_(session), dbmodel_(dbmodel) {
 
-/*	addWidget(cpp14::make_unique<WText>("Notifications"));
+	setTemplateText(WString::tr("settings-notifications"));
 
-	auto notificationsTable = addWidget(cpp14::make_unique<WTable>());
+        addFunction("block",&WTemplate::Functions::block);
+        addFunction("tr",&WTemplate::Functions::tr);
+        addFunction("id",&WTemplate::Functions::id);
 
-	notificationsTable->elementAt(0,0)->addWidget(cpp14::make_unique<WText>("eMail notifications"));
+	auto notificationsTable = cpp14::make_unique<WTable>();
+	notificationsTable->addStyleClass("oj-settings-notifications");
 
-	notificationsTable->elementAt(1,0)->addWidget(cpp14::make_unique<WText>("Browser notifications"));
+	notificationsTable->elementAt(0,1)->addWidget(cpp14::make_unique<WText>("eMail"));
+	notificationsTable->elementAt(0,2)->addWidget(cpp14::make_unique<WText>("Browser"));
 
-	notificationsTable->elementAt(2,0)->addWidget(cpp14::make_unique<WText>("App notifications"));
-*/
+	notificationsTable->elementAt(1,0)->addWidget(cpp14::make_unique<WText>("Submission results"));
+	notificationsTable->elementAt(2,0)->addWidget(cpp14::make_unique<WText>("Contest announcements"));
+	notificationsTable->elementAt(3,0)->addWidget(cpp14::make_unique<WText>("General information"));
+
+	notificationsTable->setHeaderCount(1,Orientation::Horizontal);
+	notificationsTable->setHeaderCount(1,Orientation::Vertical);
+
+	emailResults_ = notificationsTable->elementAt(1,1)->addWidget(cpp14::make_unique<WCheckBox>());
+	emailResults_->changed().connect( [=] { emailResultsChanged_ = true; });
+	emailContests_ = notificationsTable->elementAt(2,1)->addWidget(cpp14::make_unique<WCheckBox>());
+	emailContests_->changed().connect( [=] { emailContestsChanged_ = true; });
+	emailGeneral_ = notificationsTable->elementAt(3,1)->addWidget(cpp14::make_unique<WCheckBox>());
+	emailGeneral_->changed().connect( [=] { emailGeneralChanged_ = true; });
+
+	browserResults_ = notificationsTable->elementAt(1,2)->addWidget(cpp14::make_unique<WCheckBox>());
+	browserResults_->changed().connect( [=] { browserResultsChanged_ = true; });
+	browserContests_ = notificationsTable->elementAt(2,2)->addWidget(cpp14::make_unique<WCheckBox>());
+	browserContests_->changed().connect( [=] { browserContestsChanged_ = true; });
+	browserGeneral_ = notificationsTable->elementAt(3,2)->addWidget(cpp14::make_unique<WCheckBox>());
+	browserGeneral_->changed().connect( [=] { browserGeneralChanged_ = true; });
+
+	bindWidget("notifications-table",std::move(notificationsTable));
+
+        auto applyButton = cpp14::make_unique<WPushButton>("Apply");
+        applyButton->addStyleClass("btn-primary");
+        applyButton->clicked().connect(this,&ProfileWidget::NotificationsWidget::applyClicked);
+        bindWidget("apply-button",std::move(applyButton));
+
+        auto resetButton = cpp14::make_unique<WPushButton>("Reset");
+        resetButton->clicked().connect(this,&ProfileWidget::NotificationsWidget::resetClicked);
+        bindWidget("reset-button",std::move(resetButton));
 }
 
 void ProfileWidget::NotificationsWidget::login(Auth::Login& login) {
 
+        login_ = &login;
+        reset();
 }
 
 void ProfileWidget::NotificationsWidget::logout() {
 
 }
 
-ProfileWidget::EditorWidget::EditorWidget(Session *session, DBModel *dbmodel) : session_(session), dbmodel_(dbmodel) {
+void ProfileWidget::NotificationsWidget::reset() {
 
-	setTemplateText(WString::tr("settings-codeeditor"));
+        Dbo::Transaction transaction = dbmodel_->startTransaction();
+        dbo::ptr<User> userData = session_->user(login_->user());
 
-	addFunction("block",&WTemplate::Functions::block);
-        addFunction("tr",&WTemplate::Functions::tr);
-        addFunction("id",&WTemplate::Functions::id);
+	emailResults_->setCheckState(userData->settings->notifications_email_results.value_or(true)?CheckState::Checked:CheckState::Unchecked);
+	emailContests_->setCheckState(userData->settings->notifications_email_contests.value_or(true)?CheckState::Checked:CheckState::Unchecked);
+	emailGeneral_->setCheckState(userData->settings->notifications_email_general.value_or(true)?CheckState::Checked:CheckState::Unchecked);
 
-        auto applyButton = cpp14::make_unique<WPushButton>("Apply");
-        applyButton->addStyleClass("btn-primary");
-        bindWidget("apply-button",std::move(applyButton));
+	browserResults_->setCheckState(userData->settings->notifications_browser_results.value_or(false)?CheckState::Checked:CheckState::Unchecked);
+	browserContests_->setCheckState(userData->settings->notifications_browser_results.value_or(false)?CheckState::Checked:CheckState::Unchecked);
+	browserGeneral_->setCheckState(userData->settings->notifications_browser_results.value_or(false)?CheckState::Checked:CheckState::Unchecked);
 
-        auto resetButton = cpp14::make_unique<WPushButton>("Reset");
-        bindWidget("reset-button",std::move(resetButton));
+	emailResultsChanged_ = false;
+	emailContestsChanged_ = false;
+	emailGeneralChanged_ = false;
+	browserResultsChanged_ = false;
+	browserContestsChanged_ = false;
+	browserGeneralChanged_ = false;
 }
 
-void ProfileWidget::EditorWidget::login(Auth::Login& login) {
+void ProfileWidget::NotificationsWidget::resetClicked() {
 
+        auto warningBox = addChild(cpp14::make_unique<WMessageBox>("Are you sure?","All changes will be lost. Do you want to continue?",
+                        Icon::Warning,StandardButton::Yes | StandardButton::No));
+        warningBox->buttonClicked().connect( [=] (StandardButton button) {
+                switch(button) {
+                        case StandardButton::Yes:
+                                reset();
+                                break;
+                        case StandardButton::No:
+                                break;
+                }
+                removeChild(warningBox);
+        });
+        warningBox->show();
 }
 
-void ProfileWidget::EditorWidget::logout() {
+void ProfileWidget::NotificationsWidget::applyClicked() {
 
+	if(!emailResultsChanged_ && !emailContestsChanged_ && !emailGeneralChanged_ &&
+		!browserResultsChanged_ && !browserContestsChanged_ && !browserGeneralChanged_) return;
+
+        WStringStream strm ;
+
+        strm << "The following data will be updated:<br/><br/>";
+        strm << "<ul>";
+	if(emailResultsChanged_) strm << "<li>eMail submission results to: <b>" << (emailResults_->isChecked()?"enabled":"disabled") << "</b></li>";
+	if(emailContestsChanged_) strm << "<li>eMail contests announcements to: <b>" << (emailContests_->isChecked()?"enabled":"disabled") << "</b></li>";
+	if(emailGeneralChanged_) strm << "<li>eMail general information to: <b>" << (emailGeneral_->isChecked()?"enabled":"disabled") << "</b></li>";
+	if(browserResultsChanged_) strm << "<li>Browser submission results to: <b>" << (browserResults_->isChecked()?"enabled":"disabled") << "</b></li>";
+	if(browserContestsChanged_) strm << "<li>Browser contests announcements to: <b>" << (browserContests_->isChecked()?"enabled":"disabled") << "</b></li>";
+	if(browserGeneralChanged_) strm << "<li>Browser general information to: <b>" << (browserGeneral_->isChecked()?"enabled":"disabled") << "</b></li>";
+        strm << "</ul>";
+        strm << "<br/>Do you want to continue?";
+
+        auto warningBox = addChild(cpp14::make_unique<WMessageBox>("Are you sure?","",Icon::Information,StandardButton::Yes | StandardButton::No));
+        warningBox->textWidget()->setTextFormat(TextFormat::XHTML);
+        warningBox->setText(strm.str());
+
+        warningBox->buttonClicked().connect( [=] (StandardButton button) {
+                switch(button) {
+                        case StandardButton::Yes:
+                                {
+                                Dbo::Transaction transaction = dbmodel_->startTransaction();
+                                dbo::ptr<User> userData = session_->user(login_->user());
+				if(emailResultsChanged_) userData->settings.modify()->notifications_email_results = (emailResults_->isChecked()?true:false);
+				if(emailContestsChanged_) userData->settings.modify()->notifications_email_contests = (emailContests_->isChecked()?true:false);
+				if(emailGeneralChanged_) userData->settings.modify()->notifications_email_general = (emailGeneral_->isChecked()?true:false);
+				if(browserResultsChanged_) userData->settings.modify()->notifications_browser_results = (browserResults_->isChecked()?true:false);
+				if(browserContestsChanged_) userData->settings.modify()->notifications_browser_contests = (browserContests_->isChecked()?true:false);
+				if(browserGeneralChanged_) userData->settings.modify()->notifications_browser_general = (browserGeneral_->isChecked()?true:false);
+                                }
+                                break;
+                        case StandardButton::No:
+                                break;
+                }
+                removeChild(warningBox);
+        });
+        warningBox->show();
 }

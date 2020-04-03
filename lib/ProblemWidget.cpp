@@ -14,12 +14,11 @@
 #include "ProblemWidget.h"
 #include "PdfResource.h"
 #include "widgets/OJProblemViewerWidget.h"
-#include "widgets/OJCodeEditorWidget.h"
 #include "widgets/OJRatingSetWidget.h"
 
 using namespace Wt;
 
-ProblemWidget::ProblemWidget(DBModel *dbmodel, ViewModels *viewModels) : dbmodel_(dbmodel),viewModels_(viewModels) {
+ProblemWidget::ProblemWidget(DBModel *dbmodel, ViewModels *viewModels, Session *session) : dbmodel_(dbmodel),viewModels_(viewModels),session_(session) {
 
 	auto mainLayout = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout->setContentsMargins(0,0,0,0);
@@ -59,6 +58,7 @@ ProblemWidget::ProblemWidget(DBModel *dbmodel, ViewModels *viewModels) : dbmodel
 }
 
 void ProblemWidget::login(Auth::Login& login) {
+	login_ = &login;
 	loginSignal().emit(login);
 }
 
@@ -83,7 +83,7 @@ void ProblemWidget::setProblem(long long id) {
 
 void ProblemWidget::showSubmissionDialog() {
 
-	submissionDialog_ = addChild(cpp14::make_unique<ProblemSubmissionDialog>(dbmodel_,viewModels_));
+	submissionDialog_ = addChild(cpp14::make_unique<ProblemSubmissionDialog>(dbmodel_,viewModels_,session_,login_));
 	submissionDialog_->setProblem(problemData_);
 
 	submissionDialog_->finished().connect(this,&ProblemWidget::closeSubmissionDialog);
@@ -108,22 +108,6 @@ void ProblemWidget::closeSubmissionDialog(DialogCode code) {
 	removeChild(submissionDialog_);
 }
 
-/* Not for milestone 1.0.0
-void ProblemWidget::showDiscussionDialog() {
-
-	discussionDialog_ = addChild(cpp14::make_unique<ProblemDiscussionDialog>(dbmodel_,viewModels_));
-	discussionDialog_->setProblem(problemData_);
-
-	discussionDialog_->finished().connect(this,&ProblemWidget::closeDiscussionDialog);
-	discussionDialog_->show();
-}
-
-void ProblemWidget::closeDiscussionDialog() {
-
-	removeChild(discussionDialog_);
-}
-*/
-
 void ProblemWidget::showStatisticsDialog() {
 
 	statisticsDialog_ = addChild(cpp14::make_unique<ProblemStatisticsDialog>(dbmodel_,viewModels_));
@@ -141,7 +125,6 @@ void ProblemWidget::closeStatisticsDialog() {
 ProblemDescriptionWidget::ProblemDescriptionWidget(DBModel *dbmodel, ViewModels *viewModels) : dbmodel_(dbmodel),viewModels_(viewModels) {
 
 	problemViewer_ = addWidget(cpp14::make_unique<OJProblemViewerWidget>());
-	
 }
 
 void ProblemDescriptionWidget::login(Auth::Login& login) {
@@ -199,12 +182,6 @@ ProblemSidemenuWidget::ProblemSidemenuWidget(DBModel *dbmodel, ViewModels *viewM
 		showDialog_.emit(ProblemWidgetDialog::Statistics);
 	});
 
-/*	Not for milestone 1.0.0
-	auto discussButton = mainLayout->addWidget(cpp14::make_unique<WPushButton>("Discuss problem"),0);
-	discussButton->clicked().connect( [=] {
-		showDialog_.emit(ProblemWidgetDialog::Discussion);
-	});*/
-
 	auto rateLabel = mainLayout->addWidget(cpp14::make_unique<WText>("Rate this problem"));
 	rateLabel->setTextAlignment(AlignmentFlag::Center);
 
@@ -231,17 +208,6 @@ void ProblemSidemenuWidget::setProblem(dbo::ptr<Problem> problemData) {
 	tmpPdfRes->setProblem(problemData);
 }
 
-/* Not for milestone 1.0.0
-ProblemDiscussionDialog::ProblemDiscussionDialog(DBModel *dbmodel, ViewModels *viewModels) : dbmodel_(dbmodel), viewModels_(viewModels) {
-	setWindowTitle("Discussion dialog");
-	setClosable(true);
-}
-
-void ProblemDiscussionDialog::setProblem(dbo::ptr<Problem> problemData) {
-
-}
-*/
-
 ProblemStatisticsDialog::ProblemStatisticsDialog(DBModel *dbmodel, ViewModels *viewModels) : dbmodel_(dbmodel), viewModels_(viewModels) {
 	setWindowTitle("Statistics dialog");
 	setClosable(true);
@@ -261,27 +227,32 @@ void ProblemStatisticsDialog::setProblem(dbo::ptr<Problem> problemData) {
 
 }
 
-ProblemSubmissionDialog::ProblemSubmissionDialog(DBModel *dbmodel, ViewModels *viewModels) : dbmodel_(dbmodel), viewModels_(viewModels) {
+ProblemSubmissionDialog::ProblemSubmissionDialog(DBModel *dbmodel, ViewModels *viewModels, Session *session, Auth::Login *login)
+			: dbmodel_(dbmodel), viewModels_(viewModels), session_(session), login_(login) {
 	setWindowTitle("Submit");
 	setClosable(true);
 	resize(1024,700);
 
 	codeEditor_ = contents()->addWidget(cpp14::make_unique<OJCodeEditorWidget>());
 	codeEditor_->resize(774,530);
+	codeEditor_->settingsChanged().connect(this,&ProblemSubmissionDialog::saveSettings);
+
+	Dbo::Transaction transaction = dbmodel_->startTransaction();
+	dbo::ptr<User> userData = session_->user(login_->user());
+	OJCodeEditorSettings settings;
+
+	settings.fontsize = userData->settings->editor_fontsize.value_or(16);
+	settings.indent = userData->settings->editor_indent.value_or(4);
+	settings.wrap = userData->settings->editor_wrap.value_or(true);
+	settings.theme = userData->settings->editor_theme.value_or("textmate");
+
+	codeEditor_->setSettings(settings);
 
 	WPushButton *submit = footer()->addWidget(cpp14::make_unique<WPushButton>("Submit"));
 	WPushButton *cancel = footer()->addWidget(cpp14::make_unique<WPushButton>("Cancel"));
 
 	submit->clicked().connect(this,&WDialog::accept);
 	cancel->clicked().connect(this,&WDialog::reject);
-}
-
-void ProblemSubmissionDialog::login(Auth::Login& login) {
-
-}
-
-void ProblemSubmissionDialog::logout() {
-
 }
 
 void ProblemSubmissionDialog::setProblem(dbo::ptr<Problem> problemData) {
@@ -298,4 +269,15 @@ std::string ProblemSubmissionDialog::code() {
 
 void ProblemSubmissionDialog::setCode(std::string code) {
 	codeEditor_->setCode(code);
+}
+
+void ProblemSubmissionDialog::saveSettings(OJCodeEditorSettings& settings) {
+
+        Dbo::Transaction transaction = dbmodel_->startTransaction();
+        dbo::ptr<User> userData = session_->user(login_->user());
+
+	userData->settings.modify()->editor_fontsize = settings.fontsize;
+	userData->settings.modify()->editor_indent = settings.indent;
+	userData->settings.modify()->editor_wrap = settings.wrap;
+	userData->settings.modify()->editor_theme = settings.theme;
 }

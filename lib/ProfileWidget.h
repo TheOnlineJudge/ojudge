@@ -17,6 +17,7 @@
 #include <Wt/WDatePicker.h>
 #include <Wt/WComboBox.h>
 #include <Wt/WImage.h>
+#include <Wt/WCheckBox.h>
 #include "dbmodel/DBModel.h"
 #include "viewmodels/CountryModel.h"
 
@@ -92,17 +93,22 @@ void logout();
 private:
 Session *session_;
 DBModel *dbmodel_;
-};
-
-class EditorWidget : public Wt::WTemplate {
-public:
-EditorWidget(Session *session, DBModel *dbmodel);
-void login(Wt::Auth::Login& login);
-void logout();
-
-private:
-Session *session_;
-DBModel *dbmodel_;
+Wt::Auth::Login *login_;
+void reset();
+void resetClicked();
+void applyClicked();
+Wt::WCheckBox *emailResults_;
+Wt::WCheckBox *emailContests_;
+Wt::WCheckBox *emailGeneral_;
+Wt::WCheckBox *browserResults_;
+Wt::WCheckBox *browserContests_;
+Wt::WCheckBox *browserGeneral_;
+bool emailResultsChanged_ = false;
+bool emailContestsChanged_ = false;
+bool emailGeneralChanged_ = false;
+bool browserResultsChanged_ = false;
+bool browserContestsChanged_ = false;
+bool browserGeneralChanged_ = false;
 };
 
 };

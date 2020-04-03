@@ -104,11 +104,8 @@
     ${block:settingsField-template twofa}
     <div class="oj-settings-buttons">${apply-button} ${reset-button}</div>
   </message>
-  <message id="settings-codeeditor">
-    ${block:settingsField-template fontsize}
-    ${block:settingsField-template indent}
-    ${block:settingsField-template wrap}
-    ${block:settingsField-template theme}
+  <message id="settings-notifications">
+    ${notifications-table}
     <div class="oj-settings-buttons">${apply-button} ${reset-button}</div>
   </message>
   <message id="addCategory-template">
