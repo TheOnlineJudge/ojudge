@@ -134,12 +134,47 @@ body {
   text-align:right;
 }
 
-.oj-settings-group > input[type=text] {
+.oj-avatar-radiobutton {
+  width:unset !important;
+  font-weight:unset !important;
+  text-align:unset !important;
+}
+
+.oj-settings-group > input[type=text],
+.oj-settings-group > input[type=password] {
   width:200px;
 }
 
 .oj-settings-buttons {
   margin-top:50px;
+}
+
+.oj-settings-notifications {
+
+}
+
+.oj-settings-notifications tr {
+  height:32px;
+  border-bottom:1px solid #ccc;
+}
+
+.oj-settings-notifications td {
+  border-right:1px solid #ccc;
+  text-align:center;
+  vertical-align:middle;
+}
+
+.oj-settings-notifications > thead th {
+  min-width:150px;
+  text-align:center;
+  border-right:1px solid #ccc;
+}
+
+.oj-settings-notifications > tbody th {
+  padding-right:10px;
+  padding-left:10px;
+  text-align:right;
+  border-right:1px solid #ccc;
 }
 
 .oj-admin-category-tree,

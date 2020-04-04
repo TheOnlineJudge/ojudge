@@ -17,7 +17,7 @@
 
   <message id="newpassword-label">New Password</message>
   <message id="repeatpassword-label">Repeat Password</message>
-  <message id="twofa-label">Two-Factor Authentication</message>
+  <message id="twofa-label">2F Authentication</message>
 
   <message id="fontsize-label">Font Size</message>
   <message id="indent-label">Indent</message>

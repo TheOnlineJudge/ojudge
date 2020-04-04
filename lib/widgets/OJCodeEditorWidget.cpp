@@ -11,13 +11,13 @@
 #include <Wt/WHBoxLayout.h>
 #include <Wt/WVBoxLayout.h>
 #include <Wt/WImage.h>
-#include <Wt/WSpinBox.h>
 #include <Wt/WToolBar.h>
 #include <Wt/WPushButton.h>
 #include <Wt/WComboBox.h>
 #include <Wt/Json/Parser.h>
 #include <Wt/WStringListModel.h>
 #include <Wt/Utils.h>
+#include <Wt/WSpinBox.h>
 #include "OJCodeEditorWidget.h"
 
 using namespace Wt;
@@ -47,9 +47,10 @@ void OJCodeEditorWidget::render(WFlags<RenderFlag> flags) {
 		fontSizeIcon->setHeight(18);
 		fontSizeIcon->setToolTip("Select editor font size");
 		fontSizeIconLayout->addStretch(1);
+
 		auto fontSizeValue = toolbarLayout->addWidget(cpp14::make_unique<WSpinBox>());
 		fontSizeValue->addStyleClass("form-inline");
-		fontSizeValue->setValue(16);
+		fontSizeValue->setValue(fontSize_);
 		fontSizeValue->setWidth(75);
 		fontSizeValue->setSuffix("px");
 		fontSizeValue->setToolTip("Select editor font size");
@@ -73,7 +74,7 @@ void OJCodeEditorWidget::render(WFlags<RenderFlag> flags) {
 		auto wrapButton = toolbarLayout->addWidget(cpp14::make_unique<WPushButton>(),0);
 		wrapButton->setIcon(WLink("images/editor/wrap.svg"));
 		wrapButton->setCheckable(true);
-		wrapButton->setChecked(true);
+		wrapButton->setChecked(wordWrap_?true:false);
 		wrapButton->setCanReceiveFocus(false);
 		wrapButton->setToolTip("Line wrapping");
 		wrapButton->clicked().connect(this,&OJCodeEditorWidget::editorFocus);
@@ -132,7 +133,7 @@ void OJCodeEditorWidget::render(WFlags<RenderFlag> flags) {
 		strm << "var self = " << editorWidget_->jsRef() << ";";
 		strm << "var editor = ace.edit(self);";
 		strm << "var timeout = null;";
-		strm << "editor.setTheme('ace/theme/textmate');";
+		strm << "editor.setTheme('ace/theme/" << theme_ << "');";
 		strm << "editor.session.setMode('ace/mode/c_cpp');";
 		strm << "editor.session.setUseSoftTabs(false);";
 		strm << "editor.session.setTabSize(" << tabSize_ << ");";
@@ -156,24 +157,28 @@ void OJCodeEditorWidget::render(WFlags<RenderFlag> flags) {
 			ensureEditor();
 			tabSize_ = (tabSize_>1?--tabSize_:1);
 			doJavaScript("editor.session.setTabSize(" + std::to_string(tabSize_) + ");");
+			saveSettings();
 		});
 
 		indentMoreButton->clicked().connect([=] {
 			ensureEditor();
 			tabSize_++;
 			doJavaScript("editor.session.setTabSize(" + std::to_string(tabSize_) + ");");
+			saveSettings();
 		});
 
 		wrapButton->clicked().connect([=] {
 			ensureEditor();
 			wordWrap_ = wrapButton->isChecked();
 			doJavaScript("editor.session.setUseWrapMode(" + std::string(wordWrap_?"true":"false") + ");");
+			saveSettings();
 		});
 
 		fontSizeValue->valueChanged().connect([=] (int fontSize) {
 			ensureEditor();
 			fontSize_ = fontSize;
 			doJavaScript("editor.setFontSize(" + std::to_string(fontSize_) + ");");
+			saveSettings();
 		});
 	}
 
@@ -252,6 +257,14 @@ void OJCodeEditorWidget::loadCodeFromSession(const std::string& key) {
 	doJavaScript(strm.str());
 }
 
+void OJCodeEditorWidget::setSettings(OJCodeEditorSettings& settings) {
+
+	fontSize_ = settings.fontsize;
+	tabSize_ = settings.indent;
+	wordWrap_ = settings.wrap;
+	theme_ = settings.theme;
+}
+
 void OJCodeEditorWidget::getEditorCode(std::string editorCode) {
 	code_ = editorCode;
 
@@ -275,7 +288,7 @@ void OJCodeEditorWidget::getAceThemes(std::string aceThemes) {
 		ct++;
 	}
 
-	editorTheme_->setCurrentIndex(9); // FIXME - This is temporary until user settings are in place
+	editorTheme_->setCurrentIndex(comboModel->match(comboModel->index(0),ItemDataRole::User + 1,theme_,1,MatchFlag::Exactly | MatchFlag::Wrap).at(0).row());
 }
 
 void OJCodeEditorWidget::themeChanged(int index) {
@@ -291,6 +304,9 @@ void OJCodeEditorWidget::themeChanged(int index) {
 	strm << "editor.focus();";
 
 	doJavaScript(strm.str());
+
+	theme_ = cpp17::any_cast<std::string>(comboModel->data(comboModel->index(index),ItemDataRole::User + 1));
+	saveSettings();
 }
 
 void OJCodeEditorWidget::editorFocus() {
@@ -306,6 +322,18 @@ void OJCodeEditorWidget::setLengthLimit(int limit) {
 
 	lengthLimit_ = limit;
 	codeLengthProgress_->setMaximum(lengthLimit_);
+}
+
+void OJCodeEditorWidget::saveSettings() {
+
+	OJCodeEditorSettings settings;
+
+	settings.fontsize = fontSize_;
+	settings.indent = tabSize_;
+	settings.wrap = wordWrap_;
+	settings.theme = theme_;
+
+	settingsChanged_.emit(settings);
 }
 
 OJCodeEditorWidget::OJCodeEditorProgress::OJCodeEditorProgress() {

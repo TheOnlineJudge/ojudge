@@ -44,6 +44,12 @@ enum class Role {
 	Admin = 32
 };
 
+enum class AvatarType {
+	Default = 0,
+	Gravatar = 1,
+	Custom = 2
+};
+
 class User;
 class UserSettings;
 class UserAvatar;
@@ -216,13 +222,13 @@ void persist(Action& a) {
 class UserAvatar {
 public:
 dbo::ptr<User> user;
-std::optional<bool> useGravatar;
+AvatarType avatarType;
 std::optional<std::vector<unsigned char> > avatar;
 
 template<class Action>
 void persist(Action& a) {
 	dbo::id(a, user, "user", dbo::NotNull|dbo::OnDeleteCascade);
-	dbo::field(a, useGravatar, "usegravatar");
+	dbo::field(a, avatarType, "avatartype");
 	dbo::field(a, avatar, "avatar");
 }
 };
