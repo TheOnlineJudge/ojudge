@@ -69,8 +69,8 @@ ProfileWidget::AccountWidget::AccountWidget(Session *session, DBModel *dbmodel, 
 	setTemplateText(WString::tr("settings-account"));
 
 	addFunction("block",&WTemplate::Functions::block);
-        addFunction("tr",&WTemplate::Functions::tr);
-        addFunction("id",&WTemplate::Functions::id);
+	addFunction("tr",&WTemplate::Functions::tr);
+	addFunction("id",&WTemplate::Functions::id);
 
 	auto avatarGroup = std::make_shared<WButtonGroup>();
 	auto avatarDefaultButton = cpp14::make_unique<WRadioButton>("Default");
@@ -82,7 +82,9 @@ ProfileWidget::AccountWidget::AccountWidget(Session *session, DBModel *dbmodel, 
 	avatarGroup->addButton(bindWidget("avatar-none-setting",std::move(avatarDefaultButton)),(int)AvatarType::Default);
 	avatarGroup->addButton(bindWidget("avatar-gravatar-setting",std::move(avatarGravatarButton)),(int)AvatarType::Gravatar);
 	avatarGroup->addButton(bindWidget("avatar-custom-setting",std::move(avatarCustomButton)),(int)AvatarType::Custom);
-	avatarGroup->checkedChanged().connect( [=] { avatarChanged_ = true; });
+	avatarGroup->checkedChanged().connect( [=] {
+		avatarChanged_ = true;
+	});
 	avatarGroup_ = avatarGroup.get();
 
 	auto username = cpp14::make_unique<WLineEdit>();
@@ -90,20 +92,28 @@ ProfileWidget::AccountWidget::AccountWidget(Session *session, DBModel *dbmodel, 
 	username_ = bindWidget("username-setting",std::move(username));
 
 	auto email = cpp14::make_unique<WLineEdit>();
-	email->changed().connect( [=] { emailChanged_ = true; });
+	email->changed().connect( [=] {
+		emailChanged_ = true;
+	});
 	email_ = bindWidget("email-setting",std::move(email));
 
 	auto firstname = cpp14::make_unique<WLineEdit>();
-	firstname->changed().connect( [=] { firstnameChanged_ = true; });
+	firstname->changed().connect( [=] {
+		firstnameChanged_ = true;
+	});
 	firstname_ = bindWidget("firstname-setting",std::move(firstname));
 
 	auto lastname = cpp14::make_unique<WLineEdit>();
-	lastname->changed().connect( [=] { lastnameChanged_ = true; });
+	lastname->changed().connect( [=] {
+		lastnameChanged_ = true;
+	});
 	lastname_ = bindWidget("lastname-setting",std::move(lastname));
 
 	auto birthday = cpp14::make_unique<WDatePicker>();
 	birthday->lineEdit()->disable();
-	birthday->changed().connect( [=] { birthdayChanged_ = true; });
+	birthday->changed().connect( [=] {
+		birthdayChanged_ = true;
+	});
 	birthday_ = bindWidget("birthday-setting",std::move(birthday));
 
 	auto country = cpp14::make_unique<WComboBox>();
@@ -112,11 +122,17 @@ ProfileWidget::AccountWidget::AccountWidget(Session *session, DBModel *dbmodel, 
 	auto countryFlag = cpp14::make_unique<WImage>();
 	countryFlag->addStyleClass("oj-country-flag");
 	countryFlag_ = bindWidget("country-flag",std::move(countryFlag));
-	country_->changed().connect( [=] { countryFlag_->setImageLink(cpp17::any_cast<std::string>(countrymodel_->data(countrymodel_->index(country_->currentIndex(),0),ItemDataRole::Decoration))); });
-	country_->changed().connect( [=] { countryChanged_ = true; });
+	country_->changed().connect( [=] {
+		countryFlag_->setImageLink(cpp17::any_cast<std::string>(countrymodel_->data(countrymodel_->index(country_->currentIndex(),0),ItemDataRole::Decoration)));
+	});
+	country_->changed().connect( [=] {
+		countryChanged_ = true;
+	});
 
 	auto institution = cpp14::make_unique<WLineEdit>();
-	institution->changed().connect( [=] { institutionChanged_ = true; });
+	institution->changed().connect( [=] {
+		institutionChanged_ = true;
+	});
 	institution_ = bindWidget("institution-setting",std::move(institution));
 
 	auto uvaid = cpp14::make_unique<WLineEdit>();
@@ -170,14 +186,14 @@ void ProfileWidget::AccountWidget::reset() {
 void ProfileWidget::AccountWidget::resetClicked() {
 
 	auto warningBox = addChild(cpp14::make_unique<WMessageBox>("Are you sure?","All changes will be lost. Do you want to continue?",
-			Icon::Warning,StandardButton::Yes | StandardButton::No));
+	                                                           Icon::Warning,StandardButton::Yes | StandardButton::No));
 	warningBox->buttonClicked().connect( [=] (StandardButton button) {
 		switch(button) {
-			case StandardButton::Yes:
-				reset();
-				break;
-			case StandardButton::No:
-				break;
+		case StandardButton::Yes:
+			reset();
+			break;
+		case StandardButton::No:
+			break;
 		}
 		removeChild(warningBox);
 	});
@@ -188,7 +204,7 @@ void ProfileWidget::AccountWidget::applyClicked() {
 
 	if(!avatarChanged_ && !emailChanged_ && !firstnameChanged_ && !lastnameChanged_ && !birthdayChanged_ && !countryChanged_ && !institutionChanged_) return;
 
-	WStringStream strm ;
+	WStringStream strm;
 
 	strm << "The following data will be updated:<br/><br/>";
 	strm << "<ul>";
@@ -208,22 +224,22 @@ void ProfileWidget::AccountWidget::applyClicked() {
 
 	warningBox->buttonClicked().connect( [=] (StandardButton button) {
 		switch(button) {
-			case StandardButton::Yes:
-				{
-				Dbo::Transaction transaction = dbmodel_->startTransaction();
-        			dbo::ptr<User> userData = session_->user(login_->user());
-				if(avatarChanged_) userData->avatar.modify()->avatarType = (AvatarType)avatarGroup_->checkedId();
-				if(emailChanged_) myAuthService.verifyEmailAddress(login_->user(),email_->text().toUTF8());
-				if(firstnameChanged_) userData.modify()->firstName = firstname_->text().toUTF8();
-				if(lastnameChanged_) userData.modify()->lastName = lastname_->text().toUTF8();
-				if(birthdayChanged_) userData.modify()->birthday = birthday_->date();
-				if(countryChanged_) userData.modify()->country = cpp17::any_cast<std::string>(countrymodel_->data(countrymodel_->index(country_->currentIndex(),0),
-										CountryModel::CountryCodeRole));
-				if(institutionChanged_) userData.modify()->institution = institution_->text().toUTF8();
-				}
-				break;
-			case StandardButton::No:
-				break;
+		case StandardButton::Yes:
+			{
+			        Dbo::Transaction transaction = dbmodel_->startTransaction();
+			        dbo::ptr<User> userData = session_->user(login_->user());
+			        if(avatarChanged_) userData->avatar.modify()->avatarType = (AvatarType)avatarGroup_->checkedId();
+			        if(emailChanged_) myAuthService.verifyEmailAddress(login_->user(),email_->text().toUTF8());
+			        if(firstnameChanged_) userData.modify()->firstName = firstname_->text().toUTF8();
+			        if(lastnameChanged_) userData.modify()->lastName = lastname_->text().toUTF8();
+			        if(birthdayChanged_) userData.modify()->birthday = birthday_->date();
+			        if(countryChanged_) userData.modify()->country = cpp17::any_cast<std::string>(countrymodel_->data(countrymodel_->index(country_->currentIndex(),0),
+					                                                                                          CountryModel::CountryCodeRole));
+			        if(institutionChanged_) userData.modify()->institution = institution_->text().toUTF8();
+			}
+			break;
+		case StandardButton::No:
+			break;
 		}
 		removeChild(warningBox);
 	});
@@ -232,11 +248,11 @@ void ProfileWidget::AccountWidget::applyClicked() {
 
 ProfileWidget::SecurityWidget::SecurityWidget(Session *session, DBModel *dbmodel) : session_(session), dbmodel_(dbmodel) {
 
-        setTemplateText(WString::tr("settings-security"));
+	setTemplateText(WString::tr("settings-security"));
 
-        addFunction("block",&WTemplate::Functions::block);
-        addFunction("tr",&WTemplate::Functions::tr);
-        addFunction("id",&WTemplate::Functions::id);
+	addFunction("block",&WTemplate::Functions::block);
+	addFunction("tr",&WTemplate::Functions::tr);
+	addFunction("id",&WTemplate::Functions::id);
 
 	auto newPassword = cpp14::make_unique<WLineEdit>();
 	newPassword->setEchoMode(EchoMode::Password);
@@ -251,19 +267,19 @@ ProfileWidget::SecurityWidget::SecurityWidget(Session *session, DBModel *dbmodel
 	twofa->addStyleClass("btn-primary");
 	twofa_ = bindWidget("twofa-setting",std::move(twofa));
 
-        auto applyButton = cpp14::make_unique<WPushButton>("Apply");
-        applyButton->addStyleClass("btn-primary");
-        bindWidget("apply-button",std::move(applyButton));
+	auto applyButton = cpp14::make_unique<WPushButton>("Apply");
+	applyButton->addStyleClass("btn-primary");
+	bindWidget("apply-button",std::move(applyButton));
 
-        auto resetButton = cpp14::make_unique<WPushButton>("Reset");
+	auto resetButton = cpp14::make_unique<WPushButton>("Reset");
 	resetButton->clicked().connect(this,&ProfileWidget::SecurityWidget::resetClicked);
-        bindWidget("reset-button",std::move(resetButton));
+	bindWidget("reset-button",std::move(resetButton));
 }
 
 void ProfileWidget::SecurityWidget::login(Auth::Login& login) {
 
-        login_ = &login;
-        reset();
+	login_ = &login;
+	reset();
 }
 
 void ProfileWidget::SecurityWidget::logout() {
@@ -279,19 +295,19 @@ void ProfileWidget::SecurityWidget::reset() {
 
 void ProfileWidget::SecurityWidget::resetClicked() {
 
-        auto warningBox = addChild(cpp14::make_unique<WMessageBox>("Are you sure?","All changes will be lost. Do you want to continue?",
-                        Icon::Warning,StandardButton::Yes | StandardButton::No));
-        warningBox->buttonClicked().connect( [=] (StandardButton button) {
-                switch(button) {
-                        case StandardButton::Yes:
-                                reset();
-                                break;
-                        case StandardButton::No:
-                                break;
-                }
-                removeChild(warningBox);
-        });
-        warningBox->show();
+	auto warningBox = addChild(cpp14::make_unique<WMessageBox>("Are you sure?","All changes will be lost. Do you want to continue?",
+	                                                           Icon::Warning,StandardButton::Yes | StandardButton::No));
+	warningBox->buttonClicked().connect( [=] (StandardButton button) {
+		switch(button) {
+		case StandardButton::Yes:
+			reset();
+			break;
+		case StandardButton::No:
+			break;
+		}
+		removeChild(warningBox);
+	});
+	warningBox->show();
 }
 
 void ProfileWidget::SecurityWidget::applyClicked() {
@@ -302,9 +318,9 @@ ProfileWidget::NotificationsWidget::NotificationsWidget(Session *session, DBMode
 
 	setTemplateText(WString::tr("settings-notifications"));
 
-        addFunction("block",&WTemplate::Functions::block);
-        addFunction("tr",&WTemplate::Functions::tr);
-        addFunction("id",&WTemplate::Functions::id);
+	addFunction("block",&WTemplate::Functions::block);
+	addFunction("tr",&WTemplate::Functions::tr);
+	addFunction("id",&WTemplate::Functions::id);
 
 	auto notificationsTable = cpp14::make_unique<WTable>();
 	notificationsTable->addStyleClass("oj-settings-notifications");
@@ -320,35 +336,47 @@ ProfileWidget::NotificationsWidget::NotificationsWidget(Session *session, DBMode
 	notificationsTable->setHeaderCount(1,Orientation::Vertical);
 
 	emailResults_ = notificationsTable->elementAt(1,1)->addWidget(cpp14::make_unique<WCheckBox>());
-	emailResults_->changed().connect( [=] { emailResultsChanged_ = true; });
+	emailResults_->changed().connect( [=] {
+		emailResultsChanged_ = true;
+	});
 	emailContests_ = notificationsTable->elementAt(2,1)->addWidget(cpp14::make_unique<WCheckBox>());
-	emailContests_->changed().connect( [=] { emailContestsChanged_ = true; });
+	emailContests_->changed().connect( [=] {
+		emailContestsChanged_ = true;
+	});
 	emailGeneral_ = notificationsTable->elementAt(3,1)->addWidget(cpp14::make_unique<WCheckBox>());
-	emailGeneral_->changed().connect( [=] { emailGeneralChanged_ = true; });
+	emailGeneral_->changed().connect( [=] {
+		emailGeneralChanged_ = true;
+	});
 
 	browserResults_ = notificationsTable->elementAt(1,2)->addWidget(cpp14::make_unique<WCheckBox>());
-	browserResults_->changed().connect( [=] { browserResultsChanged_ = true; });
+	browserResults_->changed().connect( [=] {
+		browserResultsChanged_ = true;
+	});
 	browserContests_ = notificationsTable->elementAt(2,2)->addWidget(cpp14::make_unique<WCheckBox>());
-	browserContests_->changed().connect( [=] { browserContestsChanged_ = true; });
+	browserContests_->changed().connect( [=] {
+		browserContestsChanged_ = true;
+	});
 	browserGeneral_ = notificationsTable->elementAt(3,2)->addWidget(cpp14::make_unique<WCheckBox>());
-	browserGeneral_->changed().connect( [=] { browserGeneralChanged_ = true; });
+	browserGeneral_->changed().connect( [=] {
+		browserGeneralChanged_ = true;
+	});
 
 	bindWidget("notifications-table",std::move(notificationsTable));
 
-        auto applyButton = cpp14::make_unique<WPushButton>("Apply");
-        applyButton->addStyleClass("btn-primary");
-        applyButton->clicked().connect(this,&ProfileWidget::NotificationsWidget::applyClicked);
-        bindWidget("apply-button",std::move(applyButton));
+	auto applyButton = cpp14::make_unique<WPushButton>("Apply");
+	applyButton->addStyleClass("btn-primary");
+	applyButton->clicked().connect(this,&ProfileWidget::NotificationsWidget::applyClicked);
+	bindWidget("apply-button",std::move(applyButton));
 
-        auto resetButton = cpp14::make_unique<WPushButton>("Reset");
-        resetButton->clicked().connect(this,&ProfileWidget::NotificationsWidget::resetClicked);
-        bindWidget("reset-button",std::move(resetButton));
+	auto resetButton = cpp14::make_unique<WPushButton>("Reset");
+	resetButton->clicked().connect(this,&ProfileWidget::NotificationsWidget::resetClicked);
+	bindWidget("reset-button",std::move(resetButton));
 }
 
 void ProfileWidget::NotificationsWidget::login(Auth::Login& login) {
 
-        login_ = &login;
-        reset();
+	login_ = &login;
+	reset();
 }
 
 void ProfileWidget::NotificationsWidget::logout() {
@@ -357,16 +385,16 @@ void ProfileWidget::NotificationsWidget::logout() {
 
 void ProfileWidget::NotificationsWidget::reset() {
 
-        Dbo::Transaction transaction = dbmodel_->startTransaction();
-        dbo::ptr<User> userData = session_->user(login_->user());
+	Dbo::Transaction transaction = dbmodel_->startTransaction();
+	dbo::ptr<User> userData = session_->user(login_->user());
 
-	emailResults_->setCheckState(userData->settings->notifications_email_results.value_or(true)?CheckState::Checked:CheckState::Unchecked);
-	emailContests_->setCheckState(userData->settings->notifications_email_contests.value_or(true)?CheckState::Checked:CheckState::Unchecked);
-	emailGeneral_->setCheckState(userData->settings->notifications_email_general.value_or(true)?CheckState::Checked:CheckState::Unchecked);
+	emailResults_->setCheckState(userData->settings->notifications_email_results.value_or(true) ? CheckState::Checked : CheckState::Unchecked);
+	emailContests_->setCheckState(userData->settings->notifications_email_contests.value_or(true) ? CheckState::Checked : CheckState::Unchecked);
+	emailGeneral_->setCheckState(userData->settings->notifications_email_general.value_or(true) ? CheckState::Checked : CheckState::Unchecked);
 
-	browserResults_->setCheckState(userData->settings->notifications_browser_results.value_or(false)?CheckState::Checked:CheckState::Unchecked);
-	browserContests_->setCheckState(userData->settings->notifications_browser_results.value_or(false)?CheckState::Checked:CheckState::Unchecked);
-	browserGeneral_->setCheckState(userData->settings->notifications_browser_results.value_or(false)?CheckState::Checked:CheckState::Unchecked);
+	browserResults_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
+	browserContests_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
+	browserGeneral_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
 
 	emailResultsChanged_ = false;
 	emailContestsChanged_ = false;
@@ -378,61 +406,61 @@ void ProfileWidget::NotificationsWidget::reset() {
 
 void ProfileWidget::NotificationsWidget::resetClicked() {
 
-        auto warningBox = addChild(cpp14::make_unique<WMessageBox>("Are you sure?","All changes will be lost. Do you want to continue?",
-                        Icon::Warning,StandardButton::Yes | StandardButton::No));
-        warningBox->buttonClicked().connect( [=] (StandardButton button) {
-                switch(button) {
-                        case StandardButton::Yes:
-                                reset();
-                                break;
-                        case StandardButton::No:
-                                break;
-                }
-                removeChild(warningBox);
-        });
-        warningBox->show();
+	auto warningBox = addChild(cpp14::make_unique<WMessageBox>("Are you sure?","All changes will be lost. Do you want to continue?",
+	                                                           Icon::Warning,StandardButton::Yes | StandardButton::No));
+	warningBox->buttonClicked().connect( [=] (StandardButton button) {
+		switch(button) {
+		case StandardButton::Yes:
+			reset();
+			break;
+		case StandardButton::No:
+			break;
+		}
+		removeChild(warningBox);
+	});
+	warningBox->show();
 }
 
 void ProfileWidget::NotificationsWidget::applyClicked() {
 
 	if(!emailResultsChanged_ && !emailContestsChanged_ && !emailGeneralChanged_ &&
-		!browserResultsChanged_ && !browserContestsChanged_ && !browserGeneralChanged_) return;
+	   !browserResultsChanged_ && !browserContestsChanged_ && !browserGeneralChanged_) return;
 
-        WStringStream strm ;
+	WStringStream strm;
 
-        strm << "The following data will be updated:<br/><br/>";
-        strm << "<ul>";
-	if(emailResultsChanged_) strm << "<li>eMail submission results to: <b>" << (emailResults_->isChecked()?"enabled":"disabled") << "</b></li>";
-	if(emailContestsChanged_) strm << "<li>eMail contests announcements to: <b>" << (emailContests_->isChecked()?"enabled":"disabled") << "</b></li>";
-	if(emailGeneralChanged_) strm << "<li>eMail general information to: <b>" << (emailGeneral_->isChecked()?"enabled":"disabled") << "</b></li>";
-	if(browserResultsChanged_) strm << "<li>Browser submission results to: <b>" << (browserResults_->isChecked()?"enabled":"disabled") << "</b></li>";
-	if(browserContestsChanged_) strm << "<li>Browser contests announcements to: <b>" << (browserContests_->isChecked()?"enabled":"disabled") << "</b></li>";
-	if(browserGeneralChanged_) strm << "<li>Browser general information to: <b>" << (browserGeneral_->isChecked()?"enabled":"disabled") << "</b></li>";
-        strm << "</ul>";
-        strm << "<br/>Do you want to continue?";
+	strm << "The following data will be updated:<br/><br/>";
+	strm << "<ul>";
+	if(emailResultsChanged_) strm << "<li>eMail submission results to: <b>" << (emailResults_->isChecked() ? "enabled" : "disabled") << "</b></li>";
+	if(emailContestsChanged_) strm << "<li>eMail contests announcements to: <b>" << (emailContests_->isChecked() ? "enabled" : "disabled") << "</b></li>";
+	if(emailGeneralChanged_) strm << "<li>eMail general information to: <b>" << (emailGeneral_->isChecked() ? "enabled" : "disabled") << "</b></li>";
+	if(browserResultsChanged_) strm << "<li>Browser submission results to: <b>" << (browserResults_->isChecked() ? "enabled" : "disabled") << "</b></li>";
+	if(browserContestsChanged_) strm << "<li>Browser contests announcements to: <b>" << (browserContests_->isChecked() ? "enabled" : "disabled") << "</b></li>";
+	if(browserGeneralChanged_) strm << "<li>Browser general information to: <b>" << (browserGeneral_->isChecked() ? "enabled" : "disabled") << "</b></li>";
+	strm << "</ul>";
+	strm << "<br/>Do you want to continue?";
 
-        auto warningBox = addChild(cpp14::make_unique<WMessageBox>("Are you sure?","",Icon::Information,StandardButton::Yes | StandardButton::No));
-        warningBox->textWidget()->setTextFormat(TextFormat::XHTML);
-        warningBox->setText(strm.str());
+	auto warningBox = addChild(cpp14::make_unique<WMessageBox>("Are you sure?","",Icon::Information,StandardButton::Yes | StandardButton::No));
+	warningBox->textWidget()->setTextFormat(TextFormat::XHTML);
+	warningBox->setText(strm.str());
 
-        warningBox->buttonClicked().connect( [=] (StandardButton button) {
-                switch(button) {
-                        case StandardButton::Yes:
-                                {
-                                Dbo::Transaction transaction = dbmodel_->startTransaction();
-                                dbo::ptr<User> userData = session_->user(login_->user());
-				if(emailResultsChanged_) userData->settings.modify()->notifications_email_results = (emailResults_->isChecked()?true:false);
-				if(emailContestsChanged_) userData->settings.modify()->notifications_email_contests = (emailContests_->isChecked()?true:false);
-				if(emailGeneralChanged_) userData->settings.modify()->notifications_email_general = (emailGeneral_->isChecked()?true:false);
-				if(browserResultsChanged_) userData->settings.modify()->notifications_browser_results = (browserResults_->isChecked()?true:false);
-				if(browserContestsChanged_) userData->settings.modify()->notifications_browser_contests = (browserContests_->isChecked()?true:false);
-				if(browserGeneralChanged_) userData->settings.modify()->notifications_browser_general = (browserGeneral_->isChecked()?true:false);
-                                }
-                                break;
-                        case StandardButton::No:
-                                break;
-                }
-                removeChild(warningBox);
-        });
-        warningBox->show();
+	warningBox->buttonClicked().connect( [=] (StandardButton button) {
+		switch(button) {
+		case StandardButton::Yes:
+			{
+			        Dbo::Transaction transaction = dbmodel_->startTransaction();
+			        dbo::ptr<User> userData = session_->user(login_->user());
+			        if(emailResultsChanged_) userData->settings.modify()->notifications_email_results = (emailResults_->isChecked() ? true : false);
+			        if(emailContestsChanged_) userData->settings.modify()->notifications_email_contests = (emailContests_->isChecked() ? true : false);
+			        if(emailGeneralChanged_) userData->settings.modify()->notifications_email_general = (emailGeneral_->isChecked() ? true : false);
+			        if(browserResultsChanged_) userData->settings.modify()->notifications_browser_results = (browserResults_->isChecked() ? true : false);
+			        if(browserContestsChanged_) userData->settings.modify()->notifications_browser_contests = (browserContests_->isChecked() ? true : false);
+			        if(browserGeneralChanged_) userData->settings.modify()->notifications_browser_general = (browserGeneral_->isChecked() ? true : false);
+			}
+			break;
+		case StandardButton::No:
+			break;
+		}
+		removeChild(warningBox);
+	});
+	warningBox->show();
 }

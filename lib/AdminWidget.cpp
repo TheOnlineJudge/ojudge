@@ -458,9 +458,9 @@ void AdminWidget::AdminProblemWidget::showAddEditDialog(const WModelIndex& index
 	if(index.isValid()) {
 		const std::shared_ptr<ProblemModel> problemModel = viewModels_->getProblemModel();
 		long long problemId = cpp17::any_cast<long long>(problemModel->data(index));
-	//	dbo::ptr<Problem> problem = dbmodel_->getProblem(cpp17::any_cast<long long>(viewModels_->getProblemModel()->data(index)));
-	//	id_->setText(std::to_string(problem.id()));
-	//	title_->setText(problem->title);
+		//	dbo::ptr<Problem> problem = dbmodel_->getProblem(cpp17::any_cast<long long>(viewModels_->getProblemModel()->data(index)));
+		//	id_->setText(std::to_string(problem.id()));
+		//	title_->setText(problem->title);
 		id_->setText(std::to_string(problemId));
 		title_->setText(cpp17::any_cast<std::string>(problemModel->data(problemModel->index(index.row(),1))));
 		categories_->setSelectedIndexes(viewModels_->getProblemModel()->getCategories(problemId));
@@ -568,22 +568,22 @@ AdminWidget::AdminSettingsWidget::AdminGeneralSettingsWidget::AdminGeneralSettin
 
 	setTemplateText(WString::tr("admin-settings-general"));
 
-        addFunction("block",&WTemplate::Functions::block);
-        addFunction("tr",&WTemplate::Functions::tr);
-        addFunction("id",&WTemplate::Functions::id);
+	addFunction("block",&WTemplate::Functions::block);
+	addFunction("tr",&WTemplate::Functions::tr);
+	addFunction("id",&WTemplate::Functions::id);
 
-        auto siteTitle = cpp14::make_unique<WLineEdit>(dbmodel_->getSiteSetting("sitetitle"));
-        bindWidget("sitetitle-setting",std::move(siteTitle));
+	auto siteTitle = cpp14::make_unique<WLineEdit>(dbmodel_->getSiteSetting("sitetitle"));
+	bindWidget("sitetitle-setting",std::move(siteTitle));
 
-        auto siteLogo = cpp14::make_unique<WLineEdit>(dbmodel_->getSiteSetting("sitelogo"));
-        bindWidget("sitelogo-setting",std::move(siteLogo));
+	auto siteLogo = cpp14::make_unique<WLineEdit>(dbmodel_->getSiteSetting("sitelogo"));
+	bindWidget("sitelogo-setting",std::move(siteLogo));
 
-        auto siteColor = cpp14::make_unique<OJColorPicker>(WColor(dbmodel_->getSiteSetting("sitecolor")));
-        siteColor->setWidth(50);
-        bindWidget("sitecolor-setting",std::move(siteColor));
+	auto siteColor = cpp14::make_unique<OJColorPicker>(WColor(dbmodel_->getSiteSetting("sitecolor")));
+	siteColor->setWidth(50);
+	bindWidget("sitecolor-setting",std::move(siteColor));
 
-        auto googleAnalytics = cpp14::make_unique<WLineEdit>(dbmodel_->getSiteSetting("googleanalytics"));
-        bindWidget("googleanalytics-setting",std::move(googleAnalytics));
+	auto googleAnalytics = cpp14::make_unique<WLineEdit>(dbmodel_->getSiteSetting("googleanalytics"));
+	bindWidget("googleanalytics-setting",std::move(googleAnalytics));
 
 	auto applyButton = cpp14::make_unique<WPushButton>("Apply");
 	applyButton->addStyleClass("btn-primary");

@@ -33,10 +33,10 @@ cpp17::any CountryModel::data(const WModelIndex& index, ItemDataRole role) const
 			return countryStore_->countryName(countryStore_->getCountry(index.row()));
 		}
 	} else if(role == ItemDataRole::Decoration) {
-                if(index.column()==0) {
-                        return std::string("images/flags/" + countryStore_->getCountry(index.row()) + ".svg");
-                }
-        } else if(role == ItemDataRole::StyleClass) {
+		if(index.column()==0) {
+			return std::string("images/flags/" + countryStore_->getCountry(index.row()) + ".svg");
+		}
+	} else if(role == ItemDataRole::StyleClass) {
 		if(index.column()==0) {
 			return std::string("oj-country-table-item");
 		}

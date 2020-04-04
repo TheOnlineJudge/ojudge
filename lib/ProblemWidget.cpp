@@ -87,7 +87,7 @@ void ProblemWidget::showSubmissionDialog() {
 	submissionDialog_->setProblem(problemData_);
 
 	submissionDialog_->finished().connect(this,&ProblemWidget::closeSubmissionDialog);
-        submissionDialog_->show();
+	submissionDialog_->show();
 }
 
 void ProblemWidget::closeSubmissionDialog(DialogCode code) {
@@ -228,7 +228,7 @@ void ProblemStatisticsDialog::setProblem(dbo::ptr<Problem> problemData) {
 }
 
 ProblemSubmissionDialog::ProblemSubmissionDialog(DBModel *dbmodel, ViewModels *viewModels, Session *session, Auth::Login *login)
-			: dbmodel_(dbmodel), viewModels_(viewModels), session_(session), login_(login) {
+	: dbmodel_(dbmodel), viewModels_(viewModels), session_(session), login_(login) {
 	setWindowTitle("Submit");
 	setClosable(true);
 	resize(1024,700);
@@ -273,8 +273,8 @@ void ProblemSubmissionDialog::setCode(std::string code) {
 
 void ProblemSubmissionDialog::saveSettings(OJCodeEditorSettings& settings) {
 
-        Dbo::Transaction transaction = dbmodel_->startTransaction();
-        dbo::ptr<User> userData = session_->user(login_->user());
+	Dbo::Transaction transaction = dbmodel_->startTransaction();
+	dbo::ptr<User> userData = session_->user(login_->user());
 
 	userData->settings.modify()->editor_fontsize = settings.fontsize;
 	userData->settings.modify()->editor_indent = settings.indent;

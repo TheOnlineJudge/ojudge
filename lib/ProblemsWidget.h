@@ -40,10 +40,10 @@ virtual std::unique_ptr<Wt::WWidget> update(Wt::WWidget *widget, const Wt::WMode
 
 private:
 struct WidgetRef {
-        std::unique_ptr<Wt::WWidget> created;
-        Wt::WWidget *w;
-        WidgetRef(Wt::WWidget *widget) : w(widget) {
-        }
+	std::unique_ptr<Wt::WWidget> created;
+	Wt::WWidget *w;
+	WidgetRef(Wt::WWidget *widget) : w(widget) {
+	}
 };
 ViewModels *viewModels_;
 };

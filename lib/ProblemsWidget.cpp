@@ -112,9 +112,9 @@ std::unique_ptr<WWidget> ProblemsWidget::ProblemDelegate::update(WWidget *widget
 	if(!widgetRef.w) {
 		isNew = true;
 		widgetRef.created = std::unique_ptr<WWidget>(new WContainerWidget());
-                WContainerWidget *t = static_cast<WContainerWidget*>(widgetRef.created.get());
+		WContainerWidget *t = static_cast<WContainerWidget*>(widgetRef.created.get());
 		t->setMargin(0);
-                t->addStyleClass("oj-problems-problems-item");
+		t->addStyleClass("oj-problems-problems-item");
 
 		auto layout = t->setLayout(cpp14::make_unique<WHBoxLayout>());
 		layout->setContentsMargins(3,3,3,3);
@@ -141,9 +141,9 @@ std::unique_ptr<WWidget> ProblemsWidget::ProblemDelegate::update(WWidget *widget
 		ratingLayout->addStretch(1);
 	}
 
-        if(isNew) {
-                return std::move(widgetRef.created);
-        } else {
-                return nullptr;
-        }
+	if(isNew) {
+		return std::move(widgetRef.created);
+	} else {
+		return nullptr;
+	}
 }

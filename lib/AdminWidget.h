@@ -39,10 +39,10 @@ Session *session_;
 ViewModels *viewModels_;
 DBModel *dbmodel_;
 Wt::Signal<Wt::Auth::Login&>& loginSignal() {
-        return loginSignal_;
+	return loginSignal_;
 }
 Wt::Signal<>& logoutSignal() {
-        return logoutSignal_;
+	return logoutSignal_;
 }
 
 Wt::Signal<Wt::Auth::Login&> loginSignal_;
@@ -180,10 +180,10 @@ void logout();
 private:
 DBModel *dbmodel_;
 Wt::Signal<Wt::Auth::Login&>& loginSignal() {
-        return loginSignal_;
+	return loginSignal_;
 }
 Wt::Signal<>& logoutSignal() {
-        return logoutSignal_;
+	return logoutSignal_;
 }
 
 Wt::Signal<Wt::Auth::Login&> loginSignal_;

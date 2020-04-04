@@ -157,8 +157,7 @@ DBModel::DBModel(Session* session) : session_(session) {
 			newUser = tmpUsers->registerNew();
 			newUser.addIdentity(Auth::Identity::LoginName, "admin");
 			newUser.setEmail("dummy@address.here");
-			firstRun = true;
-		}
+			firstRun = true;}
 	} catch (std::exception &e) {
 		std::cerr << e.what() << std::endl;
 		std::cerr << "Using existing database." << std::endl;

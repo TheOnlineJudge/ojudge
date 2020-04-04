@@ -56,10 +56,10 @@ void showSubmissionDialog();
 void closeStatisticsDialog();
 void closeSubmissionDialog(Wt::DialogCode code);
 Wt::Signal<Wt::Auth::Login&>& loginSignal() {
-        return loginSignal_;
+	return loginSignal_;
 }
 Wt::Signal<>& logoutSignal() {
-        return logoutSignal_;
+	return logoutSignal_;
 }
 
 Wt::Signal<Wt::Auth::Login&> loginSignal_;

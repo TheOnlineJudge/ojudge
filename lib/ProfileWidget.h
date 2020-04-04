@@ -33,11 +33,11 @@ Session *session_;
 DBModel *dbmodel_;
 const std::shared_ptr<CountryModel> countrymodel_;
 Wt::Signal<Wt::Auth::Login&>& loginSignal() {
-        return loginSignal_;
+	return loginSignal_;
 }
 
 Wt::Signal<>& logoutSignal() {
-        return logoutSignal_;
+	return logoutSignal_;
 }
 
 Wt::Signal<Wt::Auth::Login&> loginSignal_;
