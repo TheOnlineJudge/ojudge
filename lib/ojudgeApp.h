@@ -80,7 +80,7 @@ Wt::WMenuItem *profileMenu_;
 Wt::WMenuItem *profileFloatMenu_;
 Wt::WNavigationBar *floatNavBar_;
 Wt::Auth::AuthModel *authModel_;
-std::unique_ptr<LoginWidget> loginWidget_;
+LoginWidget *loginWidget_;
 
 Wt::Signal<Wt::Auth::Login&>& loginSignal() {
 	return loginSignal_;
@@ -94,6 +94,7 @@ Wt::Signal<> logoutSignal_;
 
 void pathChanged(std::string newPath);
 void switchNavbar(bool visible);
+void showLoginBar();
 void logout();
 
 Session *session_;

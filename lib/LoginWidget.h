@@ -20,8 +20,6 @@ class Session;
 class LoginWidget : public Wt::WContainerWidget {
 public:
 LoginWidget(Session *session);
-void login(Wt::Auth::Login& login);
-void logout();
 
 private:
 Session *session_;

@@ -15,12 +15,12 @@ AuthWidget::AuthWidget(Session &session) : Auth::AuthWidget(Session::auth(), ses
 
 }
 
-void AuthWidget::login(Auth::Login& login) {
+void AuthWidget::createLoginView() {
 
-}
+  setTemplateText(tr("template.login"));
 
-void AuthWidget::logout() {
-
+  createPasswordLoginView();
+  createOAuthLoginView();
 }
 
 std::unique_ptr<WWidget> AuthWidget::createRegistrationView(const Auth::Identity &id) {

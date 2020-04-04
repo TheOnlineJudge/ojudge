@@ -83,6 +83,28 @@ body {
   margin-bottom: 1px;
 }
 
+.oj-login-widget {
+  border-color:transparent !important;
+  height:150px !important;
+  background-image:none !important;
+  background-color:var(--ojcolor) !important;
+  box-shadow: 0 6px 8px -8px rgba(0, 0, 0, 0.8), 0 16px 20px -20px rgba(0, 0, 0, 0.19) !important;
+  border-bottom-left-radius:5px !important;
+  border-bottom-right-radius:5px !important;
+  max-width:1280px;
+  margin:0 !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+  margin-bottom:1px !important;
+  top:0;
+  border-width:0 0 1px;
+  position:fixed;
+  right:0;
+  left:0;
+  z-index:2000;
+  overflow:hidden;
+}
+
 .oj-footer a {
   color:white;
 }

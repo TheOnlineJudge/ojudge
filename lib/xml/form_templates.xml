@@ -50,6 +50,38 @@
       </div>
     </div>
   </message>
+  <message id="template.login">
+    <div class="Wt-form Wt-auth-login">
+      <div class="Wt-fields">
+	${<if:passwords>}
+          <label for="${id:user-name}">${user-name-label}
+            ${user-name-info class="Wt-info"}
+	  </label>
+	  ${user-name}
+
+	  ${block:Wt.Auth.field password}
+	  ${block:Wt.Auth.field remember-me}
+	 ${</if:passwords>}
+      </div>
+
+      ${<if:oauth>}
+
+        <div class="Wt-col-right">
+	  <h3>Or use:</h3>
+	  ${icons}
+	</div>
+
+      ${</if:oauth>}
+
+      <div class="Wt-buttons">
+	${login}
+      </div>
+
+      <div class="Wt-buttons">
+	${lost-password} ${sep} ${register}
+      </div>
+    </div>
+  </message>
   <message id="lineEdit-template">
     <div class="form-inline">
       <div class="form-group">
