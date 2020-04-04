@@ -134,7 +134,14 @@ body {
   text-align:right;
 }
 
-.oj-settings-group > input[type=text] {
+.oj-avatar-radiobutton {
+  width:unset !important;
+  font-weight:unset !important;
+  text-align:unset !important;
+}
+
+.oj-settings-group > input[type=text],
+.oj-settings-group > input[type=password] {
   width:200px;
 }
 

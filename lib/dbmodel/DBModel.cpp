@@ -59,7 +59,7 @@ void Session::createUserData(const Auth::User &newUser) {
 	userData.modify()->role = Role::Registered;
 	dbo::ptr<UserSettings> settings  = add(std::unique_ptr<UserSettings>(new UserSettings()));
 	dbo::ptr<UserAvatar> avatar = add(std::unique_ptr<UserAvatar>(new UserAvatar()));
-	avatar.modify()->useGravatar = false;
+	avatar.modify()->avatarType = AvatarType::Default;
 	userData.modify()->settings = settings;
 	userData.modify()->avatar = avatar;
 }
@@ -172,7 +172,7 @@ DBModel::DBModel(Session* session) : session_(session) {
 		userData.modify()->role = Role::Admin;
 		dbo::ptr<UserSettings> settings = session_->add(std::unique_ptr<UserSettings>(new UserSettings()));
 		dbo::ptr<UserAvatar> avatar = session_->add(std::unique_ptr<UserAvatar>(new UserAvatar()));
-		avatar.modify()->useGravatar = false;
+		avatar.modify()->avatarType = AvatarType::Default;
 		userData.modify()->settings = settings;
 		userData.modify()->avatar = avatar;
 		session_->passwordAuth().updatePassword(newUser,"admin");

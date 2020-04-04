@@ -18,6 +18,7 @@
 #include <Wt/WComboBox.h>
 #include <Wt/WImage.h>
 #include <Wt/WCheckBox.h>
+#include <Wt/WButtonGroup.h>
 #include "dbmodel/DBModel.h"
 #include "viewmodels/CountryModel.h"
 
@@ -56,6 +57,7 @@ const std::shared_ptr<CountryModel> countrymodel_;
 void reset();
 void resetClicked();
 void applyClicked();
+Wt::WButtonGroup *avatarGroup_;
 Wt::WLineEdit *username_;
 Wt::WLineEdit *email_;
 Wt::WLineEdit *firstname_;
@@ -65,6 +67,7 @@ Wt::WComboBox *country_;
 Wt::WImage *countryFlag_;
 Wt::WLineEdit *institution_;
 Wt::WLineEdit *uvaid_;
+bool avatarChanged_ = false;
 bool emailChanged_ = false;
 bool firstnameChanged_ = false;
 bool lastnameChanged_ = false;
@@ -82,6 +85,14 @@ void logout();
 private:
 Session *session_;
 DBModel *dbmodel_;
+Wt::Auth::Login *login_;
+void reset();
+void resetClicked();
+void applyClicked();
+Wt::WLineEdit *newPassword_;
+Wt::WLineEdit *repeatPassword_;
+Wt::WPushButton *twofa_;
+bool passwordChanged_ = false;
 };
 
 class NotificationsWidget : public Wt::WTemplate {

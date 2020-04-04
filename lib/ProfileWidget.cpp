@@ -18,6 +18,7 @@
 #include <Wt/WPushButton.h>
 #include <Wt/WMessageBox.h>
 #include <Wt/WTable.h>
+#include <Wt/WRadioButton.h>
 #include "viewmodels/CountryModel.h"
 #include "ProfileWidget.h"
 
@@ -71,52 +72,56 @@ ProfileWidget::AccountWidget::AccountWidget(Session *session, DBModel *dbmodel, 
         addFunction("tr",&WTemplate::Functions::tr);
         addFunction("id",&WTemplate::Functions::id);
 
+	auto avatarGroup = std::make_shared<WButtonGroup>();
+	auto avatarDefaultButton = cpp14::make_unique<WRadioButton>("Default");
+	avatarDefaultButton->addStyleClass("oj-avatar-radiobutton");
+	auto avatarGravatarButton = cpp14::make_unique<WRadioButton>("Gravatar / Libravatar");
+	avatarGravatarButton->addStyleClass("oj-avatar-radiobutton");
+	auto avatarCustomButton = cpp14::make_unique<WRadioButton>("Custom");
+	avatarCustomButton->addStyleClass("oj-avatar-radiobutton");
+	avatarGroup->addButton(bindWidget("avatar-none-setting",std::move(avatarDefaultButton)),(int)AvatarType::Default);
+	avatarGroup->addButton(bindWidget("avatar-gravatar-setting",std::move(avatarGravatarButton)),(int)AvatarType::Gravatar);
+	avatarGroup->addButton(bindWidget("avatar-custom-setting",std::move(avatarCustomButton)),(int)AvatarType::Custom);
+	avatarGroup->checkedChanged().connect( [=] { avatarChanged_ = true; });
+	avatarGroup_ = avatarGroup.get();
+
 	auto username = cpp14::make_unique<WLineEdit>();
 	username->disable();
-	username_ = username.get();
-	bindWidget("username-setting",std::move(username));
+	username_ = bindWidget("username-setting",std::move(username));
 
 	auto email = cpp14::make_unique<WLineEdit>();
 	email->changed().connect( [=] { emailChanged_ = true; });
-	email_ = email.get();
-	bindWidget("email-setting",std::move(email));
+	email_ = bindWidget("email-setting",std::move(email));
 
 	auto firstname = cpp14::make_unique<WLineEdit>();
 	firstname->changed().connect( [=] { firstnameChanged_ = true; });
-	firstname_ = firstname.get();
-	bindWidget("firstname-setting",std::move(firstname));
+	firstname_ = bindWidget("firstname-setting",std::move(firstname));
 
 	auto lastname = cpp14::make_unique<WLineEdit>();
 	lastname->changed().connect( [=] { lastnameChanged_ = true; });
-	lastname_ = lastname.get();
-	bindWidget("lastname-setting",std::move(lastname));
+	lastname_ = bindWidget("lastname-setting",std::move(lastname));
 
 	auto birthday = cpp14::make_unique<WDatePicker>();
 	birthday->lineEdit()->disable();
 	birthday->changed().connect( [=] { birthdayChanged_ = true; });
-	birthday_ = birthday.get();
-	bindWidget("birthday-setting",std::move(birthday));
+	birthday_ = bindWidget("birthday-setting",std::move(birthday));
 
+	auto country = cpp14::make_unique<WComboBox>();
+	country->setModel(countrymodel_);
+	country_ = bindWidget("country-setting",std::move(country));
 	auto countryFlag = cpp14::make_unique<WImage>();
 	countryFlag->addStyleClass("oj-country-flag");
-	countryFlag_ = countryFlag.get();
-	auto country = cpp14::make_unique<WComboBox>();
-	country_ = country.get();
-	country_->setModel(countrymodel_);
+	countryFlag_ = bindWidget("country-flag",std::move(countryFlag));
 	country_->changed().connect( [=] { countryFlag_->setImageLink(cpp17::any_cast<std::string>(countrymodel_->data(countrymodel_->index(country_->currentIndex(),0),ItemDataRole::Decoration))); });
 	country_->changed().connect( [=] { countryChanged_ = true; });
-	bindWidget("country-flag",std::move(countryFlag));
-	bindWidget("country-setting",std::move(country));
 
 	auto institution = cpp14::make_unique<WLineEdit>();
 	institution->changed().connect( [=] { institutionChanged_ = true; });
-	institution_ = institution.get();
-	bindWidget("institution-setting",std::move(institution));
+	institution_ = bindWidget("institution-setting",std::move(institution));
 
 	auto uvaid = cpp14::make_unique<WLineEdit>();
 	uvaid->disable();
-	uvaid_ = uvaid.get();
-	bindWidget("uvaid-setting",std::move(uvaid));
+	uvaid_ = bindWidget("uvaid-setting",std::move(uvaid));
 
 	auto applyButton = cpp14::make_unique<WPushButton>("Apply");
 	applyButton->addStyleClass("btn-primary");
@@ -143,6 +148,8 @@ void ProfileWidget::AccountWidget::reset() {
 	Dbo::Transaction transaction = dbmodel_->startTransaction();
 	dbo::ptr<User> userData = session_->user(login_->user());
 
+	avatarGroup_->button((int)userData->avatar->avatarType)->setChecked();
+	avatarChanged_ = false;
 	username_->setText(login_->user().identity("loginname"));
 	email_->setText(login_->user().email());
 	emailChanged_ = false;
@@ -179,12 +186,13 @@ void ProfileWidget::AccountWidget::resetClicked() {
 
 void ProfileWidget::AccountWidget::applyClicked() {
 
-	if(!emailChanged_ && !firstnameChanged_ && !lastnameChanged_ && !birthdayChanged_ && !countryChanged_ && !institutionChanged_) return;
+	if(!avatarChanged_ && !emailChanged_ && !firstnameChanged_ && !lastnameChanged_ && !birthdayChanged_ && !countryChanged_ && !institutionChanged_) return;
 
 	WStringStream strm ;
 
 	strm << "The following data will be updated:<br/><br/>";
 	strm << "<ul>";
+	if(avatarChanged_) strm << "<li>Avatar changed to: <b>" << avatarGroup_->checkedButton()->text().toUTF8() << "</b></li>";
 	if(emailChanged_) strm << "<li>eMail address to: <b>" << email_->text().toUTF8() << "</b></li>";
 	if(firstnameChanged_) strm << "<li>First Name to: <b>" << firstname_->text().toUTF8() << "</b></li>";
 	if(lastnameChanged_) strm << "<li>Last Name to: <b>" << lastname_->text().toUTF8() << "</b></li>";
@@ -204,6 +212,7 @@ void ProfileWidget::AccountWidget::applyClicked() {
 				{
 				Dbo::Transaction transaction = dbmodel_->startTransaction();
         			dbo::ptr<User> userData = session_->user(login_->user());
+				if(avatarChanged_) userData->avatar.modify()->avatarType = (AvatarType)avatarGroup_->checkedId();
 				if(emailChanged_) myAuthService.verifyEmailAddress(login_->user(),email_->text().toUTF8());
 				if(firstnameChanged_) userData.modify()->firstName = firstname_->text().toUTF8();
 				if(lastnameChanged_) userData.modify()->lastName = lastname_->text().toUTF8();
@@ -229,19 +238,63 @@ ProfileWidget::SecurityWidget::SecurityWidget(Session *session, DBModel *dbmodel
         addFunction("tr",&WTemplate::Functions::tr);
         addFunction("id",&WTemplate::Functions::id);
 
+	auto newPassword = cpp14::make_unique<WLineEdit>();
+	newPassword->setEchoMode(EchoMode::Password);
+	newPassword_ = bindWidget("newpassword-setting",std::move(newPassword));
+
+	auto repeatPassword = cpp14::make_unique<WLineEdit>();
+	repeatPassword->setEchoMode(EchoMode::Password);
+	repeatPassword_ = bindWidget("repeatpassword-setting",std::move(repeatPassword));
+
+	auto twofa = cpp14::make_unique<WPushButton>();
+	twofa->setText("Enable 2FA");
+	twofa->addStyleClass("btn-primary");
+	twofa_ = bindWidget("twofa-setting",std::move(twofa));
+
         auto applyButton = cpp14::make_unique<WPushButton>("Apply");
         applyButton->addStyleClass("btn-primary");
         bindWidget("apply-button",std::move(applyButton));
 
         auto resetButton = cpp14::make_unique<WPushButton>("Reset");
+	resetButton->clicked().connect(this,&ProfileWidget::SecurityWidget::resetClicked);
         bindWidget("reset-button",std::move(resetButton));
 }
 
 void ProfileWidget::SecurityWidget::login(Auth::Login& login) {
 
+        login_ = &login;
+        reset();
 }
 
 void ProfileWidget::SecurityWidget::logout() {
+
+}
+
+void ProfileWidget::SecurityWidget::reset() {
+
+	newPassword_->setText("");
+	repeatPassword_->setText("");
+	passwordChanged_ = false;
+}
+
+void ProfileWidget::SecurityWidget::resetClicked() {
+
+        auto warningBox = addChild(cpp14::make_unique<WMessageBox>("Are you sure?","All changes will be lost. Do you want to continue?",
+                        Icon::Warning,StandardButton::Yes | StandardButton::No));
+        warningBox->buttonClicked().connect( [=] (StandardButton button) {
+                switch(button) {
+                        case StandardButton::Yes:
+                                reset();
+                                break;
+                        case StandardButton::No:
+                                break;
+                }
+                removeChild(warningBox);
+        });
+        warningBox->show();
+}
+
+void ProfileWidget::SecurityWidget::applyClicked() {
 
 }
 

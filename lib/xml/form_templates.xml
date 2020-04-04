@@ -82,7 +82,14 @@
     <div class="oj-settings-buttons">${apply-button} ${reset-button}</div>
   </message>
   <message id="settings-account">
-    ${block:settingsField-template avatar}
+    <div class="form-inline oj-form-inline">
+      <div class="form-group oj-settings-group">
+        <label>${tr:avatar-label}</label>
+        ${avatar-none-setting}
+	${avatar-gravatar-setting}
+        ${avatar-custom-setting}
+      </div>
+    </div>
     ${block:settingsField-template username}
     ${block:settingsField-template email}
     ${block:settingsField-template firstname}
