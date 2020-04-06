@@ -103,6 +103,76 @@ body {
   left:0;
   z-index:2000;
   overflow:hidden;
+  color:white;
+}
+
+.oj-login-widget .left-stretch {
+  width:300px;
+  height:150px;
+  float:left;
+}
+
+.oj-login-widget .form-group {
+  display:flex;
+  margin-top:6px;
+}
+
+.oj-login-widget .control-label {
+  width:175px;
+  line-height:2.5;
+  text-align:right;
+  padding-right:10px;
+}
+
+.oj-login-widget .form-rememberme {
+  padding-left:175px;
+  margin-top:1px;
+}
+
+.oj-login-widget .form-rememberme .remember-label {
+  font-weight:normal;
+  padding-left:5px;
+  margin-bottom:0px;
+}
+
+.oj-login-widget .form-password button {
+  margin-left:10px;
+}
+
+.oj-login-widget .lost-password span {
+  margin-left:175px;
+  cursor:pointer;
+}
+
+.oj-login-widget .lost-password span:hover {
+  text-decoration:underline;
+}
+
+.oj-login-widget .password-auth {
+  margin-top:15px;
+  height:135px;
+  width:600px;
+  float:left;
+}
+
+.oj-login-widget .right-column {
+  height:135px;
+  margin-top:15px;
+  float:left;
+}
+
+.oj-login-widget .right-column span {
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.oj-login-widget .right-column span:hover {
+  text-decoration:underline;
+}
+
+.oj-login-widget input[type=text],
+.oj-login-widget input[type=password] {
+  width:275px;
 }
 
 .oj-footer a {

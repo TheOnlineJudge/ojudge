@@ -23,4 +23,10 @@
   <message id="indent-label">Indent</message>
   <message id="wrap-label">Word Wrap</message>
   <message id="theme-label">Theme</message>
+
+  <message id="OJ.Auth.user-name">Username</message>
+  <message id="OJ.Auth.password">Password</message>
+  <message id="OJ.Auth.remember-me">Remember me</message>
+  <message id="OJ.Auth.donthave">Don't have an account?</message>
+  <message id="OJ.Auth.orlogin">or login with</message>
 </messages>

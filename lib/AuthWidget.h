@@ -20,6 +20,7 @@ class AuthWidget : public Auth::AuthWidget {
 public:
 AuthWidget(Session &session);
 virtual void createLoginView() override;
+virtual void createLoggedInView() override;
 virtual std::unique_ptr<WWidget> createRegistrationView(const Auth::Identity& id) override;
 void resetForm();
 

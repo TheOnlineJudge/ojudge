@@ -33,3 +33,13 @@ LoginWidget::LoginWidget(Session *session) : session_(session) {
 		}
 	});
 }
+
+void LoginWidget::login(Auth::Login& login) {
+
+	WAnimation anim(AnimationEffect::SlideInFromTop | AnimationEffect::Fade);
+	animateHide(anim);
+}
+
+void LoginWidget::logout() {
+
+}

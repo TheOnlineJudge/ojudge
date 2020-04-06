@@ -181,6 +181,8 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	dashboardFloatMenu_ = mainFloatMenu_->addItem(WString("Dashboard"));
 
 	loginWidget_ = vbox->addWidget(std::move(cpp14::make_unique<LoginWidget>(session_)));
+	loginSignal().connect(loginWidget_,&LoginWidget::login);
+	logoutSignal().connect(loginWidget_,&LoginWidget::logout);
         loginWidget_->addStyleClass("oj-login-widget");
 	loginWidget_->hide();
 
