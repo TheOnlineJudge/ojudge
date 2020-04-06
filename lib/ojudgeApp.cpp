@@ -180,12 +180,20 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	dashboardMenu_ = mainMenu_->addItem(WString("Dashboard"),std::move(dashboardWidget));
 	dashboardFloatMenu_ = mainFloatMenu_->addItem(WString("Dashboard"));
 
-	loginWidget_ = cpp14::make_unique<LoginWidget>(session_);
-	loginSignal().connect(loginWidget_.get(),&LoginWidget::login);
-	logoutSignal().connect(loginWidget_.get(),&LoginWidget::logout);
+	loginWidget_ = vbox->addWidget(std::move(cpp14::make_unique<LoginWidget>(session_)));
+	loginSignal().connect(loginWidget_,&LoginWidget::login);
+	logoutSignal().connect(loginWidget_,&LoginWidget::logout);
+        loginWidget_->addStyleClass("oj-login-widget");
+	loginWidget_->hide();
 
-	loginMenu_ = mainMenu_->addItem(WString("Login"),std::move(loginWidget_));
+	loginMenu_ = mainMenu_->addItem(WString("Login"));
+	loginMenu_->setInternalPathEnabled(false);
+	loginMenu_->setSelectable(false);
+	loginMenu_->clicked().connect(this,&ojudgeApp::showLoginBar);
 	loginFloatMenu_ = mainFloatMenu_->addItem(WString("Login"));
+	loginFloatMenu_->setInternalPathEnabled(false);
+	loginFloatMenu_->setSelectable(false);
+	loginFloatMenu_->clicked().connect(this,&ojudgeApp::showLoginBar);
 
 	auto profilePopup = cpp14::make_unique<WPopupMenu>();
 	auto profilePopupProfile = profilePopup->addItem(WString("Profile"));
@@ -365,6 +373,13 @@ void ojudgeApp::switchNavbar(bool visible) {
 	} else {
 		floatNavBar_->animateShow(anim);
 	}
+}
+
+void ojudgeApp::showLoginBar() {
+
+	WAnimation anim(AnimationEffect::SlideInFromTop | AnimationEffect::Fade);
+
+	loginWidget_->animateShow(anim);
 }
 
 void ojudgeApp::logout() {

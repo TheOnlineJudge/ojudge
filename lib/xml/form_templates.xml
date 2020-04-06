@@ -50,6 +50,68 @@
       </div>
     </div>
   </message>
+  <message id="OJ.template.login">
+    <div class="left-stretch"/>
+    <div class="password-auth">
+         <div class="username-auth">
+          ${block:OJ.Auth.field user-name}
+          ${block:OJ.Auth.fieldremember remember-me}
+	  ${block:OJ.Auth.fieldpassword password}
+          <div class="lost-password">${lost-password}</div>
+         </div>
+    </div>
+    <div class="right-column">
+      ${tr:OJ.Auth.donthave}
+      <div class="register-here">${register}${<if:oauth>} ${tr:OJ.Auth.orlogin}:${</if:oauth>}</div>
+      ${<if:oauth>}
+	  ${icons}
+      ${</if:oauth>}
+    </div>
+  </message>
+  <message id="OJ.template.loggedin">
+  </message>
+  <message id="OJ.Auth.field">
+    <![CDATA[
+    ${<if:{1}>}
+    <div class="form-inline">
+    <div class="form-group">
+    <label for="${id:{1}}" class="control-label">
+      ${tr:OJ.Auth.{1}}
+    </label>
+    ${{1}}
+    </div>
+    </div>
+    ${</if:{1}>}
+    ]]>
+  </message>
+  <message id="OJ.Auth.fieldremember">
+    <![CDATA[
+    ${<if:{1}>}
+    <div class="form-inline">
+    <div class="form-group form-rememberme">
+    ${{1}}
+    <label for="${id:{1}}" class="remember-label">
+      ${tr:OJ.Auth.{1}}
+    </label>
+    </div>
+    </div>
+    ${</if:{1}>}
+    ]]>
+  </message>
+  <message id="OJ.Auth.fieldpassword">
+    <![CDATA[
+    ${<if:{1}>}
+    <div class="form-inline">
+    <div class="form-group form-password">
+    <label for="${id:{1}}" class="control-label">
+      ${tr:OJ.Auth.{1}}
+    </label>
+    ${{1}} ${login}
+    </div>
+    </div>
+    ${</if:{1}>}
+    ]]>
+  </message>
   <message id="lineEdit-template">
     <div class="form-inline">
       <div class="form-group">

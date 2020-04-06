@@ -15,12 +15,12 @@ AuthWidget::AuthWidget(Session &session) : Auth::AuthWidget(Session::auth(), ses
 
 }
 
-void AuthWidget::login(Auth::Login& login) {
+void AuthWidget::createLoginView() {
 
-}
+  setTemplateText(tr("OJ.template.login"));
 
-void AuthWidget::logout() {
-
+  createPasswordLoginView();
+  createOAuthLoginView();
 }
 
 std::unique_ptr<WWidget> AuthWidget::createRegistrationView(const Auth::Identity &id) {
@@ -33,6 +33,12 @@ std::unique_ptr<WWidget> AuthWidget::createRegistrationView(const Auth::Identity
 
 	registrationView->setModel(std::move(model));
 	return std::move(registrationView);
+}
+
+void AuthWidget::createLoggedInView() {
+
+	setTemplateText(tr("OJ.template.loggedin"));
+
 }
 
 void AuthWidget::resetForm() {
