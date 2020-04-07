@@ -203,6 +203,10 @@ body {
   padding: 20px;
 }
 
+.oj-settings-stack {
+  min-height: calc(100vh - 381px);
+}
+
 .oj-boxes {
   height:400px;
   margin-top:40px;
@@ -370,7 +374,8 @@ body {
   visibility:hidden;
 }
 
-.flex-column.nav > li.active > a {
+.flex-column.nav > li.active > a,
+.flex-column.nav > li > ul > li.active a {
   border-top-left-radius:5px;
   border-bottom-left-radius:5px;
   background:linear-gradient(to right, var(--ojcolor) 0%, var(--ojcolor) 70%, white 100%);

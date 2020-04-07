@@ -163,6 +163,12 @@
     ${block:mailField-template auth-mail-sender-address}
     ${tr:yourconfigfile} <b>${config-file-path}</b><br/>
     ${tr:changesmustbedonethere}
+    <div class="form-inline oj-form-inline">
+      <div class="form-group oj-settings-group">
+        <label for="${id:test-mail}">${tr:test-mail-label}</label>
+        ${test-mail} ${test-mail-button}
+      </div>
+    </div>
   </message>
   <message id="settings-account">
     <div class="form-inline oj-form-inline">

@@ -22,6 +22,8 @@
 #include <Wt/WMenu.h>
 #include <Wt/WStackedWidget.h>
 #include <Wt/WApplication.h>
+#include <Wt/Mail/Client.h>
+#include <Wt/Mail/Message.h>
 #include "dbmodel/DBModel.h"
 #include "widgets/OJColorPicker.h"
 #include "AdminWidget.h"
@@ -36,9 +38,10 @@ AdminWidget::AdminWidget(Session *session,ViewModels *viewModels,DBModel *dbmode
 	auto pageTitle = mainLayout->addWidget(cpp14::make_unique<WText>("Admin"),0);
 	pageTitle->addStyleClass("oj-pagetitle");
 
-	auto contentLayout = mainLayout->addLayout(cpp14::make_unique<WHBoxLayout>(),0);
+	auto contentLayout = mainLayout->addLayout(cpp14::make_unique<WHBoxLayout>(),1);
 	contentLayout->setContentsMargins(0,0,0,0);
 	auto mainStack = cpp14::make_unique<WStackedWidget>();
+	mainStack->addStyleClass("oj-settings-stack");
 	auto mainMenu = contentLayout->addWidget(cpp14::make_unique<WMenu>(mainStack.get()),0);
 	auto settingsMenu = cpp14::make_unique<WMenu>(mainStack.get());
 	mainMenu->addStyleClass("flex-column");
@@ -603,7 +606,56 @@ AdminWidget::AdminMailSettingsWidget::AdminMailSettingsWidget() {
 	mainTemplate->addFunction("tr",&WTemplate::Functions::tr);
 	mainTemplate->addFunction("id",&WTemplate::Functions::id);
 
+	std::vector<std::string> settingFields = {
+		"smtp-self-host",
+		"smtp-host",
+		"smtp-port",
+		"smtp-auth-username",
+		"smtp-auth-method",
+		"smtp-transport-encryption",
+		"auth-mail-sender-name",
+		"auth-mail-sender-address"
+	};
+
+	std::string tmpstr;
+	for(const auto &field: settingFields) {
+		auto tmpLineEdit = cpp14::make_unique<WLineEdit>(app->readConfigurationProperty(field,tmpstr)?tmpstr:"<not set>");
+		tmpLineEdit->disable();
+		mainTemplate->bindWidget(field + "-setting",std::move(tmpLineEdit));
+	}
+	auto tmpLineEdit = cpp14::make_unique<WLineEdit>(app->readConfigurationProperty("smtp-auth-password",tmpstr)?"<set and hidden>":"<not set>");
+	tmpLineEdit->disable();
+	mainTemplate->bindWidget("smtp-auth-password-setting",std::move(tmpLineEdit));
+
 	mainTemplate->bindWidget("config-file-path",cpp14::make_unique<WText>(WT_CONFIG_XML));
+
+	auto testEmail = cpp14::make_unique<WLineEdit>();
+	testEmail->setPlaceholderText("test@address.here");
+	auto testEmailPtr = testEmail.get();
+	mainTemplate->bindWidget("test-mail",std::move(testEmail));
+
+	auto testButton = cpp14::make_unique<WPushButton>("Send");
+	testButton->clicked().connect( [=] {
+		testEmailPtr->removeStyleClass("has-error");
+		testEmailPtr->removeStyleClass("has-success");
+		Mail::Message message;
+		std::string tmpstr1;
+		std::string tmpstr2;
+		app->readConfigurationProperty("auth-mail-sender-address",tmpstr1);
+		app->readConfigurationProperty("auth-mail-sender-name",tmpstr2);
+		message.setFrom(Mail::Mailbox(tmpstr1,tmpstr2));
+		message.addRecipient(Mail::RecipientType::To,Mail::Mailbox(testEmailPtr->text().toUTF8(),testEmailPtr->text().toUTF8()));
+		message.setSubject("Test email");
+		message.setBody("Mail configuration seems to work!");
+		
+		Mail::Client client;
+		client.connect();
+		bool result = client.send(message);
+
+		testEmailPtr->addStyleClass(result?"has-success":"has-error");
+	});
+		
+	mainTemplate->bindWidget("test-mail-button",std::move(testButton));
 
 	mainLayout->addWidget(std::move(mainTemplate),1);
 }

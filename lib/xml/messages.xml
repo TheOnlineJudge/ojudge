@@ -28,8 +28,9 @@
   <message id="smtp-auth-password-label">SMTP Password</message>
   <message id="smtp-auth-method-label">SMTP Auth Method</message>
   <message id="smtp-transport-encryption-label">SMTP Transport</message>
-  <message id="auth-mail-sender-name-label">Auth Mails Sender</message>
-  <message id="auth-mail-sender-address-label">Auth Mails Address</message>
+  <message id="auth-mail-sender-name-label">Auth Mail Sender</message>
+  <message id="auth-mail-sender-address-label">Auth Mail Address</message>
+  <message id="test-mail-label">Send test email</message>
 
   <message id="fontsize-label">Font Size</message>
   <message id="indent-label">Indent</message>
