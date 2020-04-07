@@ -136,12 +136,33 @@
       </div>
     </div>
   </message>
+  <message id="mailField-template">
+    <div class="form-inline oj-form-inline">
+      <div class="form-group oj-settings-group">
+        <label for="${id:{1}-setting}">${tr:{1}-label}</label>
+        ${{1}-setting} <i>{1}</i>
+      </div>
+    </div>
+  </message>
   <message id="admin-settings-general">
     ${block:settingsField-template sitetitle}
     ${block:settingsField-template sitelogo}
     ${block:settingsField-template sitecolor}
     ${block:settingsField-template googleanalytics}
     <div class="oj-settings-buttons">${apply-button} ${reset-button}</div>
+  </message>
+  <message id="admin-settings-mail">
+    ${block:mailField-template smtp-self-host}
+    ${block:mailField-template smtp-host}
+    ${block:mailField-template smtp-port}
+    ${block:mailField-template smtp-auth-username}
+    ${block:mailField-template smtp-auth-password}
+    ${block:mailField-template smtp-auth-method}
+    ${block:mailField-template smtp-transport-encryption}
+    ${block:mailField-template auth-mail-sender-name}
+    ${block:mailField-template auth-mail-sender-address}
+    ${tr:yourconfigfile} <b>${config-file-path}</b><br/>
+    ${tr:changesmustbedonethere}
   </message>
   <message id="settings-account">
     <div class="form-inline oj-form-inline">

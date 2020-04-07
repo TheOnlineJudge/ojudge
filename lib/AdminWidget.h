@@ -171,25 +171,7 @@ Wt::Signal<const Wt::WModelIndex&> deleteProblem_;
 
 };
 
-class AdminSettingsWidget : public Wt::WContainerWidget {
-public:
-AdminSettingsWidget(DBModel *dbmodel);
-void login(Wt::Auth::Login& login);
-void logout();
-
-private:
-DBModel *dbmodel_;
-Wt::Signal<Wt::Auth::Login&>& loginSignal() {
-	return loginSignal_;
-}
-Wt::Signal<>& logoutSignal() {
-	return logoutSignal_;
-}
-
-Wt::Signal<Wt::Auth::Login&> loginSignal_;
-Wt::Signal<> logoutSignal_;
-
-class AdminGeneralSettingsWidget : public Wt::WTemplate {
+class AdminGeneralSettingsWidget : public Wt::WContainerWidget {
 public:
 AdminGeneralSettingsWidget(DBModel *dbmodel);
 void login(Wt::Auth::Login& login);
@@ -199,9 +181,9 @@ private:
 DBModel *dbmodel_;
 };
 
-class AdminMailSettingsWidget : public Wt::WTemplate {
+class AdminMailSettingsWidget : public Wt::WContainerWidget {
 public:
-AdminMailSettingsWidget(DBModel *dbmodel);
+AdminMailSettingsWidget();
 void login(Wt::Auth::Login& login);
 void logout();
 
@@ -209,7 +191,7 @@ private:
 DBModel *dbmodel_;
 };
 
-class AdminContactSettingsWidget : public Wt::WTemplate {
+class AdminContactSettingsWidget : public Wt::WContainerWidget {
 public:
 AdminContactSettingsWidget(DBModel *dbmodel);
 void login(Wt::Auth::Login& login);
@@ -227,8 +209,6 @@ void logout();
 
 private:
 DBModel *dbmodel_;
-};
-
 };
 
 class AdminUserWidget : public Wt::WContainerWidget {
