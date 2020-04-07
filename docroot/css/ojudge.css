@@ -175,6 +175,19 @@ body {
   width:275px;
 }
 
+.oj-login-widget .has-error .control-label,
+.oj-login-widget .has-success .control-label {
+  color:white;
+}
+
+.oj-login-widget .has-error .form-control {
+  background-color:#ffcccc;
+}
+
+.oj-login-widget .has-success .form-control {
+  background-color:#ccffcc;
+}
+
 .oj-footer a {
   color:white;
 }
