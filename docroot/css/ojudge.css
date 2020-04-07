@@ -175,6 +175,19 @@ body {
   width:275px;
 }
 
+.oj-login-widget .has-error .control-label,
+.oj-login-widget .has-success .control-label {
+  color:white;
+}
+
+.oj-login-widget .has-error .form-control {
+  background-color:#ffcccc;
+}
+
+.oj-login-widget .has-success .form-control {
+  background-color:#ccffcc;
+}
+
 .oj-footer a {
   color:white;
 }
@@ -188,6 +201,10 @@ body {
 .oj-maincontent {
   min-height: calc(100vh - 284px);
   padding: 20px;
+}
+
+.oj-settings-stack {
+  min-height: calc(100vh - 381px);
 }
 
 .oj-boxes {
@@ -357,7 +374,8 @@ body {
   visibility:hidden;
 }
 
-.flex-column.nav > li.active > a {
+.flex-column.nav > li.active > a,
+.flex-column.nav > li > ul > li.active a {
   border-top-left-radius:5px;
   border-bottom-left-radius:5px;
   background:linear-gradient(to right, var(--ojcolor) 0%, var(--ojcolor) 70%, white 100%);

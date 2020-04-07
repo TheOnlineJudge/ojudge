@@ -19,6 +19,19 @@
   <message id="repeatpassword-label">Repeat Password</message>
   <message id="twofa-label">2F Authentication</message>
 
+  <message id="yourconfigfile">You current Wt config file is:</message>
+  <message id="changesmustbedonethere">Any changes to this configuration must be done directly in that file, according to the field names shown above. Check Wt docs for more information.</message>
+  <message id="smtp-self-host-label">SMTP Self Host</message>
+  <message id="smtp-host-label">SMTP Server Host</message>
+  <message id="smtp-port-label">SMTP Server Port</message>
+  <message id="smtp-auth-username-label">SMTP Username</message>
+  <message id="smtp-auth-password-label">SMTP Password</message>
+  <message id="smtp-auth-method-label">SMTP Auth Method</message>
+  <message id="smtp-transport-encryption-label">SMTP Transport</message>
+  <message id="auth-mail-sender-name-label">Auth Mail Sender</message>
+  <message id="auth-mail-sender-address-label">Auth Mail Address</message>
+  <message id="test-mail-label">Send test email</message>
+
   <message id="fontsize-label">Font Size</message>
   <message id="indent-label">Indent</message>
   <message id="wrap-label">Word Wrap</message>

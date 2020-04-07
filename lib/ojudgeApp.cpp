@@ -331,8 +331,8 @@ void ojudgeApp::pathChanged(std::string newPath) {
 	if(mainFloatMenu_->currentItem() != NULL)
 		mainFloatMenu_->currentItem()->renderSelected(false);
 
-	if(newPath.substr(0,9)=="/problem/") {
-		problemWidget_->setProblem(std::stoi(newPath.substr(9)));
+	if(internalPathMatches("/problem/")) {
+		problemWidget_->setProblem(std::stoi(internalPathNextPart("/problem/")));
 		mainStack_->setCurrentWidget(problemWidget_);
 	} else if(newPath=="/about") {
 		mainStack_->setCurrentWidget(aboutWidget_);
