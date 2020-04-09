@@ -203,10 +203,6 @@ body {
   padding: 20px;
 }
 
-.oj-settings-stack {
-  min-height: calc(100vh - 381px);
-}
-
 .oj-boxes {
   height:400px;
   margin-top:40px;
@@ -238,6 +234,11 @@ body {
   margin-bottom:2px;
 }
 
+.oj-settings-avatar {
+  border:1px solid #ccc;
+  float:right;
+}
+
 .oj-settings-group > label {
   width:175px;
   text-align:right;
@@ -252,6 +253,19 @@ body {
 .oj-settings-group > input[type=text],
 .oj-settings-group > input[type=password] {
   width:200px;
+}
+
+.oj-settings-avatar-upload.hidden {
+  display:none;
+}
+
+.oj-settings-avatar-upload label {
+  width:175px;
+  text-align:right;
+}
+
+.oj-settings-avatar-upload input[type=file] {
+  display:inline-block;
 }
 
 .oj-settings-buttons {

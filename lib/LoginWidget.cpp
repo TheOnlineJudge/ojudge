@@ -19,12 +19,13 @@ using namespace Wt;
 
 LoginWidget::LoginWidget(Session *session) : session_(session) {
 
-	authWidget_ = cpp14::make_unique<AuthWidget>(*session_);
-	authWidget_->model()->addPasswordAuth(&Session::passwordAuth());
-	authWidget_->model()->addOAuth(Session::oAuth());
-	authWidget_->setRegistrationEnabled(true);
-	authWidget_->processEnvironment();
-	addWidget(std::move(authWidget_));
+	auto authWidget = cpp14::make_unique<AuthWidget>(*session_);
+	authWidget->model()->addPasswordAuth(&Session::passwordAuth());
+	authWidget->model()->addOAuth(Session::oAuth());
+	authWidget->setRegistrationEnabled(true);
+	authWidget->processEnvironment();
+	authWidget_ = authWidget.get();
+	addWidget(std::move(authWidget));
 
 	mouseWentOut().connect( [=] (WMouseEvent event) {
 		if(event.widget().x < 0 || event.widget().x > 1279 || event.widget().y > 149) {
@@ -32,6 +33,10 @@ LoginWidget::LoginWidget(Session *session) : session_(session) {
 			animateHide(anim);
 		}
 	});
+}
+
+AuthWidget* LoginWidget::authWidget() {
+	return authWidget_;
 }
 
 void LoginWidget::login(Auth::Login& login) {

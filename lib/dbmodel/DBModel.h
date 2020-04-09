@@ -169,6 +169,8 @@ std::optional<bool> firstlogin;
 Submissions submissions;
 dbo::weak_ptr<UserSettings> settings;
 
+const std::string avatarLink(const AvatarType type, int size = 128) const;
+
 template<class Action>
 void persist(Action& a)
 {
@@ -185,6 +187,9 @@ void persist(Action& a)
 	dbo::hasMany(a, submissions, dbo::ManyToOne, "user");
 	dbo::hasOne(a, settings, "user");
 }
+
+private:
+const std::string bin_to_hex(const std::string bin) const;
 };
 
 class UserSettings {

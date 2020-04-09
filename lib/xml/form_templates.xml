@@ -171,6 +171,7 @@
     </div>
   </message>
   <message id="settings-account">
+    <div class="oj-settings-avatar">${avatar-image}</div>
     <div class="form-inline oj-form-inline">
       <div class="form-group oj-settings-group">
         <label>${tr:avatar-label}</label>
@@ -179,6 +180,7 @@
         ${avatar-custom-setting}
       </div>
     </div>
+    ${upload-avatar}
     ${block:settingsField-template username}
     ${block:settingsField-template email}
     ${block:settingsField-template firstname}
@@ -195,10 +197,8 @@
     <div class="oj-settings-buttons">${apply-button} ${reset-button}</div>
   </message>
   <message id="settings-security">
-    ${block:settingsField-template newpassword}
-    ${block:settingsField-template repeatpassword}
+    ${block:settingsField-template changepassword}
     ${block:settingsField-template twofa}
-    <div class="oj-settings-buttons">${apply-button} ${reset-button}</div>
   </message>
   <message id="settings-notifications">
     ${notifications-table}

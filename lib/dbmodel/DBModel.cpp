@@ -14,6 +14,7 @@
 #include <Wt/Auth/Dbo/UserDatabase.h>
 #include <Wt/Dbo/backend/Postgres.h>
 #include <Wt/Dbo/Impl.h>
+#include <Wt/Utils.h>
 
 #include "DBModel.h"
 
@@ -259,4 +260,29 @@ Languages DBModel::getLanguages() {
 
 	dbo::Transaction t = startTransaction();
 	return session_->find<Language>();
+}
+
+const std::string User::avatarLink(const AvatarType type, int size) const {
+
+	switch(type) {
+	case AvatarType::Default:
+		return "https://cdn.libravatar.org/avatar/" + bin_to_hex(Utils::md5(bin_to_hex(Utils::md5(authInfo->email())))) + "?s=" + std::to_string(size) + "&forcedefault=y&default=identicon" ;
+	case AvatarType::Gravatar:
+		return "https://cdn.libravatar.org/avatar/" + bin_to_hex(Utils::md5(authInfo->email())) + "?s=" + std::to_string(size) + "&default=identicon" ;
+	}
+
+	return "https://www.libravatar.org/static/img/mm/" + std::to_string(size) + ".png";
+}
+
+const std::string User::bin_to_hex(const std::string bin) const {
+
+	std::string result;
+	char tmpbyte[2];
+
+	for(unsigned char c: bin) {
+		sprintf(tmpbyte,"%02x",c);
+		result += tmpbyte;
+	}
+
+	return result;
 }
