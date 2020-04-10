@@ -34,49 +34,53 @@ AdminWidget::AdminWidget(Session *session,ViewModels *viewModels,DBModel *dbmode
 
 	auto mainLayout = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout->setContentsMargins(0,0,0,0);
+        mainLayout->setPreferredImplementation(LayoutImplementation::JavaScript);
 
 	auto pageTitle = mainLayout->addWidget(cpp14::make_unique<WText>("Admin"),0);
 	pageTitle->addStyleClass("oj-pagetitle");
 
-	auto contentLayout = mainLayout->addLayout(cpp14::make_unique<WHBoxLayout>(),1);
-	contentLayout->setContentsMargins(0,0,0,0);
-	auto mainStack = cpp14::make_unique<WStackedWidget>();
-	mainStack->addStyleClass("oj-settings-stack");
-	auto mainMenu = contentLayout->addWidget(cpp14::make_unique<WMenu>(mainStack.get()),0);
-	auto settingsMenu = cpp14::make_unique<WMenu>(mainStack.get());
+	auto mainWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
+	auto menuLayout = mainWidget->setLayout(cpp14::make_unique<WHBoxLayout>());
+	menuLayout->setContentsMargins(0,0,0,0);
+	menuLayout->setPreferredImplementation(LayoutImplementation::JavaScript);
+	
+	auto mainStack = menuLayout->addWidget(cpp14::make_unique<WStackedWidget>(),1);
+	auto mainMenu = menuLayout->insertWidget(0,cpp14::make_unique<WMenu>(mainStack),0);
 	mainMenu->addStyleClass("flex-column");
 	mainMenu->setWidth(200);
-	contentLayout->addWidget(std::move(mainStack),1);
+	auto settingsMenu = cpp14::make_unique<WMenu>(mainStack);
 
 	auto adminProblemWidget = cpp14::make_unique<AdminProblemWidget>(viewModels_,dbmodel_);
 	loginSignal().connect(adminProblemWidget.get(),&AdminProblemWidget::login);
 	logoutSignal().connect(adminProblemWidget.get(),&AdminProblemWidget::logout);
-	mainMenu->addItem("Problems",std::move(adminProblemWidget),ContentLoading::Lazy);
+	mainMenu->addItem("Problems",std::move(adminProblemWidget));
 
 	auto adminCategoryWidget = cpp14::make_unique<AdminCategoryWidget>(viewModels_->getCategoryModel());
 	loginSignal().connect(adminCategoryWidget.get(),&AdminCategoryWidget::login);
 	logoutSignal().connect(adminCategoryWidget.get(),&AdminCategoryWidget::logout);
-	mainMenu->addItem("Categories",std::move(adminCategoryWidget),ContentLoading::Lazy);
+	mainMenu->addItem("Categories",std::move(adminCategoryWidget));
 
 	auto adminContestWidget = cpp14::make_unique<AdminContestWidget>();
 	loginSignal().connect(adminContestWidget.get(),&AdminContestWidget::login);
 	logoutSignal().connect(adminContestWidget.get(),&AdminContestWidget::logout);
-	mainMenu->addItem("Contests",std::move(adminContestWidget),ContentLoading::Lazy);
+	mainMenu->addItem("Contests",std::move(adminContestWidget));
 
 	auto adminUserWidget = cpp14::make_unique<AdminUserWidget>();
 	loginSignal().connect(adminUserWidget.get(),&AdminUserWidget::login);
 	logoutSignal().connect(adminUserWidget.get(),&AdminUserWidget::logout);
-	mainMenu->addItem("Users",std::move(adminUserWidget),ContentLoading::Lazy);
+	mainMenu->addItem("Users",std::move(adminUserWidget));
 
 	auto adminLanguageWidget = cpp14::make_unique<AdminLanguageWidget>();
 	loginSignal().connect(adminLanguageWidget.get(),&AdminLanguageWidget::login);
 	logoutSignal().connect(adminLanguageWidget.get(),&AdminLanguageWidget::logout);
-	mainMenu->addItem("Languages",std::move(adminLanguageWidget),ContentLoading::Lazy);
-
-	auto settingsItem = mainMenu->addItem("Settings");
+	mainMenu->addItem("Languages",std::move(adminLanguageWidget));
 
 	auto generalSettingsWidget = cpp14::make_unique<AdminGeneralSettingsWidget>(dbmodel_);
+	loginSignal().connect(generalSettingsWidget.get(),&AdminGeneralSettingsWidget::login);
+	logoutSignal().connect(generalSettingsWidget.get(),&AdminGeneralSettingsWidget::logout);
 	auto mailSettingsWidget = cpp14::make_unique<AdminMailSettingsWidget>();
+	loginSignal().connect(mailSettingsWidget.get(),&AdminMailSettingsWidget::login);
+	logoutSignal().connect(mailSettingsWidget.get(),&AdminMailSettingsWidget::logout);
 //	auto contactSettingsWidget = cpp14::make_unique<AdminContactSettingsWidget>(dbmodel_);
 //	auto footerSettingsWidget = cpp14::make_unique<AdminFooterSettingsWidget>(dbmodel_);
 
@@ -85,8 +89,8 @@ AdminWidget::AdminWidget(Session *session,ViewModels *viewModels,DBModel *dbmode
 //	settingsMenu->addItem("Contact",std::move(contactSettingsWidget));
 //	settingsMenu->addItem("Footer",std::move(footerSettingsWidget));
 
+	auto settingsItem = mainMenu->addItem("Settings");
 	settingsItem->setMenu(std::move(settingsMenu));
-
 }
 
 void AdminWidget::login(Auth::Login& login) {
@@ -377,7 +381,7 @@ AdminWidget::AdminProblemWidget::AdminProblemWidget(ViewModels *viewModels, DBMo
 	tableWidget_->setSortingEnabled(false);
 	tableWidget_->setColumnHidden(3,true);
 	tableWidget_->setColumnResizeEnabled(false);
-	tableWidget_->setColumnWidth(1,WLength(919));
+	tableWidget_->setColumnWidth(1,WLength(695));
 
 	auto adminActionsDelegate = std::make_shared<AdminProblemWidget::AdminActionsDelegate>();
 	adminActionsDelegate->editProblem().connect(this,&AdminProblemWidget::showAddEditDialog);
@@ -551,60 +555,133 @@ std::unique_ptr<WWidget> AdminWidget::AdminProblemWidget::AdminActionsDelegate::
 
 AdminWidget::AdminGeneralSettingsWidget::AdminGeneralSettingsWidget(DBModel *dbmodel) : dbmodel_(dbmodel) {
 
-	auto mainLayout = setLayout(cpp14::make_unique<WVBoxLayout>());
-	mainLayout->setContentsMargins(0,0,0,0);
+	setTemplateText(WString::tr("admin-settings-general"));
 
-	auto mainTemplate = cpp14::make_unique<WTemplate>();
-	mainTemplate->setTemplateText(WString::tr("admin-settings-general"));
+	addFunction("block",&WTemplate::Functions::block);
+	addFunction("tr",&WTemplate::Functions::tr);
+	addFunction("id",&WTemplate::Functions::id);
 
-	mainTemplate->addFunction("block",&WTemplate::Functions::block);
-	mainTemplate->addFunction("tr",&WTemplate::Functions::tr);
-	mainTemplate->addFunction("id",&WTemplate::Functions::id);
+	auto siteTitle = cpp14::make_unique<WLineEdit>();
+	siteTitle->changed().connect( [=] {
+		siteTitleChanged_ = true;
+	});
+	siteTitle_ = bindWidget("sitetitle-setting",std::move(siteTitle));
 
-	auto siteTitle = cpp14::make_unique<WLineEdit>(dbmodel_->getSiteSetting("sitetitle"));
-	mainTemplate->bindWidget("sitetitle-setting",std::move(siteTitle));
+	auto siteLogo = cpp14::make_unique<WLineEdit>();
+	siteLogo->changed().connect( [=] {
+		siteLogoChanged_ = true;
+	});
+	siteLogo_ = bindWidget("sitelogo-setting",std::move(siteLogo));
 
-	auto siteLogo = cpp14::make_unique<WLineEdit>(dbmodel_->getSiteSetting("sitelogo"));
-	mainTemplate->bindWidget("sitelogo-setting",std::move(siteLogo));
-
-	auto siteColor = cpp14::make_unique<OJColorPicker>(WColor(dbmodel_->getSiteSetting("sitecolor")));
+	auto siteColor = cpp14::make_unique<OJColorPicker>();
 	siteColor->setWidth(50);
-	mainTemplate->bindWidget("sitecolor-setting",std::move(siteColor));
+	siteColor->colorInput().connect( [=] {
+		siteColorChanged_ = true;
+	});
+	siteColor_ = bindWidget("sitecolor-setting",std::move(siteColor));
 
-	auto googleAnalytics = cpp14::make_unique<WLineEdit>(dbmodel_->getSiteSetting("googleanalytics"));
-	mainTemplate->bindWidget("googleanalytics-setting",std::move(googleAnalytics));
+	auto googleAnalytics = cpp14::make_unique<WLineEdit>();
+	googleAnalytics->changed().connect( [=] {
+		googleAnalyticsChanged_ = true;
+	});
+	googleAnalytics_ = bindWidget("googleanalytics-setting",std::move(googleAnalytics));
 
 	auto applyButton = cpp14::make_unique<WPushButton>("Apply");
 	applyButton->addStyleClass("btn-primary");
-	mainTemplate->bindWidget("apply-button",std::move(applyButton));
+	applyButton->clicked().connect(this,&AdminWidget::AdminGeneralSettingsWidget::applyClicked);
+	bindWidget("apply-button",std::move(applyButton));
 
 	auto resetButton = cpp14::make_unique<WPushButton>("Reset");
-	mainTemplate->bindWidget("reset-button",std::move(resetButton));
-
-	mainLayout->addWidget(std::move(mainTemplate),1);
+	resetButton->clicked().connect(this,&AdminWidget::AdminGeneralSettingsWidget::resetClicked);
+	bindWidget("reset-button",std::move(resetButton));
 }
 
 void AdminWidget::AdminGeneralSettingsWidget::login(Auth::Login& login) {
 
+	login_ = &login;
+	reset();
 }
 
 void AdminWidget::AdminGeneralSettingsWidget::logout() {
 
 }
 
+void AdminWidget::AdminGeneralSettingsWidget::reset() {
+
+	siteTitle_->setText(dbmodel_->getSiteSetting("sitetitle"));
+	siteLogo_->setText(dbmodel_->getSiteSetting("sitelogo"));
+	siteColor_->setColor(WColor(dbmodel_->getSiteSetting("sitecolor")));
+	googleAnalytics_->setText(dbmodel_->getSiteSetting("googleanalytics"));
+
+	siteTitleChanged_ = false;
+	siteLogoChanged_ = false;
+	siteColorChanged_ = false;
+	googleAnalyticsChanged_ = false;
+}
+
+void AdminWidget::AdminGeneralSettingsWidget::resetClicked() {
+
+	auto warningBox = addChild(cpp14::make_unique<WMessageBox>("Are you sure?","All changes will be lost. Do you want to continue?",
+									Icon::Warning,StandardButton::Yes | StandardButton::No));
+	warningBox->buttonClicked().connect( [=] (StandardButton button) {
+	switch(button) {
+		case StandardButton::Yes:
+			reset();
+			break;
+		case StandardButton::No:
+			break;
+	}
+	removeChild(warningBox);
+	});
+	warningBox->show();
+}
+
+void AdminWidget::AdminGeneralSettingsWidget::applyClicked() {
+
+        if(!siteTitleChanged_ && !siteLogoChanged_ && !siteColorChanged_ && !googleAnalyticsChanged_) return;
+
+        WStringStream strm;
+
+        strm << "The following data will be updated:<br/><br/>";
+        strm << "<ul>";
+        if(siteTitleChanged_) strm << "<li>Site title to: <b>" << siteTitle_->text().toUTF8() << "</b></li>";
+        if(siteLogoChanged_) strm << "<li>Site logo to: <b>" << siteLogo_->text().toUTF8() << "</b></li>";
+        if(siteColorChanged_) strm << "<li>Site color to: <b>" << siteColor_->color().cssText() << "</b></li>";
+        if(googleAnalyticsChanged_) strm << "<li>Google Analytics to: <b>" << googleAnalytics_->text().toUTF8() << "</b></li>";
+        strm << "</ul>";
+        strm << "<br/>Do you want to continue?";
+
+        auto warningBox = addChild(cpp14::make_unique<WMessageBox>("Are you sure?","",Icon::Information,StandardButton::Yes | StandardButton::No));
+        warningBox->textWidget()->setTextFormat(TextFormat::XHTML);
+        warningBox->setText(strm.str());
+
+        warningBox->buttonClicked().connect( [=] (StandardButton button) {
+                switch(button) {
+                case StandardButton::Yes:
+                        {
+                                if(siteTitleChanged_) dbmodel_->updateSiteSetting("sitetitle", siteTitle_->text().toUTF8());
+                                if(siteLogoChanged_) dbmodel_->updateSiteSetting("sitelogo", siteLogo_->text().toUTF8());
+                                if(siteColorChanged_) dbmodel_->updateSiteSetting("sitecolor",siteColor_->color().cssText());
+                                if(googleAnalyticsChanged_) dbmodel_->updateSiteSetting("googleanalytics",googleAnalytics_->text().toUTF8());
+                        }
+                        break;
+                case StandardButton::No:
+                        break;
+                }
+                removeChild(warningBox);
+        });
+        warningBox->show();
+}
+
 AdminWidget::AdminMailSettingsWidget::AdminMailSettingsWidget() {
 
 	auto app = WApplication::instance();
 
-	auto mainLayout = setLayout(cpp14::make_unique<WVBoxLayout>());
-	mainLayout->setContentsMargins(0,0,0,0);
+	setTemplateText(WString::tr("admin-settings-mail"));
 
-	auto mainTemplate = cpp14::make_unique<WTemplate>();
-	mainTemplate->setTemplateText(WString::tr("admin-settings-mail"));
-
-	mainTemplate->addFunction("block",&WTemplate::Functions::block);
-	mainTemplate->addFunction("tr",&WTemplate::Functions::tr);
-	mainTemplate->addFunction("id",&WTemplate::Functions::id);
+	addFunction("block",&WTemplate::Functions::block);
+	addFunction("tr",&WTemplate::Functions::tr);
+	addFunction("id",&WTemplate::Functions::id);
 
 	std::vector<std::string> settingFields = {
 		"smtp-self-host",
@@ -621,18 +698,18 @@ AdminWidget::AdminMailSettingsWidget::AdminMailSettingsWidget() {
 	for(const auto &field: settingFields) {
 		auto tmpLineEdit = cpp14::make_unique<WLineEdit>(app->readConfigurationProperty(field,tmpstr)?tmpstr:"<not set>");
 		tmpLineEdit->disable();
-		mainTemplate->bindWidget(field + "-setting",std::move(tmpLineEdit));
+		bindWidget(field + "-setting",std::move(tmpLineEdit));
 	}
 	auto tmpLineEdit = cpp14::make_unique<WLineEdit>(app->readConfigurationProperty("smtp-auth-password",tmpstr)?"<set and hidden>":"<not set>");
 	tmpLineEdit->disable();
-	mainTemplate->bindWidget("smtp-auth-password-setting",std::move(tmpLineEdit));
+	bindWidget("smtp-auth-password-setting",std::move(tmpLineEdit));
 
-	mainTemplate->bindWidget("config-file-path",cpp14::make_unique<WText>(WT_CONFIG_XML));
+	bindWidget("config-file-path",cpp14::make_unique<WText>(WT_CONFIG_XML));
 
 	auto testEmail = cpp14::make_unique<WLineEdit>();
 	testEmail->setPlaceholderText("test@address.here");
 	auto testEmailPtr = testEmail.get();
-	mainTemplate->bindWidget("test-mail",std::move(testEmail));
+	bindWidget("test-mail",std::move(testEmail));
 
 	auto testButton = cpp14::make_unique<WPushButton>("Send");
 	testButton->clicked().connect( [=] {
@@ -655,9 +732,7 @@ AdminWidget::AdminMailSettingsWidget::AdminMailSettingsWidget() {
 		testEmailPtr->addStyleClass(result?"has-success":"has-error");
 	});
 		
-	mainTemplate->bindWidget("test-mail-button",std::move(testButton));
-
-	mainLayout->addWidget(std::move(mainTemplate),1);
+	bindWidget("test-mail-button",std::move(testButton));
 }
 
 void AdminWidget::AdminMailSettingsWidget::login(Auth::Login& login) {

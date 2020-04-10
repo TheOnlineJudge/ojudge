@@ -19,21 +19,26 @@
 #include <Wt/WMessageBox.h>
 #include <Wt/WTable.h>
 #include <Wt/WRadioButton.h>
+#include <Wt/WFileUpload.h>
+#include <Wt/Utils.h>
 #include "viewmodels/CountryModel.h"
 #include "ProfileWidget.h"
 
 using namespace Wt;
 
-ProfileWidget::ProfileWidget(Session *session, DBModel *dbmodel, const std::shared_ptr<CountryModel> countrymodel) : session_(session), dbmodel_(dbmodel), countrymodel_(countrymodel) {
+ProfileWidget::ProfileWidget(Session *session, DBModel *dbmodel, const std::shared_ptr<CountryModel> countrymodel, AuthWidget* authWidget) : session_(session), dbmodel_(dbmodel), countrymodel_(countrymodel) {
 
 	auto mainLayout = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout->setContentsMargins(0,0,0,0);
+	mainLayout->setPreferredImplementation(LayoutImplementation::JavaScript);
 
 	auto pageTitle = mainLayout->addWidget(cpp14::make_unique<WText>("Profile"),0);
 	pageTitle->addStyleClass("oj-pagetitle");
 
 	auto mainWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
 	auto menuLayout = mainWidget->setLayout(cpp14::make_unique<WHBoxLayout>());
+	menuLayout->setContentsMargins(0,0,0,0);
+	menuLayout->setPreferredImplementation(LayoutImplementation::JavaScript);
 
 	auto mainStack = menuLayout->addWidget(cpp14::make_unique<WStackedWidget>(),1);
 	auto menuWidget = menuLayout->insertWidget(0,cpp14::make_unique<WMenu>(mainStack),0);
@@ -45,7 +50,7 @@ ProfileWidget::ProfileWidget(Session *session, DBModel *dbmodel, const std::shar
 	logoutSignal().connect(accountWidget.get(),&AccountWidget::logout);
 	auto accountItem = menuWidget->addItem("Account",std::move(accountWidget));
 
-	auto securityWidget = cpp14::make_unique<SecurityWidget>(session_,dbmodel_);
+	auto securityWidget = cpp14::make_unique<SecurityWidget>(session_,dbmodel_,authWidget);
 	loginSignal().connect(securityWidget.get(),&SecurityWidget::login);
 	logoutSignal().connect(securityWidget.get(),&SecurityWidget::logout);
 	auto securityItem = menuWidget->addItem("Security",std::move(securityWidget));
@@ -72,6 +77,23 @@ ProfileWidget::AccountWidget::AccountWidget(Session *session, DBModel *dbmodel, 
 	addFunction("tr",&WTemplate::Functions::tr);
 	addFunction("id",&WTemplate::Functions::id);
 
+	auto avatarImage = cpp14::make_unique<WImage>();
+	avatarImage->resize(128,128);
+	avatarImage_ = bindWidget("avatar-image",std::move(avatarImage));
+
+	auto avatarUpload = cpp14::make_unique<WContainerWidget>();
+	avatarUpload->addStyleClass("oj-settings-avatar-upload");
+	avatarUpload->setMargin(0);
+	auto avatarLayout = avatarUpload->setLayout(cpp14::make_unique<WVBoxLayout>());
+	avatarLayout->setContentsMargins(0,0,0,0);
+	auto avatarFileLayout = avatarLayout->addLayout(cpp14::make_unique<WHBoxLayout>());
+	avatarFileLayout->setContentsMargins(0,0,0,0);
+	avatarFileLayout->addWidget(cpp14::make_unique<WText>("<label>" + tr("upload-avatar-label") + "</label>"));
+	auto avatarFileUpload = avatarFileLayout->addWidget(cpp14::make_unique<WFileUpload>(),1);
+	auto avatarMessage = avatarLayout->addWidget(cpp14::make_unique<WText>("<label></label><i>" + tr("upload-avatar-message") + "</i>"));
+	avatarMessage->setMargin(0);
+	avatarUpload_ = bindWidget("upload-avatar",std::move(avatarUpload));
+
 	auto avatarGroup = std::make_shared<WButtonGroup>();
 	auto avatarDefaultButton = cpp14::make_unique<WRadioButton>("Default");
 	avatarDefaultButton->addStyleClass("oj-avatar-radiobutton");
@@ -84,6 +106,14 @@ ProfileWidget::AccountWidget::AccountWidget(Session *session, DBModel *dbmodel, 
 	avatarGroup->addButton(bindWidget("avatar-custom-setting",std::move(avatarCustomButton)),(int)AvatarType::Custom);
 	avatarGroup->checkedChanged().connect( [=] {
 		avatarChanged_ = true;
+		if((AvatarType)avatarGroup->checkedId() == AvatarType::Custom) {
+			avatarUpload_->removeStyleClass("hidden");
+		} else {
+			avatarUpload_->addStyleClass("hidden");
+		}
+		Dbo::Transaction transaction = dbmodel_->startTransaction();
+		dbo::ptr<User> userData = session_->user(login_->user());
+		avatarImage_->setImageLink(userData->avatarLink((AvatarType)avatarGroup->checkedId()));
 	});
 	avatarGroup_ = avatarGroup.get();
 
@@ -165,6 +195,12 @@ void ProfileWidget::AccountWidget::reset() {
 	dbo::ptr<User> userData = session_->user(login_->user());
 
 	avatarGroup_->button((int)userData->avatar->avatarType)->setChecked();
+	avatarImage_->setImageLink(userData->avatarLink(userData->avatar->avatarType));
+	if((AvatarType)userData->avatar->avatarType == AvatarType::Custom) {
+		avatarUpload_->removeStyleClass("hidden");
+	} else {
+		avatarUpload_->addStyleClass("hidden");
+	}
 	avatarChanged_ = false;
 	username_->setText(login_->user().identity("loginname"));
 	email_->setText(login_->user().email());
@@ -246,7 +282,7 @@ void ProfileWidget::AccountWidget::applyClicked() {
 	warningBox->show();
 }
 
-ProfileWidget::SecurityWidget::SecurityWidget(Session *session, DBModel *dbmodel) : session_(session), dbmodel_(dbmodel) {
+ProfileWidget::SecurityWidget::SecurityWidget(Session *session, DBModel *dbmodel, AuthWidget *authWidget) : session_(session), dbmodel_(dbmodel), authWidget_(authWidget) {
 
 	setTemplateText(WString::tr("settings-security"));
 
@@ -254,63 +290,25 @@ ProfileWidget::SecurityWidget::SecurityWidget(Session *session, DBModel *dbmodel
 	addFunction("tr",&WTemplate::Functions::tr);
 	addFunction("id",&WTemplate::Functions::id);
 
-	auto newPassword = cpp14::make_unique<WLineEdit>();
-	newPassword->setEchoMode(EchoMode::Password);
-	newPassword_ = bindWidget("newpassword-setting",std::move(newPassword));
-
-	auto repeatPassword = cpp14::make_unique<WLineEdit>();
-	repeatPassword->setEchoMode(EchoMode::Password);
-	repeatPassword_ = bindWidget("repeatpassword-setting",std::move(repeatPassword));
+	auto changePassword = cpp14::make_unique<WPushButton>();
+	changePassword->setText("Click here");
+	changePassword->clicked().connect( [=] {
+		authWidget_->letUpdatePassword(login_->user(),true);
+	});
+	changePassword_ = bindWidget("changepassword-setting",std::move(changePassword));
 
 	auto twofa = cpp14::make_unique<WPushButton>();
 	twofa->setText("Enable 2FA");
 	twofa->addStyleClass("btn-primary");
 	twofa_ = bindWidget("twofa-setting",std::move(twofa));
-
-	auto applyButton = cpp14::make_unique<WPushButton>("Apply");
-	applyButton->addStyleClass("btn-primary");
-	bindWidget("apply-button",std::move(applyButton));
-
-	auto resetButton = cpp14::make_unique<WPushButton>("Reset");
-	resetButton->clicked().connect(this,&ProfileWidget::SecurityWidget::resetClicked);
-	bindWidget("reset-button",std::move(resetButton));
 }
 
 void ProfileWidget::SecurityWidget::login(Auth::Login& login) {
 
 	login_ = &login;
-	reset();
 }
 
 void ProfileWidget::SecurityWidget::logout() {
-
-}
-
-void ProfileWidget::SecurityWidget::reset() {
-
-	newPassword_->setText("");
-	repeatPassword_->setText("");
-	passwordChanged_ = false;
-}
-
-void ProfileWidget::SecurityWidget::resetClicked() {
-
-	auto warningBox = addChild(cpp14::make_unique<WMessageBox>("Are you sure?","All changes will be lost. Do you want to continue?",
-	                                                           Icon::Warning,StandardButton::Yes | StandardButton::No));
-	warningBox->buttonClicked().connect( [=] (StandardButton button) {
-		switch(button) {
-		case StandardButton::Yes:
-			reset();
-			break;
-		case StandardButton::No:
-			break;
-		}
-		removeChild(warningBox);
-	});
-	warningBox->show();
-}
-
-void ProfileWidget::SecurityWidget::applyClicked() {
 
 }
 

@@ -6,6 +6,8 @@
   <message id="googleanalytics-label">Google Analytics ID</message>
 
   <message id="avatar-label">Avatar</message>
+  <message id="upload-avatar-label">Upload avatar</message>
+  <message id="upload-avatar-message">File must be JPG or PNG, with a size of 128x128 pixels.</message>
   <message id="username-label">Username</message>
   <message id="email-label">eMail</message>
   <message id="firstname-label">First Name</message>
@@ -15,8 +17,7 @@
   <message id="institution-label">Institution / Company</message>
   <message id="uvaid-label">UVa ID</message>
 
-  <message id="newpassword-label">New Password</message>
-  <message id="repeatpassword-label">Repeat Password</message>
+  <message id="changepassword-label">Change Password</message>
   <message id="twofa-label">2F Authentication</message>
 
   <message id="yourconfigfile">You current Wt config file is:</message>

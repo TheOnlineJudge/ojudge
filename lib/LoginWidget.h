@@ -20,12 +20,13 @@ class Session;
 class LoginWidget : public Wt::WContainerWidget {
 public:
 LoginWidget(Session *session);
+AuthWidget* authWidget();
 void login(Wt::Auth::Login& login);
 void logout();
 
 private:
 Session *session_;
-std::unique_ptr<AuthWidget> authWidget_;
+AuthWidget* authWidget_;
 };
 
 #endif // LOGINWIDGET_H

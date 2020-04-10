@@ -27,6 +27,7 @@
 #include "dbmodel/DBModel.h"
 
 class Session;
+class OJColorPicker;
 
 class AdminWidget : public Wt::WContainerWidget {
 public:
@@ -171,7 +172,7 @@ Wt::Signal<const Wt::WModelIndex&> deleteProblem_;
 
 };
 
-class AdminGeneralSettingsWidget : public Wt::WContainerWidget {
+class AdminGeneralSettingsWidget : public Wt::WTemplate {
 public:
 AdminGeneralSettingsWidget(DBModel *dbmodel);
 void login(Wt::Auth::Login& login);
@@ -179,9 +180,21 @@ void logout();
 
 private:
 DBModel *dbmodel_;
+Wt::WLineEdit* siteTitle_;
+Wt::WLineEdit* siteLogo_;
+OJColorPicker* siteColor_;
+Wt::WLineEdit* googleAnalytics_;
+Wt::Auth::Login *login_;
+bool siteTitleChanged_ = false;
+bool siteLogoChanged_ = false;
+bool siteColorChanged_ = false;
+bool googleAnalyticsChanged_ = false;
+void reset();
+void resetClicked();
+void applyClicked();
 };
 
-class AdminMailSettingsWidget : public Wt::WContainerWidget {
+class AdminMailSettingsWidget : public Wt::WTemplate {
 public:
 AdminMailSettingsWidget();
 void login(Wt::Auth::Login& login);
@@ -191,7 +204,7 @@ private:
 DBModel *dbmodel_;
 };
 
-class AdminContactSettingsWidget : public Wt::WContainerWidget {
+class AdminContactSettingsWidget : public Wt::WTemplate {
 public:
 AdminContactSettingsWidget(DBModel *dbmodel);
 void login(Wt::Auth::Login& login);
@@ -201,7 +214,7 @@ private:
 DBModel *dbmodel_;
 };
 
-class AdminFooterSettingsWidget : public Wt::WContainerWidget {
+class AdminFooterSettingsWidget : public Wt::WTemplate {
 public:
 AdminFooterSettingsWidget(DBModel *dbmodel);
 void login(Wt::Auth::Login& login);
