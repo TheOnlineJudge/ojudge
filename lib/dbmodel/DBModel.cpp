@@ -256,6 +256,13 @@ std::string DBModel::getSiteSetting(std::string settingName) {
 	return setting->settingValue;
 }
 
+void DBModel::updateSiteSetting(std::string settingName, std::string settingValue) {
+
+	dbo::Transaction t = startTransaction();
+	dbo::ptr<Setting> setting = session_->find<Setting>().where("settingname = ?").bind(settingName);
+	setting.modify()->settingValue = settingValue;
+}
+
 Languages DBModel::getLanguages() {
 
 	dbo::Transaction t = startTransaction();

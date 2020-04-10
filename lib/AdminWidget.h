@@ -27,6 +27,7 @@
 #include "dbmodel/DBModel.h"
 
 class Session;
+class OJColorPicker;
 
 class AdminWidget : public Wt::WContainerWidget {
 public:
@@ -179,6 +180,18 @@ void logout();
 
 private:
 DBModel *dbmodel_;
+Wt::WLineEdit* siteTitle_;
+Wt::WLineEdit* siteLogo_;
+OJColorPicker* siteColor_;
+Wt::WLineEdit* googleAnalytics_;
+Wt::Auth::Login *login_;
+bool siteTitleChanged_ = false;
+bool siteLogoChanged_ = false;
+bool siteColorChanged_ = false;
+bool googleAnalyticsChanged_ = false;
+void reset();
+void resetClicked();
+void applyClicked();
 };
 
 class AdminMailSettingsWidget : public Wt::WTemplate {

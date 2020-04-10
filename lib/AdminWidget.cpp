@@ -76,7 +76,11 @@ AdminWidget::AdminWidget(Session *session,ViewModels *viewModels,DBModel *dbmode
 	mainMenu->addItem("Languages",std::move(adminLanguageWidget));
 
 	auto generalSettingsWidget = cpp14::make_unique<AdminGeneralSettingsWidget>(dbmodel_);
+	loginSignal().connect(generalSettingsWidget.get(),&AdminGeneralSettingsWidget::login);
+	logoutSignal().connect(generalSettingsWidget.get(),&AdminGeneralSettingsWidget::logout);
 	auto mailSettingsWidget = cpp14::make_unique<AdminMailSettingsWidget>();
+	loginSignal().connect(mailSettingsWidget.get(),&AdminMailSettingsWidget::login);
+	logoutSignal().connect(mailSettingsWidget.get(),&AdminMailSettingsWidget::logout);
 //	auto contactSettingsWidget = cpp14::make_unique<AdminContactSettingsWidget>(dbmodel_);
 //	auto footerSettingsWidget = cpp14::make_unique<AdminFooterSettingsWidget>(dbmodel_);
 
@@ -557,33 +561,116 @@ AdminWidget::AdminGeneralSettingsWidget::AdminGeneralSettingsWidget(DBModel *dbm
 	addFunction("tr",&WTemplate::Functions::tr);
 	addFunction("id",&WTemplate::Functions::id);
 
-	auto siteTitle = cpp14::make_unique<WLineEdit>(dbmodel_->getSiteSetting("sitetitle"));
-	bindWidget("sitetitle-setting",std::move(siteTitle));
+	auto siteTitle = cpp14::make_unique<WLineEdit>();
+	siteTitle->changed().connect( [=] {
+		siteTitleChanged_ = true;
+	});
+	siteTitle_ = bindWidget("sitetitle-setting",std::move(siteTitle));
 
-	auto siteLogo = cpp14::make_unique<WLineEdit>(dbmodel_->getSiteSetting("sitelogo"));
-	bindWidget("sitelogo-setting",std::move(siteLogo));
+	auto siteLogo = cpp14::make_unique<WLineEdit>();
+	siteLogo->changed().connect( [=] {
+		siteLogoChanged_ = true;
+	});
+	siteLogo_ = bindWidget("sitelogo-setting",std::move(siteLogo));
 
-	auto siteColor = cpp14::make_unique<OJColorPicker>(WColor(dbmodel_->getSiteSetting("sitecolor")));
+	auto siteColor = cpp14::make_unique<OJColorPicker>();
 	siteColor->setWidth(50);
-	bindWidget("sitecolor-setting",std::move(siteColor));
+	siteColor->colorInput().connect( [=] {
+		siteColorChanged_ = true;
+	});
+	siteColor_ = bindWidget("sitecolor-setting",std::move(siteColor));
 
-	auto googleAnalytics = cpp14::make_unique<WLineEdit>(dbmodel_->getSiteSetting("googleanalytics"));
-	bindWidget("googleanalytics-setting",std::move(googleAnalytics));
+	auto googleAnalytics = cpp14::make_unique<WLineEdit>();
+	googleAnalytics->changed().connect( [=] {
+		googleAnalyticsChanged_ = true;
+	});
+	googleAnalytics_ = bindWidget("googleanalytics-setting",std::move(googleAnalytics));
 
 	auto applyButton = cpp14::make_unique<WPushButton>("Apply");
 	applyButton->addStyleClass("btn-primary");
+	applyButton->clicked().connect(this,&AdminWidget::AdminGeneralSettingsWidget::applyClicked);
 	bindWidget("apply-button",std::move(applyButton));
 
 	auto resetButton = cpp14::make_unique<WPushButton>("Reset");
+	resetButton->clicked().connect(this,&AdminWidget::AdminGeneralSettingsWidget::resetClicked);
 	bindWidget("reset-button",std::move(resetButton));
 }
 
 void AdminWidget::AdminGeneralSettingsWidget::login(Auth::Login& login) {
 
+	login_ = &login;
+	reset();
 }
 
 void AdminWidget::AdminGeneralSettingsWidget::logout() {
 
+}
+
+void AdminWidget::AdminGeneralSettingsWidget::reset() {
+
+	siteTitle_->setText(dbmodel_->getSiteSetting("sitetitle"));
+	siteLogo_->setText(dbmodel_->getSiteSetting("sitelogo"));
+	siteColor_->setColor(WColor(dbmodel_->getSiteSetting("sitecolor")));
+	googleAnalytics_->setText(dbmodel_->getSiteSetting("googleanalytics"));
+
+	siteTitleChanged_ = false;
+	siteLogoChanged_ = false;
+	siteColorChanged_ = false;
+	googleAnalyticsChanged_ = false;
+}
+
+void AdminWidget::AdminGeneralSettingsWidget::resetClicked() {
+
+	auto warningBox = addChild(cpp14::make_unique<WMessageBox>("Are you sure?","All changes will be lost. Do you want to continue?",
+									Icon::Warning,StandardButton::Yes | StandardButton::No));
+	warningBox->buttonClicked().connect( [=] (StandardButton button) {
+	switch(button) {
+		case StandardButton::Yes:
+			reset();
+			break;
+		case StandardButton::No:
+			break;
+	}
+	removeChild(warningBox);
+	});
+	warningBox->show();
+}
+
+void AdminWidget::AdminGeneralSettingsWidget::applyClicked() {
+
+        if(!siteTitleChanged_ && !siteLogoChanged_ && !siteColorChanged_ && !googleAnalyticsChanged_) return;
+
+        WStringStream strm;
+
+        strm << "The following data will be updated:<br/><br/>";
+        strm << "<ul>";
+        if(siteTitleChanged_) strm << "<li>Site title to: <b>" << siteTitle_->text().toUTF8() << "</b></li>";
+        if(siteLogoChanged_) strm << "<li>Site logo to: <b>" << siteLogo_->text().toUTF8() << "</b></li>";
+        if(siteColorChanged_) strm << "<li>Site color to: <b>" << siteColor_->color().cssText() << "</b></li>";
+        if(googleAnalyticsChanged_) strm << "<li>Google Analytics to: <b>" << googleAnalytics_->text().toUTF8() << "</b></li>";
+        strm << "</ul>";
+        strm << "<br/>Do you want to continue?";
+
+        auto warningBox = addChild(cpp14::make_unique<WMessageBox>("Are you sure?","",Icon::Information,StandardButton::Yes | StandardButton::No));
+        warningBox->textWidget()->setTextFormat(TextFormat::XHTML);
+        warningBox->setText(strm.str());
+
+        warningBox->buttonClicked().connect( [=] (StandardButton button) {
+                switch(button) {
+                case StandardButton::Yes:
+                        {
+                                if(siteTitleChanged_) dbmodel_->updateSiteSetting("sitetitle", siteTitle_->text().toUTF8());
+                                if(siteLogoChanged_) dbmodel_->updateSiteSetting("sitelogo", siteLogo_->text().toUTF8());
+                                if(siteColorChanged_) dbmodel_->updateSiteSetting("sitecolor",siteColor_->color().cssText());
+                                if(googleAnalyticsChanged_) dbmodel_->updateSiteSetting("googleanalytics",googleAnalytics_->text().toUTF8());
+                        }
+                        break;
+                case StandardButton::No:
+                        break;
+                }
+                removeChild(warningBox);
+        });
+        warningBox->show();
 }
 
 AdminWidget::AdminMailSettingsWidget::AdminMailSettingsWidget() {
