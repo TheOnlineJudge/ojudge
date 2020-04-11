@@ -284,7 +284,7 @@ const std::string User::avatarLink(const AvatarType type, int size) const {
 const std::string User::bin_to_hex(const std::string bin) const {
 
 	std::string result;
-	char tmpbyte[2];
+	char tmpbyte[3];
 
 	for(unsigned char c: bin) {
 		sprintf(tmpbyte,"%02x",c);
