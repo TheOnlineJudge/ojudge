@@ -175,8 +175,9 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	contestsFloatMenu->setLink(contestsFloatMenuLink);
 
 	auto dashboardWidget = cpp14::make_unique<DashboardWidget>();
-	loginSignal().connect(dashboardWidget.get(),&DashboardWidget::login);
-	logoutSignal().connect(dashboardWidget.get(),&DashboardWidget::logout);
+	dashboardWidget_ = dashboardWidget.get();
+	loginSignal().connect(dashboardWidget_,&DashboardWidget::login);
+	logoutSignal().connect(dashboardWidget_,&DashboardWidget::logout);
 	dashboardMenu_ = mainMenu_->addItem(WString("Dashboard"),std::move(dashboardWidget));
 	dashboardFloatMenu_ = mainFloatMenu_->addItem(WString("Dashboard"));
 
@@ -199,9 +200,10 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	auto profilePopupProfile = profilePopup->addItem(WString("Profile"));
 	WLink profilePopupProfileLink(LinkType::InternalPath,"/profile");
 	profilePopupProfile->setLink(profilePopupProfileLink);
-	auto profilePopupAdmin = profilePopup->addItem(WString("Admin"));
+	profilePopupAdmin_ = profilePopup->addItem(WString("Admin"));
 	WLink profilePopupAdminLink(LinkType::InternalPath,"/admin");
-	profilePopupAdmin->setLink(profilePopupAdminLink);
+	profilePopupAdmin_->setLink(profilePopupAdminLink);
+	profilePopupAdmin_->hide();
 	profilePopup->addSeparator();
 	auto logoutItem = profilePopup->addItem(WString("Logout"));
 	logoutItem->decorationStyle().setCursor(Cursor::PointingHand);
@@ -214,8 +216,9 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	profilePopup = cpp14::make_unique<WPopupMenu>();
 	profilePopupProfile = profilePopup->addItem(WString("Profile"));
 	profilePopupProfile->setLink(profilePopupProfileLink);
-	profilePopupAdmin = profilePopup->addItem(WString("Admin"));
-	profilePopupAdmin->setLink(profilePopupAdminLink);
+	profilePopupFloatAdmin_ = profilePopup->addItem(WString("Admin"));
+	profilePopupFloatAdmin_->setLink(profilePopupAdminLink);
+	profilePopupFloatAdmin_->hide();
 	profilePopup->addSeparator();
 	logoutItem = profilePopup->addItem(WString("Logout"));
 	logoutItem->decorationStyle().setCursor(Cursor::PointingHand);
@@ -294,10 +297,19 @@ void ojudgeApp::authEvent() {
 		profileMenu_->show();
 		profileFloatMenu_->show();
 
+		dbo::Transaction transaction = dbmodel_->startTransaction();
+		dbo::ptr<User> userData = session_->user(session_->login().user());
+		if(userData->role == Role::Admin) {
+			profilePopupAdmin_->show();
+			profilePopupFloatAdmin_->show();
+		}
+
 		loginSignal().emit(session_->login());
 	} else {
 		dashboardMenu_->hide();
 		dashboardFloatMenu_->hide();
+		profilePopupAdmin_->hide();
+		profilePopupFloatAdmin_->hide();
 		profileMenu_->hide();
 		profileFloatMenu_->hide();
 		loginMenu_->show();
@@ -308,13 +320,6 @@ void ojudgeApp::authEvent() {
 }
 
 void ojudgeApp::pathChanged(std::string newPath) {
-
-	if(newPath == "/profile" || newPath == "/dashboard") {
-		if(!session_->login().loggedIn()) {
-			setInternalPath("/login",true);
-			return;
-		}
-	}
 
 	if(googleAnalytics_) {
 		doJavaScript(   "window.dataLayer = window.dataLayer || [];"

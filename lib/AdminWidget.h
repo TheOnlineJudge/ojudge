@@ -23,6 +23,7 @@
 #include <Wt/WAbstractItemDelegate.h>
 #include <Wt/WSortFilterProxyModel.h>
 #include <Wt/WFileUpload.h>
+#include <Wt/WText.h>
 #include "viewmodels/ViewModels.h"
 #include "dbmodel/DBModel.h"
 
@@ -39,6 +40,9 @@ private:
 Session *session_;
 ViewModels *viewModels_;
 DBModel *dbmodel_;
+Wt::WVBoxLayout *mainLayout_;
+Wt::WContainerWidget *mainWidget_;
+Wt::WText *mustLoginWidget_;
 Wt::Signal<Wt::Auth::Login&>& loginSignal() {
 	return loginSignal_;
 }

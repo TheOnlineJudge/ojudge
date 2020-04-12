@@ -9,7 +9,6 @@
 
 #include <fstream>
 #include <iterator>
-#include <Wt/WText.h>
 #include <Wt/WHBoxLayout.h>
 #include <Wt/WTemplate.h>
 #include <Wt/WPushButton.h>
@@ -32,72 +31,92 @@ using namespace Wt;
 
 AdminWidget::AdminWidget(Session *session,ViewModels *viewModels,DBModel *dbmodel) : session_(session),viewModels_(viewModels),dbmodel_(dbmodel) {
 
-	auto mainLayout = setLayout(cpp14::make_unique<WVBoxLayout>());
-	mainLayout->setContentsMargins(0,0,0,0);
-        mainLayout->setPreferredImplementation(LayoutImplementation::JavaScript);
+	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
+	mainLayout_->setContentsMargins(0,0,0,0);
+        mainLayout_->setPreferredImplementation(LayoutImplementation::JavaScript);
 
-	auto pageTitle = mainLayout->addWidget(cpp14::make_unique<WText>("Admin"),0);
+	auto pageTitle = mainLayout_->addWidget(cpp14::make_unique<WText>("Admin"),0);
 	pageTitle->addStyleClass("oj-pagetitle");
 
-	auto mainWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
-	auto menuLayout = mainWidget->setLayout(cpp14::make_unique<WHBoxLayout>());
-	menuLayout->setContentsMargins(0,0,0,0);
-	menuLayout->setPreferredImplementation(LayoutImplementation::JavaScript);
-	
-	auto mainStack = menuLayout->addWidget(cpp14::make_unique<WStackedWidget>(),1);
-	auto mainMenu = menuLayout->insertWidget(0,cpp14::make_unique<WMenu>(mainStack),0);
-	mainMenu->addStyleClass("flex-column");
-	mainMenu->setWidth(200);
-	auto settingsMenu = cpp14::make_unique<WMenu>(mainStack);
-
-	auto adminProblemWidget = cpp14::make_unique<AdminProblemWidget>(viewModels_,dbmodel_);
-	loginSignal().connect(adminProblemWidget.get(),&AdminProblemWidget::login);
-	logoutSignal().connect(adminProblemWidget.get(),&AdminProblemWidget::logout);
-	mainMenu->addItem("Problems",std::move(adminProblemWidget));
-
-	auto adminCategoryWidget = cpp14::make_unique<AdminCategoryWidget>(viewModels_->getCategoryModel());
-	loginSignal().connect(adminCategoryWidget.get(),&AdminCategoryWidget::login);
-	logoutSignal().connect(adminCategoryWidget.get(),&AdminCategoryWidget::logout);
-	mainMenu->addItem("Categories",std::move(adminCategoryWidget));
-
-	auto adminContestWidget = cpp14::make_unique<AdminContestWidget>();
-	loginSignal().connect(adminContestWidget.get(),&AdminContestWidget::login);
-	logoutSignal().connect(adminContestWidget.get(),&AdminContestWidget::logout);
-	mainMenu->addItem("Contests",std::move(adminContestWidget));
-
-	auto adminUserWidget = cpp14::make_unique<AdminUserWidget>();
-	loginSignal().connect(adminUserWidget.get(),&AdminUserWidget::login);
-	logoutSignal().connect(adminUserWidget.get(),&AdminUserWidget::logout);
-	mainMenu->addItem("Users",std::move(adminUserWidget));
-
-	auto adminLanguageWidget = cpp14::make_unique<AdminLanguageWidget>();
-	loginSignal().connect(adminLanguageWidget.get(),&AdminLanguageWidget::login);
-	logoutSignal().connect(adminLanguageWidget.get(),&AdminLanguageWidget::logout);
-	mainMenu->addItem("Languages",std::move(adminLanguageWidget));
-
-	auto generalSettingsWidget = cpp14::make_unique<AdminGeneralSettingsWidget>(dbmodel_);
-	loginSignal().connect(generalSettingsWidget.get(),&AdminGeneralSettingsWidget::login);
-	logoutSignal().connect(generalSettingsWidget.get(),&AdminGeneralSettingsWidget::logout);
-	auto mailSettingsWidget = cpp14::make_unique<AdminMailSettingsWidget>();
-	loginSignal().connect(mailSettingsWidget.get(),&AdminMailSettingsWidget::login);
-	logoutSignal().connect(mailSettingsWidget.get(),&AdminMailSettingsWidget::logout);
-//	auto contactSettingsWidget = cpp14::make_unique<AdminContactSettingsWidget>(dbmodel_);
-//	auto footerSettingsWidget = cpp14::make_unique<AdminFooterSettingsWidget>(dbmodel_);
-
-	settingsMenu->addItem("General",std::move(generalSettingsWidget));
-	settingsMenu->addItem("Mail",std::move(mailSettingsWidget));
-//	settingsMenu->addItem("Contact",std::move(contactSettingsWidget));
-//	settingsMenu->addItem("Footer",std::move(footerSettingsWidget));
-
-	auto settingsItem = mainMenu->addItem("Settings");
-	settingsItem->setMenu(std::move(settingsMenu));
+	mustLoginWidget_ = mainLayout_->addWidget(cpp14::make_unique<WText>("You are not logged in."),1);
 }
 
+
 void AdminWidget::login(Auth::Login& login) {
+
+	dbo::Transaction transaction = dbmodel_->startTransaction();
+	dbo::ptr<User> userData = session_->user(login.user());
+
+	if(userData->role == Role::Admin) {
+
+		mustLoginWidget_->hide();
+
+		mainWidget_ = mainLayout_->addWidget(cpp14::make_unique<WContainerWidget>(),1);
+		auto menuLayout = mainWidget_->setLayout(cpp14::make_unique<WHBoxLayout>());
+		menuLayout->setContentsMargins(0,0,0,0);
+		menuLayout->setPreferredImplementation(LayoutImplementation::JavaScript);
+	
+		auto mainStack = menuLayout->addWidget(cpp14::make_unique<WStackedWidget>(),1);
+		auto mainMenu = menuLayout->insertWidget(0,cpp14::make_unique<WMenu>(mainStack),0);
+		mainMenu->addStyleClass("flex-column");
+		mainMenu->setWidth(200);
+		auto settingsMenu = cpp14::make_unique<WMenu>(mainStack);
+
+		auto adminProblemWidget = cpp14::make_unique<AdminProblemWidget>(viewModels_,dbmodel_);
+		loginSignal().connect(adminProblemWidget.get(),&AdminProblemWidget::login);
+		logoutSignal().connect(adminProblemWidget.get(),&AdminProblemWidget::logout);
+		mainMenu->addItem("Problems",std::move(adminProblemWidget));
+
+		auto adminCategoryWidget = cpp14::make_unique<AdminCategoryWidget>(viewModels_->getCategoryModel());
+		loginSignal().connect(adminCategoryWidget.get(),&AdminCategoryWidget::login);
+		logoutSignal().connect(adminCategoryWidget.get(),&AdminCategoryWidget::logout);
+		mainMenu->addItem("Categories",std::move(adminCategoryWidget));
+
+		auto adminContestWidget = cpp14::make_unique<AdminContestWidget>();
+		loginSignal().connect(adminContestWidget.get(),&AdminContestWidget::login);
+		logoutSignal().connect(adminContestWidget.get(),&AdminContestWidget::logout);
+		mainMenu->addItem("Contests",std::move(adminContestWidget));
+
+		auto adminUserWidget = cpp14::make_unique<AdminUserWidget>();
+		loginSignal().connect(adminUserWidget.get(),&AdminUserWidget::login);
+		logoutSignal().connect(adminUserWidget.get(),&AdminUserWidget::logout);
+		mainMenu->addItem("Users",std::move(adminUserWidget));
+
+		auto adminLanguageWidget = cpp14::make_unique<AdminLanguageWidget>();
+		loginSignal().connect(adminLanguageWidget.get(),&AdminLanguageWidget::login);
+		logoutSignal().connect(adminLanguageWidget.get(),&AdminLanguageWidget::logout);
+		mainMenu->addItem("Languages",std::move(adminLanguageWidget));
+
+		auto generalSettingsWidget = cpp14::make_unique<AdminGeneralSettingsWidget>(dbmodel_);
+		loginSignal().connect(generalSettingsWidget.get(),&AdminGeneralSettingsWidget::login);
+		logoutSignal().connect(generalSettingsWidget.get(),&AdminGeneralSettingsWidget::logout);
+		auto mailSettingsWidget = cpp14::make_unique<AdminMailSettingsWidget>();
+		loginSignal().connect(mailSettingsWidget.get(),&AdminMailSettingsWidget::login);
+		logoutSignal().connect(mailSettingsWidget.get(),&AdminMailSettingsWidget::logout);
+//		auto contactSettingsWidget = cpp14::make_unique<AdminContactSettingsWidget>(dbmodel_);
+//		auto footerSettingsWidget = cpp14::make_unique<AdminFooterSettingsWidget>(dbmodel_);
+
+		settingsMenu->addItem("General",std::move(generalSettingsWidget));
+		settingsMenu->addItem("Mail",std::move(mailSettingsWidget));
+//		settingsMenu->addItem("Contact",std::move(contactSettingsWidget));
+//		settingsMenu->addItem("Footer",std::move(footerSettingsWidget));
+
+		auto settingsItem = mainMenu->addItem("Settings");
+		settingsItem->setMenu(std::move(settingsMenu));
+	} else {
+		mustLoginWidget_->setText("You don't have permission to be here. Your presence has been reported.");
+		mainWidget_ = mainLayout_->addWidget(cpp14::make_unique<WContainerWidget>(),0);
+	}
+
 	loginSignal().emit(login);
 }
 
 void AdminWidget::logout() {
+
+        mainLayout_->removeWidget(mainWidget_);
+	mustLoginWidget_->setText("You are not logged in.");
+        mustLoginWidget_->show();
+
 	logoutSignal().emit();
 }
 

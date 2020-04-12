@@ -7,14 +7,12 @@
 * Read the LICENSE file for information on license terms
 *********************************************************************/
 
-#include <Wt/WVBoxLayout.h>
 #include <Wt/WHBoxLayout.h>
 #include <Wt/WCssDecorationStyle.h>
 #include <Wt/WFont.h>
 #include <Wt/WMenu.h>
 #include <Wt/WMenuItem.h>
 #include <Wt/WStackedWidget.h>
-#include <Wt/WContainerWidget.h>
 #include <Wt/WPushButton.h>
 #include <Wt/WMessageBox.h>
 #include <Wt/WTable.h>
@@ -26,17 +24,26 @@
 
 using namespace Wt;
 
-ProfileWidget::ProfileWidget(Session *session, DBModel *dbmodel, const std::shared_ptr<CountryModel> countrymodel, AuthWidget* authWidget) : session_(session), dbmodel_(dbmodel), countrymodel_(countrymodel) {
+ProfileWidget::ProfileWidget(Session *session, DBModel *dbmodel, const std::shared_ptr<CountryModel> countrymodel, AuthWidget* authWidget) :
+			session_(session), dbmodel_(dbmodel), countrymodel_(countrymodel), authWidget_(authWidget) {
 
-	auto mainLayout = setLayout(cpp14::make_unique<WVBoxLayout>());
-	mainLayout->setContentsMargins(0,0,0,0);
-	mainLayout->setPreferredImplementation(LayoutImplementation::JavaScript);
+	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
+	mainLayout_->setContentsMargins(0,0,0,0);
+	mainLayout_->setPreferredImplementation(LayoutImplementation::JavaScript);
 
-	auto pageTitle = mainLayout->addWidget(cpp14::make_unique<WText>("Profile"),0);
+	auto pageTitle = mainLayout_->addWidget(cpp14::make_unique<WText>("Profile"),0);
 	pageTitle->addStyleClass("oj-pagetitle");
 
-	auto mainWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
-	auto menuLayout = mainWidget->setLayout(cpp14::make_unique<WHBoxLayout>());
+	mustLoginWidget_ = mainLayout_->addWidget(cpp14::make_unique<WText>("You are not logged in."),1);
+}
+
+
+void ProfileWidget::login(Auth::Login& login) {
+
+	mustLoginWidget_->hide();
+
+	mainWidget_ = mainLayout_->addWidget(cpp14::make_unique<WContainerWidget>(),1);
+	auto menuLayout = mainWidget_->setLayout(cpp14::make_unique<WHBoxLayout>());
 	menuLayout->setContentsMargins(0,0,0,0);
 	menuLayout->setPreferredImplementation(LayoutImplementation::JavaScript);
 
@@ -50,7 +57,7 @@ ProfileWidget::ProfileWidget(Session *session, DBModel *dbmodel, const std::shar
 	logoutSignal().connect(accountWidget.get(),&AccountWidget::logout);
 	auto accountItem = menuWidget->addItem("Account",std::move(accountWidget));
 
-	auto securityWidget = cpp14::make_unique<SecurityWidget>(session_,dbmodel_,authWidget);
+	auto securityWidget = cpp14::make_unique<SecurityWidget>(session_,dbmodel_,authWidget_);
 	loginSignal().connect(securityWidget.get(),&SecurityWidget::login);
 	logoutSignal().connect(securityWidget.get(),&SecurityWidget::logout);
 	auto securityItem = menuWidget->addItem("Security",std::move(securityWidget));
@@ -59,13 +66,15 @@ ProfileWidget::ProfileWidget(Session *session, DBModel *dbmodel, const std::shar
 	loginSignal().connect(notificationsWidget.get(),&NotificationsWidget::login);
 	logoutSignal().connect(notificationsWidget.get(),&NotificationsWidget::logout);
 	auto notificationsItem = menuWidget->addItem("Notifications",std::move(notificationsWidget));
-}
 
-void ProfileWidget::login(Auth::Login& login) {
 	loginSignal().emit(login);
 }
 
 void ProfileWidget::logout() {
+
+	mainLayout_->removeWidget(mainWidget_);
+	mustLoginWidget_->show();
+
 	logoutSignal().emit();
 }
 

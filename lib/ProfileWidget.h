@@ -11,6 +11,7 @@
 #define PROFILEWIDGET_H
 
 #include <Wt/WContainerWidget.h>
+#include <Wt/WVBoxLayout.h>
 #include <Wt/WTemplate.h>
 #include <Wt/WText.h>
 #include <Wt/WLineEdit.h>
@@ -32,6 +33,10 @@ void logout();
 private:
 Session *session_;
 DBModel *dbmodel_;
+AuthWidget *authWidget_;
+Wt::WVBoxLayout *mainLayout_;
+Wt::WContainerWidget *mainWidget_;
+Wt::WText *mustLoginWidget_;
 const std::shared_ptr<CountryModel> countrymodel_;
 Wt::Signal<Wt::Auth::Login&>& loginSignal() {
 	return loginSignal_;
