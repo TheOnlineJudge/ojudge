@@ -18,6 +18,7 @@
 #include <Wt/WDialog.h>
 #include "dbmodel/DBModel.h"
 #include "widgets/OJCodeEditorWidget.h"
+#include "widgets/OJRatingSetWidget.h"
 
 class ViewModels;
 class OJProblemViewerWidget;
@@ -93,6 +94,11 @@ private:
 DBModel *dbmodel_;
 ViewModels *viewModels_;
 Wt::WPushButton *downloadButton_;
+Wt::WPushButton *submitButton_;
+Wt::WPushButton *bookmarkButton_;
+Wt::WText *rateLabel_;
+OJRatingSetWidget *rateSet_;
+
 Wt::Signal<ProblemWidgetDialog> showDialog_;
 };
 

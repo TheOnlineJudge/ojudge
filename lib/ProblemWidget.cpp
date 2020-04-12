@@ -14,7 +14,6 @@
 #include "ProblemWidget.h"
 #include "PdfResource.h"
 #include "widgets/OJProblemViewerWidget.h"
-#include "widgets/OJRatingSetWidget.h"
 
 using namespace Wt;
 
@@ -146,10 +145,12 @@ ProblemSidemenuWidget::ProblemSidemenuWidget(DBModel *dbmodel, ViewModels *viewM
 
 	auto mainLayout = setLayout(cpp14::make_unique<WVBoxLayout>());
 
-	auto submitButton = mainLayout->addWidget(cpp14::make_unique<WPushButton>("Submit solution"),0);
-	submitButton->clicked().connect( [=] {
+	submitButton_ = mainLayout->addWidget(cpp14::make_unique<WPushButton>("Submit solution"),0);
+	submitButton_->clicked().connect( [=] {
 		showDialog_.emit(ProblemWidgetDialog::Submission);
 	});
+	submitButton_->disable();
+	submitButton_->setToolTip("You have to log in to submit a solution.");
 
 	auto downloadBookmarkLayout = mainLayout->addLayout(cpp14::make_unique<WHBoxLayout>(),0);
 	downloadBookmarkLayout->setContentsMargins(0,0,0,0);
@@ -158,10 +159,11 @@ ProblemSidemenuWidget::ProblemSidemenuWidget(DBModel *dbmodel, ViewModels *viewM
 	downloadButton_->setLink(WLink(std::make_shared<PdfResource>(dbmodel_)));
 	downloadButton_->setIcon(WLink("images/pdf.svg"));
 
-	// ------------- To be shown only if an user is logged in
-	auto bookmarkButton = downloadBookmarkLayout->addWidget(cpp14::make_unique<WPushButton>("Bookmark problem"),0);
-	bookmarkButton->setCheckable(true);
-	bookmarkButton->setIcon(WLink("images/bookmark.svg"));
+	bookmarkButton_ = downloadBookmarkLayout->addWidget(cpp14::make_unique<WPushButton>("Bookmark problem"),0);
+	bookmarkButton_->setCheckable(true);
+	bookmarkButton_->setIcon(WLink("images/bookmark.svg"));
+	bookmarkButton_->disable();
+	bookmarkButton_->setToolTip("You have to log in to bookmark a problem.");
 
 	// Placeholder for problem info (CPU limit, RAM limit, etc.)
 	auto infoFrame = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),0);
@@ -182,13 +184,15 @@ ProblemSidemenuWidget::ProblemSidemenuWidget(DBModel *dbmodel, ViewModels *viewM
 		showDialog_.emit(ProblemWidgetDialog::Statistics);
 	});
 
-	auto rateLabel = mainLayout->addWidget(cpp14::make_unique<WText>("Rate this problem"));
-	rateLabel->setTextAlignment(AlignmentFlag::Center);
+	rateLabel_ = mainLayout->addWidget(cpp14::make_unique<WText>("Rate this problem"));
+	rateLabel_->setTextAlignment(AlignmentFlag::Center);
 
 	auto rateLayout = mainLayout->addLayout(cpp14::make_unique<WHBoxLayout>());
 	rateLayout->setContentsMargins(0,0,0,0);
 	rateLayout->addStretch(1);
-	auto rateSet = rateLayout->addWidget(cpp14::make_unique<OJRatingSetWidget>(),0);
+	rateSet_ = rateLayout->addWidget(cpp14::make_unique<OJRatingSetWidget>(),0);
+	rateSet_->disable();
+	rateSet_->setToolTip("You have to log in to rate a problem.");
 	rateLayout->addStretch(1);
 
 	mainLayout->addStretch(1);
@@ -196,10 +200,22 @@ ProblemSidemenuWidget::ProblemSidemenuWidget(DBModel *dbmodel, ViewModels *viewM
 
 void ProblemSidemenuWidget::login(Auth::Login& login) {
 
+	submitButton_->enable();
+	submitButton_->setToolTip("");
+	bookmarkButton_->enable();
+	bookmarkButton_->setToolTip("");
+	rateSet_->enable();
+	rateSet_->setToolTip("");
 }
 
 void ProblemSidemenuWidget::logout() {
 
+	submitButton_->disable();
+	submitButton_->setToolTip("You have to log in to submit a solution.");
+	bookmarkButton_->disable();
+	bookmarkButton_->setToolTip("You have to log in to bookmark a problem.");
+	rateSet_->disable();
+	rateSet_->setToolTip("You have to log in to rate a problem.");
 }
 
 void ProblemSidemenuWidget::setProblem(dbo::ptr<Problem> problemData) {
