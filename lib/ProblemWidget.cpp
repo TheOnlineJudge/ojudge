@@ -159,7 +159,6 @@ ProblemSidemenuWidget::ProblemSidemenuWidget(DBModel *dbmodel, ViewModels *viewM
 	downloadButton_->setLink(WLink(std::make_shared<PdfResource>(dbmodel_)));
 	downloadButton_->setIcon(WLink("images/pdf.svg"));
 
-	// ------------- To be shown only if an user is logged in
 	bookmarkButton_ = downloadBookmarkLayout->addWidget(cpp14::make_unique<WPushButton>("Bookmark problem"),0);
 	bookmarkButton_->setCheckable(true);
 	bookmarkButton_->setIcon(WLink("images/bookmark.svg"));
