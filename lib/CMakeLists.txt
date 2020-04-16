@@ -47,6 +47,7 @@ Joomla10HashFunction.cpp
 HomeWidget.cpp
 LanguagesWidget.cpp
 LoginWidget.cpp
+OJAuthModel.cpp
 OJUtils.cpp
 PdfResource.cpp
 ProblemsWidget.cpp

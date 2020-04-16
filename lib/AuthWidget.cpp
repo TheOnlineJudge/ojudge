@@ -8,11 +8,13 @@
 *********************************************************************/
 
 #include "AuthWidget.h"
+#include "OJAuthModel.h"
 #include "RegistrationView.h"
 #include "dbmodel/DBModel.h"
 
 AuthWidget::AuthWidget(Session &session) : Auth::AuthWidget(Session::auth(), session.users(), session.login()), session_(session) {
 
+	setModel(cpp14::make_unique<OJAuthModel>(Session::auth(), session.users()));
 }
 
 void AuthWidget::createLoginView() {
