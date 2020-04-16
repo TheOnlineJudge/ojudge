@@ -43,9 +43,11 @@ ContributeWidget.cpp
 DashboardWidget.cpp
 FactsWidget.cpp
 FooterWidget.cpp
+Joomla10HashFunction.cpp
 HomeWidget.cpp
 LanguagesWidget.cpp
 LoginWidget.cpp
+OJUtils.cpp
 PdfResource.cpp
 ProblemsWidget.cpp
 ProblemWidget.cpp

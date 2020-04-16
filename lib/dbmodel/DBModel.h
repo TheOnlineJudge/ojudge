@@ -187,9 +187,6 @@ void persist(Action& a)
 	dbo::hasMany(a, submissions, dbo::ManyToOne, "user");
 	dbo::hasOne(a, settings, "user");
 }
-
-private:
-const std::string bin_to_hex(const std::string bin) const;
 };
 
 class UserSettings {
