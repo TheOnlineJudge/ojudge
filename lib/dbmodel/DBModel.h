@@ -187,9 +187,6 @@ void persist(Action& a)
 	dbo::hasMany(a, submissions, dbo::ManyToOne, "user");
 	dbo::hasOne(a, settings, "user");
 }
-
-private:
-const std::string bin_to_hex(const std::string bin) const;
 };
 
 class UserSettings {
@@ -205,7 +202,8 @@ std::optional<bool> notifications_email_general;
 std::optional<bool> notifications_browser_results;
 std::optional<bool> notifications_browser_contests;
 std::optional<bool> notifications_browser_general;
-std::optional<bool> security_2fa;
+std::optional<bool> twofa_enabled;
+std::optional<std::vector<unsigned char> > twofa_secret;
 
 template<class Action>
 void persist(Action& a) {
@@ -220,7 +218,8 @@ void persist(Action& a) {
 	dbo::field(a, notifications_browser_results, "notifications_browser_results");
 	dbo::field(a, notifications_browser_contests, "notifications_browser_contests");
 	dbo::field(a, notifications_browser_general, "notifications_browser_general");
-	dbo::field(a, security_2fa, "security_2fa");
+	dbo::field(a, twofa_enabled, "twofa_enabled");
+	dbo::field(a, twofa_secret, "twofa_secret");
 }
 };
 

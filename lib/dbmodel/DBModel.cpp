@@ -17,6 +17,8 @@
 #include <Wt/Utils.h>
 
 #include "DBModel.h"
+#include "../OJUtils.h"
+#include "../Joomla10HashFunction.h"
 
 void Session::configureAuth() {
 	myAuthService.setAuthTokensEnabled(true, "logincookie");
@@ -25,6 +27,7 @@ void Session::configureAuth() {
 
 	auto verifier = cpp14::make_unique<Auth::PasswordVerifier>();
 	verifier->addHashFunction(cpp14::make_unique<Auth::BCryptHashFunction>(7));
+	verifier->addHashFunction(cpp14::make_unique<Joomla10HashFunction>());
 	myPasswordService.setVerifier(std::move(verifier));
 	myPasswordService.setAttemptThrottlingEnabled(true);
 	myPasswordService.setStrengthValidator(cpp14::make_unique<Auth::PasswordStrengthValidator>());
@@ -273,23 +276,10 @@ const std::string User::avatarLink(const AvatarType type, int size) const {
 
 	switch(type) {
 	case AvatarType::Default:
-		return "https://cdn.libravatar.org/avatar/" + bin_to_hex(Utils::md5(bin_to_hex(Utils::md5(authInfo->email())))) + "?s=" + std::to_string(size) + "&forcedefault=y&default=identicon" ;
+		return "https://cdn.libravatar.org/avatar/" + OJUtils::bin_to_hex(Utils::md5(OJUtils::bin_to_hex(Utils::md5(authInfo->email())))) + "?s=" + std::to_string(size) + "&forcedefault=y&default=identicon" ;
 	case AvatarType::Gravatar:
-		return "https://cdn.libravatar.org/avatar/" + bin_to_hex(Utils::md5(authInfo->email())) + "?s=" + std::to_string(size) + "&default=identicon" ;
+		return "https://cdn.libravatar.org/avatar/" + OJUtils::bin_to_hex(Utils::md5(authInfo->email())) + "?s=" + std::to_string(size) + "&default=identicon" ;
 	}
 
 	return "https://www.libravatar.org/static/img/mm/" + std::to_string(size) + ".png";
-}
-
-const std::string User::bin_to_hex(const std::string bin) const {
-
-	std::string result;
-	char tmpbyte[3];
-
-	for(unsigned char c: bin) {
-		sprintf(tmpbyte,"%02x",c);
-		result += tmpbyte;
-	}
-
-	return result;
 }

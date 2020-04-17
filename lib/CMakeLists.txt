@@ -24,6 +24,7 @@ datastore/DataStore.cpp
 datastore/LanguageStore.cpp
 datastore/ProblemStore.cpp
 dbmodel/DBModel.cpp
+external/QrCode.cpp
 viewmodels/CategoryModel.cpp
 viewmodels/CountryModel.cpp
 viewmodels/LanguageModel.cpp
@@ -43,9 +44,12 @@ ContributeWidget.cpp
 DashboardWidget.cpp
 FactsWidget.cpp
 FooterWidget.cpp
+Joomla10HashFunction.cpp
 HomeWidget.cpp
 LanguagesWidget.cpp
 LoginWidget.cpp
+OJAuthModel.cpp
+OJUtils.cpp
 PdfResource.cpp
 ProblemsWidget.cpp
 ProblemWidget.cpp
