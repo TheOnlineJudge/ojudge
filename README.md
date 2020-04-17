@@ -14,6 +14,8 @@ To build and run this software you need Wt (http://webtoolkit.eu) and its depend
 
 You will also need PostgreSQL installed and running in your system.
 
+oath-tookit (https://www.nongnu.org/oath-toolkit/index.html) is required for Two Factor Authentication. It is available for install in all major Linux distributions.
+
 ### Building
 Clone this repository, or a fork of it, and from its root directory run:
 

@@ -3,6 +3,8 @@ PROJECT (ojudge)
 set(Boost_NO_BOOST_CMAKE ON)
 FIND_PACKAGE (Wt REQUIRED Wt HTTP )
 FIND_PACKAGE (Boost COMPONENTS filesystem program_options REQUIRED)
+FIND_PACKAGE (PkgConfig REQUIRED)
+pkg_check_modules(OATH REQUIRED IMPORTED_TARGET liboath)
 
 SET (CMAKE_CXX_FLAGS "-O2 -std=c++17 -g")
 
@@ -33,4 +35,5 @@ add_dependencies (ojudgeapp do_generateversion)
 
 TARGET_LINK_LIBRARIES (ojudgeapp
 	ojudge
+	PkgConfig::OATH
 )

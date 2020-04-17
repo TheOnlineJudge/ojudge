@@ -24,6 +24,7 @@ datastore/DataStore.cpp
 datastore/LanguageStore.cpp
 datastore/ProblemStore.cpp
 dbmodel/DBModel.cpp
+external/QrCode.cpp
 viewmodels/CategoryModel.cpp
 viewmodels/CountryModel.cpp
 viewmodels/LanguageModel.cpp

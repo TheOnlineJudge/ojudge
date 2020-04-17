@@ -180,7 +180,8 @@ body {
   color:white;
 }
 
-.oj-login-widget .has-error .form-control {
+.oj-login-widget .has-error .form-control,
+.has-error.form-control {
   background-color:#ffcccc;
 }
 

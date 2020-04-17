@@ -7,6 +7,13 @@
 * Read the LICENSE file for information on license terms
 *********************************************************************/
 
+#include <algorithm>
+#include <cctype>
+#include <random>
+#include <climits>
+#include <functional>
+#include <chrono>
+#include <liboath/oath.h>
 #include <Wt/WHBoxLayout.h>
 #include <Wt/WCssDecorationStyle.h>
 #include <Wt/WFont.h>
@@ -19,10 +26,13 @@
 #include <Wt/WRadioButton.h>
 #include <Wt/WFileUpload.h>
 #include <Wt/Utils.h>
+#include <Wt/WMemoryResource.h>
+#include "external/QrCode.h"
 #include "viewmodels/CountryModel.h"
 #include "ProfileWidget.h"
 
 using namespace Wt;
+using random_bytes_engine = std::independent_bits_engine<std::default_random_engine, CHAR_BIT, unsigned char>;
 
 ProfileWidget::ProfileWidget(Session *session, DBModel *dbmodel, const std::shared_ptr<CountryModel> countrymodel, AuthWidget* authWidget) :
 			session_(session), dbmodel_(dbmodel), countrymodel_(countrymodel), authWidget_(authWidget) {
@@ -306,10 +316,94 @@ ProfileWidget::SecurityWidget::SecurityWidget(Session *session, DBModel *dbmodel
 	});
 	changePassword_ = bindWidget("changepassword-setting",std::move(changePassword));
 
-	auto twofa = cpp14::make_unique<WPushButton>();
-	twofa->setText("Enable 2FA");
-	twofa->addStyleClass("btn-primary");
-	twofa_ = bindWidget("twofa-setting",std::move(twofa));
+	twofa_ = bindWidget("twofa-setting",cpp14::make_unique<WPushButton>());
+	twofa_->clicked().connect( [=] {
+		twofaDialog_ = addChild(cpp14::make_unique<TwoFADialog>(session_,dbmodel_,login_,disableTwoFA_));
+		twofaDialog_->finished().connect(this,&ProfileWidget::SecurityWidget::TwoFADialogDone);
+		twofaDialog_->show();
+	});
+	twofaButtonReset();
+}
+
+void ProfileWidget::SecurityWidget::twofaButtonReset() {
+
+	dbo::Transaction transaction = dbmodel_->startTransaction();
+	dbo::ptr<User> userData = session_->user(session_->login().user());
+
+	if(userData->settings->twofa_enabled == true) {
+		twofa_->setText("Disable 2FA");
+		twofa_->removeStyleClass("btn-primary");
+		twofa_->addStyleClass("btn-default");
+		disableTwoFA_ = true;
+	} else {
+		twofa_->setText("Enable 2FA");
+		twofa_->removeStyleClass("btn-default");
+		twofa_->addStyleClass("btn-primary");
+		disableTwoFA_ = false;
+	}
+}
+
+void ProfileWidget::SecurityWidget::TwoFADialogDone(DialogCode code) {
+
+	if(code == DialogCode::Accepted) {
+		if(!disableTwoFA_) {
+			std::vector<unsigned char> secret(twofaDialog_->getSecret());
+			auto t = time(NULL);
+			oath_init();
+			int result = oath_totp_validate(
+				reinterpret_cast<char*> (&secret[0]),
+				32,
+				t,
+				OATH_TOTP_DEFAULT_TIME_STEP_SIZE,
+				OATH_TOTP_DEFAULT_START_TIME,
+				10,
+				twofaDialog_->getAuthCode().c_str()
+			);
+			oath_done();
+
+			if(result != OATH_INVALID_OTP) {
+				dbo::Transaction transaction = dbmodel_->startTransaction();
+				dbo::ptr<User> userData = session_->user(session_->login().user());
+				dbo::ptr<UserSettings> settings = userData->settings;
+				settings.modify()->twofa_enabled = true;
+				settings.modify()->twofa_secret = secret;
+			} else {
+				twofaDialog_->setCodeError();
+				twofaDialog_->show();
+				return;
+			}
+		} else {
+			dbo::Transaction transaction = dbmodel_->startTransaction();
+			dbo::ptr<User> userData = session_->user(session_->login().user());
+			dbo::ptr<UserSettings> settings = userData->settings;
+			std::vector<unsigned char> secret(userData->settings->twofa_secret.value());
+
+			auto t = time(NULL);
+			oath_init();
+			int result = oath_totp_validate(
+				reinterpret_cast<char*> (&secret[0]),
+				32,
+				t,
+				OATH_TOTP_DEFAULT_TIME_STEP_SIZE,
+                                OATH_TOTP_DEFAULT_START_TIME,
+                                10,
+                                twofaDialog_->getAuthCode().c_str()
+			);
+			oath_done();
+
+			if(result != OATH_INVALID_OTP) {
+				settings.modify()->twofa_enabled = false;
+				settings.modify()->twofa_secret = std::vector<unsigned char>();
+			} else {
+				twofaDialog_->setCodeError();
+				twofaDialog_->show();
+				return;
+			}
+		}
+	}
+
+	removeChild(twofaDialog_);
+	twofaButtonReset();
 }
 
 void ProfileWidget::SecurityWidget::login(Auth::Login& login) {
@@ -319,6 +413,86 @@ void ProfileWidget::SecurityWidget::login(Auth::Login& login) {
 
 void ProfileWidget::SecurityWidget::logout() {
 
+}
+
+ProfileWidget::SecurityWidget::TwoFADialog::TwoFADialog(Session *session, DBModel *dbmodel, Auth::Login *login, bool disable) : session_(session), dbmodel_(dbmodel), login_(login), secret_(32) {
+
+	setWindowTitle((disable?"Disable":"Enable") + std::string(" 2-Factor Authentication"));
+	setClosable(true);
+	auto mainLayout = contents()->setLayout(cpp14::make_unique<WVBoxLayout>());
+	mainLayout->setContentsMargins(0,0,0,0);
+
+	if(!disable) {
+		auto f = [](unsigned char const c) { return std::isspace(c); };
+		auto qrLayout = mainLayout->addLayout(cpp14::make_unique<WHBoxLayout>());
+		qrLayout->setContentsMargins(0,0,0,0);
+		qrLayout->addStretch(1);
+		auto qrCode = qrLayout->addWidget(cpp14::make_unique<WImage>());
+		qrCode->setHeight(250);
+		qrLayout->addStretch(1);
+
+                std::string qrstr ;
+                qrstr += "otpauth://totp/";
+                std::string sitetitle(dbmodel_->getSiteSetting("sitetitle"));
+                sitetitle.erase(std::remove_if(sitetitle.begin(), sitetitle.end(), f), sitetitle.end());
+                qrstr += sitetitle;
+                qrstr += ":";
+                qrstr += login_->user().identity("loginname").toUTF8();
+
+                random_bytes_engine rbe;
+		rbe.seed(std::chrono::system_clock::now().time_since_epoch().count());
+                std::generate(begin(secret_), end(secret_), std::ref(rbe));
+                char *base32secret;
+                size_t base32len;
+		oath_init();
+                oath_base32_encode(reinterpret_cast<char*> (&secret_[0]),32,&base32secret,&base32len);
+		oath_done();
+
+                qrstr += "?secret=";
+                qrstr += base32secret;
+
+                qrstr += "&algorithm=SHA1&digits=6&period=30" ;
+
+                // In case we want to add a logo
+                // qrstr += "&image=<logo_escaped_url>";
+
+                qrcodegen::QrCode twofaqr = qrcodegen::QrCode::encodeText(qrstr.c_str(), qrcodegen::QrCode::Ecc::MEDIUM);
+                std::string twofaqrsvg = twofaqr.toSvgString(4);
+
+                qrCode->setImageLink(WLink(std::make_shared<WMemoryResource>("image/svg+xml",std::vector<unsigned char>(twofaqrsvg.begin(), twofaqrsvg.end()))));
+
+		mainLayout->addWidget(cpp14::make_unique<WText>("Scan the above QR code with your preferred 2FA app and enter the resulting code below"));
+	} else {
+		mainLayout->addWidget(cpp14::make_unique<WText>("Enter the current 2FA code from your app to disable it"));
+	}
+
+	auto codeLayout = mainLayout->addLayout(cpp14::make_unique<WHBoxLayout>());
+	codeLayout->setContentsMargins(0,0,0,0);
+	codeLayout->addStretch(1);
+	authCode_ = codeLayout->addWidget(cpp14::make_unique<WLineEdit>());
+	authCode_->setWidth(200);
+	authCode_->setInputMask("999999");
+	codeLayout->addStretch(1);
+
+	WPushButton *ok = footer()->addWidget(cpp14::make_unique<WPushButton>("Ok"));
+	ok->addStyleClass("btn-primary");
+	WPushButton *cancel = footer()->addWidget(cpp14::make_unique<WPushButton>("Cancel"));
+
+	ok->clicked().connect(this,&WDialog::accept);
+	cancel->clicked().connect(this,&WDialog::reject);
+}
+
+std::vector<unsigned char> ProfileWidget::SecurityWidget::TwoFADialog::getSecret() {
+	return secret_;
+}
+
+std::string ProfileWidget::SecurityWidget::TwoFADialog::getAuthCode() {
+
+	return authCode_->text().toUTF8();
+}
+
+void ProfileWidget::SecurityWidget::TwoFADialog::setCodeError() {
+	authCode_->addStyleClass("has-error");
 }
 
 ProfileWidget::NotificationsWidget::NotificationsWidget(Session *session, DBModel *dbmodel) : session_(session), dbmodel_(dbmodel) {

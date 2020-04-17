@@ -20,6 +20,7 @@
 #include <Wt/WImage.h>
 #include <Wt/WCheckBox.h>
 #include <Wt/WButtonGroup.h>
+#include <Wt/WDialog.h>
 #include "AuthWidget.h"
 #include "dbmodel/DBModel.h"
 #include "viewmodels/CountryModel.h"
@@ -97,6 +98,27 @@ AuthWidget *authWidget_;
 Wt::Auth::Login *login_;
 Wt::WPushButton *changePassword_;
 Wt::WPushButton *twofa_;
+void twofaButtonReset();
+void TwoFADialogDone(Wt::DialogCode code);
+bool disableTwoFA_ = false;
+
+class TwoFADialog : public Wt::WDialog {
+public:
+TwoFADialog(Session *session, DBModel *dbmodel, Wt::Auth::Login *login, bool disable);
+std::vector<unsigned char> getSecret();
+std::string getAuthCode();
+void setCodeError();
+
+private:
+Session *session_;
+DBModel *dbmodel_;
+Wt::Auth::Login *login_;
+Wt::WLineEdit *authCode_;
+std::vector<unsigned char> secret_;
+};
+
+TwoFADialog *twofaDialog_;
+
 };
 
 class NotificationsWidget : public Wt::WTemplate {
