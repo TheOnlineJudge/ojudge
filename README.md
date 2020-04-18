@@ -48,7 +48,7 @@ $ ./run.sh
 If there are no errors, you'll access the platform via your web browser, pointing it to ```http://localhost:9090```. An administration user is created by default, with username ```admin``` and also password ```admin```.
 
 ## Questions or contributing
-In case you have problems setting and running this software, or if you'd like to contribute code to its development, you are welcome to join us in https://groups.google.com/d/forum/ojudge-developers.
+In case you have problems setting and running this software, or if you'd like to contribute code to its development, you are welcome to join us in https://groups.google.com/d/forum/ojudge-developers. We are also at Discord: https://discord.gg/aFQZRZC.
 
 You can also contribute with financial support using these channels:
 
