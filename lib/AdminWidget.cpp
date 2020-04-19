@@ -682,6 +682,11 @@ void AdminWidget::AdminGeneralSettingsWidget::applyClicked() {
                                 if(siteLogoChanged_) dbmodel_->updateSiteSetting("sitelogo", siteLogo_->text().toUTF8());
                                 if(siteColorChanged_) dbmodel_->updateSiteSetting("sitecolor",siteColor_->color().cssText());
                                 if(googleAnalyticsChanged_) dbmodel_->updateSiteSetting("googleanalytics",googleAnalytics_->text().toUTF8());
+
+				siteTitleChanged_ = false;
+				siteLogoChanged_ = false;
+				siteColorChanged_ = false;
+				googleAnalyticsChanged_ = false;
                         }
                         break;
                 case StandardButton::No:

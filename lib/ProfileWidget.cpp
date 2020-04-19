@@ -291,6 +291,14 @@ void ProfileWidget::AccountWidget::applyClicked() {
 			        if(countryChanged_) userData.modify()->country = cpp17::any_cast<std::string>(countrymodel_->data(countrymodel_->index(country_->currentIndex(),0),
 					                                                                                          CountryModel::CountryCodeRole));
 			        if(institutionChanged_) userData.modify()->institution = institution_->text().toUTF8();
+
+				avatarChanged_ = false;
+				emailChanged_ = false;
+				firstnameChanged_ = false;
+				lastnameChanged_ = false;
+				birthdayChanged_ = false;
+				countryChanged_ = false;
+				institutionChanged_ = false;
 			}
 			break;
 		case StandardButton::No:
@@ -636,6 +644,13 @@ void ProfileWidget::NotificationsWidget::applyClicked() {
 			        if(browserResultsChanged_) userData->settings.modify()->notifications_browser_results = (browserResults_->isChecked() ? true : false);
 			        if(browserContestsChanged_) userData->settings.modify()->notifications_browser_contests = (browserContests_->isChecked() ? true : false);
 			        if(browserGeneralChanged_) userData->settings.modify()->notifications_browser_general = (browserGeneral_->isChecked() ? true : false);
+
+				emailResultsChanged_ = false;
+				emailContestsChanged_ = false;
+				emailGeneralChanged_ = false;
+				browserResultsChanged_ = false;
+				browserContestsChanged_ = false;
+				browserGeneralChanged_ = false;
 			}
 			break;
 		case StandardButton::No:
