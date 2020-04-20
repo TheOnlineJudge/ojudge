@@ -183,6 +183,7 @@
     ${upload-avatar}
     ${block:settingsField-template username}
     ${block:settingsField-template email}
+    ${block:settingsField-template telegramUsername}
     ${block:settingsField-template firstname}
     ${block:settingsField-template lastname}
     ${block:settingsField-template birthday}
