@@ -21,6 +21,7 @@
 #include <Wt/WCheckBox.h>
 #include <Wt/WButtonGroup.h>
 #include <Wt/WDialog.h>
+#include <Wt/WFileUpload.h>
 #include "AuthWidget.h"
 #include "dbmodel/DBModel.h"
 #include "viewmodels/CountryModel.h"
@@ -64,9 +65,11 @@ const std::shared_ptr<CountryModel> countrymodel_;
 void reset();
 void resetClicked();
 void applyClicked();
+void avatarUploaded();
 Wt::WImage *avatarImage_;
 Wt::WButtonGroup *avatarGroup_;
 Wt::WContainerWidget *avatarUpload_;
+Wt::WFileUpload *avatarFileUpload_;
 Wt::WLineEdit *username_;
 Wt::WLineEdit *email_;
 Wt::WLineEdit *firstname_;
@@ -76,7 +79,9 @@ Wt::WComboBox *country_;
 Wt::WImage *countryFlag_;
 Wt::WLineEdit *institution_;
 Wt::WLineEdit *uvaid_;
+std::vector<unsigned char> customAvatar_;
 bool avatarChanged_ = false;
+bool customAvatarChanged_ = false;
 bool emailChanged_ = false;
 bool firstnameChanged_ = false;
 bool lastnameChanged_ = false;

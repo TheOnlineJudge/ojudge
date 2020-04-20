@@ -5,6 +5,7 @@ FIND_PACKAGE (Wt REQUIRED Wt HTTP )
 FIND_PACKAGE (Boost COMPONENTS filesystem program_options REQUIRED)
 FIND_PACKAGE (PkgConfig REQUIRED)
 pkg_check_modules(OATH REQUIRED IMPORTED_TARGET liboath)
+pkg_check_modules(GRAPHICSMAGICK REQUIRED IMPORTED_TARGET GraphicsMagick++)
 
 SET (CMAKE_CXX_FLAGS "-O2 -std=c++17 -g")
 
@@ -14,7 +15,7 @@ SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 SET (OJUDGE_VERSION_MAJOR 0)
 SET (OJUDGE_VERSION_MINOR 2)
-SET (OJUDGE_VERSION_RELEASE 2)
+SET (OJUDGE_VERSION_RELEASE 3)
 
 add_custom_command (
 	OUTPUT version.h
@@ -35,5 +36,4 @@ add_dependencies (ojudgeapp do_generateversion)
 
 TARGET_LINK_LIBRARIES (ojudgeapp
 	ojudge
-	PkgConfig::OATH
 )

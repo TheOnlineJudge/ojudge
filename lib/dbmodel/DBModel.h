@@ -169,8 +169,6 @@ std::optional<bool> firstlogin;
 Submissions submissions;
 dbo::weak_ptr<UserSettings> settings;
 
-const std::string avatarLink(const AvatarType type, int size = 128) const;
-
 template<class Action>
 void persist(Action& a)
 {
@@ -431,6 +429,8 @@ std::string getSiteSetting(std::string settingName);
 void updateSiteSetting(std::string settingName, std::string settingValue);
 
 Languages getLanguages();
+
+const std::string avatarLink(dbo::ptr<User> user, const AvatarType type, int size = 128);
 
 private:
 Session* session_;
