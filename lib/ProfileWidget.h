@@ -21,6 +21,7 @@
 #include <Wt/WCheckBox.h>
 #include <Wt/WButtonGroup.h>
 #include <Wt/WDialog.h>
+#include <Wt/WFileUpload.h>
 #include "AuthWidget.h"
 #include "dbmodel/DBModel.h"
 #include "viewmodels/CountryModel.h"
@@ -64,9 +65,11 @@ const std::shared_ptr<CountryModel> countrymodel_;
 void reset();
 void resetClicked();
 void applyClicked();
+void avatarUploaded();
 Wt::WImage *avatarImage_;
 Wt::WButtonGroup *avatarGroup_;
 Wt::WContainerWidget *avatarUpload_;
+Wt::WFileUpload *avatarFileUpload_;
 Wt::WLineEdit *username_;
 Wt::WLineEdit *email_;
 Wt::WLineEdit *telegramUsername_;
@@ -77,7 +80,9 @@ Wt::WComboBox *country_;
 Wt::WImage *countryFlag_;
 Wt::WLineEdit *institution_;
 Wt::WLineEdit *uvaid_;
+std::vector<unsigned char> customAvatar_;
 bool avatarChanged_ = false;
+bool customAvatarChanged_ = false;
 bool emailChanged_ = false;
 bool telegramUsernameChanged_ = false;
 bool firstnameChanged_ = false;
@@ -148,10 +153,6 @@ Wt::WCheckBox *telegramResults_;
 Wt::WCheckBox *telegramContests_;
 Wt::WCheckBox *telegramGeneral_;
 Wt::WCheckBox *telegramMessages_;
-Wt::WCheckBox *siteResults_;
-Wt::WCheckBox *siteContests_;
-Wt::WCheckBox *siteGeneral_;
-Wt::WCheckBox *siteMessages_;
 bool emailResultsChanged_ = false;
 bool emailContestsChanged_ = false;
 bool emailGeneralChanged_ = false;
@@ -164,10 +165,6 @@ bool telegramResultsChanged_ = false;
 bool telegramContestsChanged_ = false;
 bool telegramGeneralChanged_ = false;
 bool telegramMessagesChanged_ = false;
-bool siteResultsChanged_ = false;
-bool siteContestsChanged_ = false;
-bool siteGeneralChanged_ = false;
-bool siteMessagesChanged_ = false;
 };
 
 };

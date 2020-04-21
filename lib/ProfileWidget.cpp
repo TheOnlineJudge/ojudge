@@ -7,6 +7,7 @@
 * Read the LICENSE file for information on license terms
 *********************************************************************/
 
+#include <fstream>
 #include <algorithm>
 #include <cctype>
 #include <random>
@@ -14,6 +15,7 @@
 #include <functional>
 #include <chrono>
 #include <liboath/oath.h>
+#include <Magick++.h>
 #include <Wt/WHBoxLayout.h>
 #include <Wt/WCssDecorationStyle.h>
 #include <Wt/WFont.h>
@@ -24,7 +26,6 @@
 #include <Wt/WMessageBox.h>
 #include <Wt/WTable.h>
 #include <Wt/WRadioButton.h>
-#include <Wt/WFileUpload.h>
 #include <Wt/Utils.h>
 #include <Wt/WMemoryResource.h>
 #include "external/QrCode.h"
@@ -32,10 +33,11 @@
 #include "ProfileWidget.h"
 
 using namespace Wt;
+using namespace Magick;
 using random_bytes_engine = std::independent_bits_engine<std::default_random_engine, CHAR_BIT, unsigned char>;
 
 ProfileWidget::ProfileWidget(Session *session, DBModel *dbmodel, const std::shared_ptr<CountryModel> countrymodel, AuthWidget* authWidget) :
-			session_(session), dbmodel_(dbmodel), countrymodel_(countrymodel), authWidget_(authWidget) {
+	session_(session), dbmodel_(dbmodel), countrymodel_(countrymodel), authWidget_(authWidget) {
 
 	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout_->setContentsMargins(0,0,0,0);
@@ -108,7 +110,13 @@ ProfileWidget::AccountWidget::AccountWidget(Session *session, DBModel *dbmodel, 
 	auto avatarFileLayout = avatarLayout->addLayout(cpp14::make_unique<WHBoxLayout>());
 	avatarFileLayout->setContentsMargins(0,0,0,0);
 	avatarFileLayout->addWidget(cpp14::make_unique<WText>("<label>" + tr("upload-avatar-label") + "</label>"));
-	auto avatarFileUpload = avatarFileLayout->addWidget(cpp14::make_unique<WFileUpload>(),1);
+	avatarFileUpload_ = avatarFileLayout->addWidget(cpp14::make_unique<WFileUpload>(),1);
+	avatarFileUpload_->setFilters("image/x-png,image/jpeg");
+	avatarFileUpload_->changed().connect(avatarFileUpload_,&WFileUpload::upload);
+	avatarFileUpload_->uploaded().connect(this,&ProfileWidget::AccountWidget::avatarUploaded);
+	avatarFileUpload_->fileTooLarge().connect( [=] {
+		WMessageBox::show("Error","The file that you are trying to upload is too large.",StandardButton::Ok);
+	});
 	auto avatarMessage = avatarLayout->addWidget(cpp14::make_unique<WText>("<label></label><i>" + tr("upload-avatar-message") + "</i>"));
 	avatarMessage->setMargin(0);
 	avatarUpload_ = bindWidget("upload-avatar",std::move(avatarUpload));
@@ -126,13 +134,13 @@ ProfileWidget::AccountWidget::AccountWidget(Session *session, DBModel *dbmodel, 
 	avatarGroup->checkedChanged().connect( [=] {
 		avatarChanged_ = true;
 		if((AvatarType)avatarGroup->checkedId() == AvatarType::Custom) {
-			avatarUpload_->removeStyleClass("hidden");
+		        avatarUpload_->removeStyleClass("hidden");
 		} else {
-			avatarUpload_->addStyleClass("hidden");
+		        avatarUpload_->addStyleClass("hidden");
 		}
 		Dbo::Transaction transaction = dbmodel_->startTransaction();
 		dbo::ptr<User> userData = session_->user(login_->user());
-		avatarImage_->setImageLink(userData->avatarLink((AvatarType)avatarGroup->checkedId()));
+		avatarImage_->setImageLink(dbmodel_->avatarLink(userData,(AvatarType)avatarGroup->checkedId()));
 	});
 	avatarGroup_ = avatarGroup.get();
 
@@ -145,7 +153,7 @@ ProfileWidget::AccountWidget::AccountWidget(Session *session, DBModel *dbmodel, 
 		emailChanged_ = true;
 	});
 	email_ = bindWidget("email-setting",std::move(email));
-	
+
 	auto telegramUsername = cpp14::make_unique<WLineEdit>();
 	telegramUsername->changed().connect( [=] {
 		telegramUsernameChanged_ = true;
@@ -220,13 +228,14 @@ void ProfileWidget::AccountWidget::reset() {
 	dbo::ptr<User> userData = session_->user(login_->user());
 
 	avatarGroup_->button((int)userData->avatar->avatarType)->setChecked();
-	avatarImage_->setImageLink(userData->avatarLink(userData->avatar->avatarType));
+	avatarImage_->setImageLink(dbmodel_->avatarLink(userData,userData->avatar->avatarType));
 	if((AvatarType)userData->avatar->avatarType == AvatarType::Custom) {
 		avatarUpload_->removeStyleClass("hidden");
 	} else {
 		avatarUpload_->addStyleClass("hidden");
 	}
 	avatarChanged_ = false;
+	customAvatarChanged_ = false;
 	username_->setText(login_->user().identity("loginname"));
 	email_->setText(login_->user().email());
 	emailChanged_ = false;
@@ -265,13 +274,19 @@ void ProfileWidget::AccountWidget::resetClicked() {
 
 void ProfileWidget::AccountWidget::applyClicked() {
 
-	if(!avatarChanged_ && !emailChanged_ && !firstnameChanged_ && !lastnameChanged_ && !birthdayChanged_ && !countryChanged_ && !institutionChanged_) return;
+	if(!avatarChanged_ && !customAvatarChanged_ && !emailChanged_ && !firstnameChanged_ && !lastnameChanged_ && !birthdayChanged_ && !countryChanged_ && !institutionChanged_) return;
 
 	WStringStream strm;
 
 	strm << "The following data will be updated:<br/><br/>";
 	strm << "<ul>";
-	if(avatarChanged_) strm << "<li>Avatar changed to: <b>" << avatarGroup_->checkedButton()->text().toUTF8() << "</b></li>";
+	if(avatarChanged_) {
+		if((AvatarType)avatarGroup_->checkedId() == AvatarType::Custom && !customAvatarChanged_) {
+			strm << "<li>Avatar changed to: <b>You set the avatar type to 'Custom', but didn't upload a custom avatar. Change won't be saved.</b></li>";
+		} else {
+			strm << "<li>Avatar changed to: <b>" << avatarGroup_->checkedButton()->text().toUTF8() << "</b></li>";
+		}
+	}
 	if(emailChanged_) strm << "<li>eMail address to: <b>" << email_->text().toUTF8() << "</b></li>";
 	if(telegramUsernameChanged_) strm << "<li>Telegram Username to: <b>" << telegramUsername_->text().toUTF8() << "</b><li>";
 	if(firstnameChanged_) strm << "<li>First Name to: <b>" << firstname_->text().toUTF8() << "</b></li>";
@@ -292,15 +307,32 @@ void ProfileWidget::AccountWidget::applyClicked() {
 			{
 			        Dbo::Transaction transaction = dbmodel_->startTransaction();
 			        dbo::ptr<User> userData = session_->user(login_->user());
-			        if(avatarChanged_) userData->avatar.modify()->avatarType = (AvatarType)avatarGroup_->checkedId();
+			        if(avatarChanged_) {
+			                if((AvatarType)avatarGroup_->checkedId() != AvatarType::Custom) {
+			                        userData->avatar.modify()->avatarType = (AvatarType)avatarGroup_->checkedId();
+					} else if((AvatarType)avatarGroup_->checkedId() == AvatarType::Custom && customAvatarChanged_) {
+			                        Dbo::ptr<UserAvatar> avatar = userData->avatar;
+			                        avatar.modify()->avatarType = (AvatarType)avatarGroup_->checkedId();
+			                        avatar.modify()->avatar = customAvatar_;
+					}
+				}
 			        if(emailChanged_) myAuthService.verifyEmailAddress(login_->user(),email_->text().toUTF8());
 			        if(telegramUsernameChanged_);
-					if(firstnameChanged_) userData.modify()->firstName = firstname_->text().toUTF8();
+			        if(firstnameChanged_) userData.modify()->firstName = firstname_->text().toUTF8();
 			        if(lastnameChanged_) userData.modify()->lastName = lastname_->text().toUTF8();
 			        if(birthdayChanged_) userData.modify()->birthday = birthday_->date();
 			        if(countryChanged_) userData.modify()->country = cpp17::any_cast<std::string>(countrymodel_->data(countrymodel_->index(country_->currentIndex(),0),
 					                                                                                          CountryModel::CountryCodeRole));
 			        if(institutionChanged_) userData.modify()->institution = institution_->text().toUTF8();
+
+			        avatarChanged_ = false;
+			        customAvatarChanged_ = false;
+			        emailChanged_ = false;
+			        firstnameChanged_ = false;
+			        lastnameChanged_ = false;
+			        birthdayChanged_ = false;
+			        countryChanged_ = false;
+			        institutionChanged_ = false;
 			}
 			break;
 		case StandardButton::No:
@@ -309,6 +341,29 @@ void ProfileWidget::AccountWidget::applyClicked() {
 		removeChild(warningBox);
 	});
 	warningBox->show();
+}
+
+void ProfileWidget::AccountWidget::avatarUploaded() {
+
+	InitializeMagick(NULL);
+	try {
+		Image avatar(avatarFileUpload_->spoolFileName());
+		if(avatar.magick() != "PNG" && avatar.magick() != "JPEG") {
+			WMessageBox::show("Error","The image is not in JPEG or PNG format.",StandardButton::Ok);
+		} else if(avatar.columns() != 128 || avatar.rows() !=128) {
+			WMessageBox::show("Error","The image must have a size of 128x128 pixels.",StandardButton::Ok);
+		} else {
+			std::ifstream avatarFile(avatarFileUpload_->spoolFileName(), std::ios::binary);
+			customAvatar_.assign(std::istreambuf_iterator<char>{avatarFile},{});
+			std::string mimeType("image/" + std::string((avatar.magick()=="JPEG" ? "jpeg" : "png")));
+			std::string base64data("data:"+mimeType+";base64,"+Utils::base64Encode(std::string(customAvatar_.begin(),customAvatar_.end()),false));
+			avatarImage_->setImageLink(WLink(base64data));
+			customAvatarChanged_ = true;
+		}
+	} catch(Exception &error_) {
+		WMessageBox::show("Error","You are trying to upload a file of unknown format.",StandardButton::Ok);
+	}
+
 }
 
 ProfileWidget::SecurityWidget::SecurityWidget(Session *session, DBModel *dbmodel, AuthWidget *authWidget) : session_(session), dbmodel_(dbmodel), authWidget_(authWidget) {
@@ -368,7 +423,7 @@ void ProfileWidget::SecurityWidget::TwoFADialogDone(DialogCode code) {
 				OATH_TOTP_DEFAULT_START_TIME,
 				10,
 				twofaDialog_->getAuthCode().c_str()
-			);
+				);
 			oath_done();
 
 			if(result != OATH_INVALID_OTP) {
@@ -395,10 +450,10 @@ void ProfileWidget::SecurityWidget::TwoFADialogDone(DialogCode code) {
 				32,
 				t,
 				OATH_TOTP_DEFAULT_TIME_STEP_SIZE,
-                                OATH_TOTP_DEFAULT_START_TIME,
-                                10,
-                                twofaDialog_->getAuthCode().c_str()
-			);
+				OATH_TOTP_DEFAULT_START_TIME,
+				10,
+				twofaDialog_->getAuthCode().c_str()
+				);
 			oath_done();
 
 			if(result != OATH_INVALID_OTP) {
@@ -427,13 +482,15 @@ void ProfileWidget::SecurityWidget::logout() {
 
 ProfileWidget::SecurityWidget::TwoFADialog::TwoFADialog(Session *session, DBModel *dbmodel, Auth::Login *login, bool disable) : session_(session), dbmodel_(dbmodel), login_(login), secret_(32) {
 
-	setWindowTitle((disable?"Disable":"Enable") + std::string(" 2-Factor Authentication"));
+	setWindowTitle((disable ? "Disable" : "Enable") + std::string(" 2-Factor Authentication"));
 	setClosable(true);
 	auto mainLayout = contents()->setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout->setContentsMargins(0,0,0,0);
 
 	if(!disable) {
-		auto f = [](unsigned char const c) { return std::isspace(c); };
+		auto f = [](unsigned char const c) {
+				 return std::isspace(c);
+			 };
 		auto qrLayout = mainLayout->addLayout(cpp14::make_unique<WHBoxLayout>());
 		qrLayout->setContentsMargins(0,0,0,0);
 		qrLayout->addStretch(1);
@@ -441,35 +498,35 @@ ProfileWidget::SecurityWidget::TwoFADialog::TwoFADialog(Session *session, DBMode
 		qrCode->setHeight(250);
 		qrLayout->addStretch(1);
 
-                std::string qrstr ;
-                qrstr += "otpauth://totp/";
-                std::string sitetitle(dbmodel_->getSiteSetting("sitetitle"));
-                sitetitle.erase(std::remove_if(sitetitle.begin(), sitetitle.end(), f), sitetitle.end());
-                qrstr += sitetitle;
-                qrstr += ":";
-                qrstr += login_->user().identity("loginname").toUTF8();
+		std::string qrstr;
+		qrstr += "otpauth://totp/";
+		std::string sitetitle(dbmodel_->getSiteSetting("sitetitle"));
+		sitetitle.erase(std::remove_if(sitetitle.begin(), sitetitle.end(), f), sitetitle.end());
+		qrstr += sitetitle;
+		qrstr += ":";
+		qrstr += login_->user().identity("loginname").toUTF8();
 
-                random_bytes_engine rbe;
+		random_bytes_engine rbe;
 		rbe.seed(std::chrono::system_clock::now().time_since_epoch().count());
-                std::generate(begin(secret_), end(secret_), std::ref(rbe));
-                char *base32secret;
-                size_t base32len;
+		std::generate(begin(secret_), end(secret_), std::ref(rbe));
+		char *base32secret;
+		size_t base32len;
 		oath_init();
-                oath_base32_encode(reinterpret_cast<char*> (&secret_[0]),32,&base32secret,&base32len);
+		oath_base32_encode(reinterpret_cast<char*> (&secret_[0]),32,&base32secret,&base32len);
 		oath_done();
 
-                qrstr += "?secret=";
-                qrstr += base32secret;
+		qrstr += "?secret=";
+		qrstr += base32secret;
 
-                qrstr += "&algorithm=SHA1&digits=6&period=30" ;
+		qrstr += "&algorithm=SHA1&digits=6&period=30";
 
-                // In case we want to add a logo
-                // qrstr += "&image=<logo_escaped_url>";
+		// In case we want to add a logo
+		// qrstr += "&image=<logo_escaped_url>";
 
-                qrcodegen::QrCode twofaqr = qrcodegen::QrCode::encodeText(qrstr.c_str(), qrcodegen::QrCode::Ecc::MEDIUM);
-                std::string twofaqrsvg = twofaqr.toSvgString(4);
+		qrcodegen::QrCode twofaqr = qrcodegen::QrCode::encodeText(qrstr.c_str(), qrcodegen::QrCode::Ecc::MEDIUM);
+		std::string twofaqrsvg = twofaqr.toSvgString(4);
 
-                qrCode->setImageLink(WLink(std::make_shared<WMemoryResource>("image/svg+xml",std::vector<unsigned char>(twofaqrsvg.begin(), twofaqrsvg.end()))));
+		qrCode->setImageLink(WLink(std::make_shared<WMemoryResource>("image/svg+xml",std::vector<unsigned char>(twofaqrsvg.begin(), twofaqrsvg.end()))));
 
 		mainLayout->addWidget(cpp14::make_unique<WText>("Scan the above QR code with your preferred 2FA app and enter the resulting code below"));
 	} else {
@@ -519,7 +576,6 @@ ProfileWidget::NotificationsWidget::NotificationsWidget(Session *session, DBMode
 	notificationsTable->elementAt(0,1)->addWidget(cpp14::make_unique<WText>("eMail"));
 	notificationsTable->elementAt(0,2)->addWidget(cpp14::make_unique<WText>("Browser"));
 	notificationsTable->elementAt(0,3)->addWidget(cpp14::make_unique<WText>("Telegram"));
-	notificationsTable->elementAt(0,4)->addWidget(cpp14::make_unique<WText>("site"));
 
 	notificationsTable->elementAt(1,0)->addWidget(cpp14::make_unique<WText>("Submission results"));
 	notificationsTable->elementAt(2,0)->addWidget(cpp14::make_unique<WText>("Contest announcements"));
@@ -580,24 +636,6 @@ ProfileWidget::NotificationsWidget::NotificationsWidget(Session *session, DBMode
 		telegramMessagesChanged_ = true;
 	});
 
-	siteResults_ = notificationsTable->elementAt(1,4)->addWidget(cpp14::make_unique<WCheckBox>());
-	browserResults_->changed().connect( [=] {
-		siteResultsChanged_ = true;
-	});
-	siteContests_ = notificationsTable->elementAt(2,4)->addWidget(cpp14::make_unique<WCheckBox>());
-	browserContests_->changed().connect( [=] {
-		siteContestsChanged_ = true;
-	});
-	siteGeneral_ = notificationsTable->elementAt(3,4)->addWidget(cpp14::make_unique<WCheckBox>());
-	browserGeneral_->changed().connect( [=] {
-		siteGeneralChanged_ = true;
-	});
-	siteMessages_ = notificationsTable->elementAt(4,4)->addWidget(cpp14::make_unique<WCheckBox>());
-	browserGeneral_->changed().connect( [=] {
-		siteMessagesChanged_ = true;
-	});
-
-
 	bindWidget("notifications-table",std::move(notificationsTable));
 
 	auto applyButton = cpp14::make_unique<WPushButton>("Apply");
@@ -640,11 +678,6 @@ void ProfileWidget::NotificationsWidget::reset() {
 	telegramGeneral_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
 	telegramMessages_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
 
-	siteResults_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
-	siteContests_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
-	siteGeneral_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
-	siteMessages_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
-
 	emailResultsChanged_ = false;
 	emailContestsChanged_ = false;
 	emailGeneralChanged_ = false;
@@ -663,10 +696,6 @@ void ProfileWidget::NotificationsWidget::reset() {
 	telegramContestsChanged_ = false;
 	telegramGeneralChanged_ = false;
 	telegramMessagesChanged_ = false;
-	siteResultsChanged_ = false;
-	siteContestsChanged_ = false;
-	siteGeneralChanged_ = false;
-	siteMessagesChanged_ = false;
 }
 
 void ProfileWidget::NotificationsWidget::resetClicked() {
@@ -707,10 +736,6 @@ void ProfileWidget::NotificationsWidget::applyClicked() {
 	if(telegramContestsChanged_) strm << "<li>Telegram contests announcements to: <b>" << (telegramContests_->isChecked() ? "enabled" : "disabled") << "</b></li>";
 	if(telegramGeneralChanged_) strm << "<li>Telegram general information to: <b>" << (telegramGeneral_->isChecked() ? "enabled" : "disabled") << "</b></li>";
 	if(telegramMessagesChanged_) strm << "<li>Telegram messages to: <b>" << (telegramMessages_->isChecked() ? "enabled" : "disabled") << "</b></li>";
-	if(siteResultsChanged_) strm << "<li>Browser submission results to: <b>" << (siteResults_->isChecked() ? "enabled" : "disabled") << "</b></li>";
-	if(siteContestsChanged_) strm << "<li>Browser contests announcements to: <b>" << (siteContests_->isChecked() ? "enabled" : "disabled") << "</b></li>";
-	if(siteGeneralChanged_) strm << "<li>Browser general information to: <b>" << (siteGeneral_->isChecked() ? "enabled" : "disabled") << "</b></li>";
-	if(siteMessagesChanged_) strm << "<li>Browser messages to: <b>" << (siteMessages_->isChecked() ? "enabled" : "disabled") << "</b></li>";
 	strm << "</ul>";
 	strm << "<br/>Do you want to continue?";
 
@@ -727,19 +752,28 @@ void ProfileWidget::NotificationsWidget::applyClicked() {
 			        if(emailResultsChanged_) userData->settings.modify()->notifications_email_results = (emailResults_->isChecked() ? true : false);
 			        if(emailContestsChanged_) userData->settings.modify()->notifications_email_contests = (emailContests_->isChecked() ? true : false);
 			        if(emailGeneralChanged_) userData->settings.modify()->notifications_email_general = (emailGeneral_->isChecked() ? true : false);
-					if(emailMessagesChanged_) userData->settings.modify()->notifications_email_general = (emailMessages_->isChecked() ? true : false);
+			        if(emailMessagesChanged_) userData->settings.modify()->notifications_email_general = (emailMessages_->isChecked() ? true : false);
 			        if(browserResultsChanged_) userData->settings.modify()->notifications_browser_results = (browserResults_->isChecked() ? true : false);
 			        if(browserContestsChanged_) userData->settings.modify()->notifications_browser_contests = (browserContests_->isChecked() ? true : false);
 			        if(browserGeneralChanged_) userData->settings.modify()->notifications_browser_general = (browserGeneral_->isChecked() ? true : false);
-					if(browserMessagesChanged_) userData->settings.modify()->notifications_browser_general = (browserMessages_->isChecked() ? true : false);
-					if(telegramResultsChanged_) userData->settings.modify()->notifications_browser_results = (telegramResults_->isChecked() ? true : false);
+			        if(browserMessagesChanged_) userData->settings.modify()->notifications_browser_general = (browserMessages_->isChecked() ? true : false);
+			        if(telegramResultsChanged_) userData->settings.modify()->notifications_browser_results = (telegramResults_->isChecked() ? true : false);
 			        if(telegramContestsChanged_) userData->settings.modify()->notifications_browser_contests = (telegramContests_->isChecked() ? true : false);
 			        if(telegramGeneralChanged_) userData->settings.modify()->notifications_browser_general = (telegramGeneral_->isChecked() ? true : false);
-					if(telegramMessagesChanged_) userData->settings.modify()->notifications_browser_general = (telegramMessages_->isChecked() ? true : false);
-					if(siteResultsChanged_) userData->settings.modify()->notifications_browser_results = (siteResults_->isChecked() ? true : false);
-			        if(siteContestsChanged_) userData->settings.modify()->notifications_browser_contests = (siteContests_->isChecked() ? true : false);
-			        if(siteGeneralChanged_) userData->settings.modify()->notifications_browser_general = (siteGeneral_->isChecked() ? true : false);
-					if(siteMessagesChanged_) userData->settings.modify()->notifications_browser_general = (siteMessages_->isChecked() ? true : false);
+			        if(telegramMessagesChanged_) userData->settings.modify()->notifications_browser_general = (telegramMessages_->isChecked() ? true : false);
+
+			        emailResultsChanged_ = false;
+			        emailContestsChanged_ = false;
+			        emailGeneralChanged_ = false;
+			        emailMessagesChanged_ = false;
+			        browserResultsChanged_ = false;
+			        browserContestsChanged_ = false;
+			        browserGeneralChanged_ = false;
+			        browserMessagesChanged_ = false;
+			        telegramResultsChanged_ = false;
+			        telegramContestsChanged_ = false;
+			        telegramGeneralChanged_ = false;
+			        telegramMessagesChanged_ = false;
 			}
 			break;
 		case StandardButton::No:
