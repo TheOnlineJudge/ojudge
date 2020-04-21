@@ -10,6 +10,7 @@
   <message id="upload-avatar-message">File must be JPG or PNG, with a size of 128x128 pixels.</message>
   <message id="username-label">Username</message>
   <message id="email-label">eMail</message>
+  <message id="telegramUsername-label">Telegram Username</message>
   <message id="firstname-label">First Name</message>
   <message id="lastname-label">Last Name</message>
   <message id="birthday-label">Birthday</message>

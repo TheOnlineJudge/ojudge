@@ -11,14 +11,14 @@
 
 namespace OJUtils {
 std::string bin_to_hex(const std::string bin) {
-        std::string result;
-        char tmpbyte[3];
+	std::string result;
+	char tmpbyte[3];
 
-        for(unsigned char c: bin) {
-                sprintf(tmpbyte,"%02x",c);
-                result += tmpbyte;
-        }
+	for(unsigned char c: bin) {
+		sprintf(tmpbyte,"%02x",c);
+		result += tmpbyte;
+	}
 
-        return result;
+	return result;
 }
 };

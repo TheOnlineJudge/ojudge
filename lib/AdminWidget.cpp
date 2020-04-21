@@ -33,7 +33,7 @@ AdminWidget::AdminWidget(Session *session,ViewModels *viewModels,DBModel *dbmode
 
 	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout_->setContentsMargins(0,0,0,0);
-        mainLayout_->setPreferredImplementation(LayoutImplementation::JavaScript);
+	mainLayout_->setPreferredImplementation(LayoutImplementation::JavaScript);
 
 	auto pageTitle = mainLayout_->addWidget(cpp14::make_unique<WText>("Admin"),0);
 	pageTitle->addStyleClass("oj-pagetitle");
@@ -55,7 +55,7 @@ void AdminWidget::login(Auth::Login& login) {
 		auto menuLayout = mainWidget_->setLayout(cpp14::make_unique<WHBoxLayout>());
 		menuLayout->setContentsMargins(0,0,0,0);
 		menuLayout->setPreferredImplementation(LayoutImplementation::JavaScript);
-	
+
 		auto mainStack = menuLayout->addWidget(cpp14::make_unique<WStackedWidget>(),1);
 		auto mainMenu = menuLayout->insertWidget(0,cpp14::make_unique<WMenu>(mainStack),0);
 		mainMenu->addStyleClass("flex-column");
@@ -113,9 +113,9 @@ void AdminWidget::login(Auth::Login& login) {
 
 void AdminWidget::logout() {
 
-        mainLayout_->removeWidget(mainWidget_);
+	mainLayout_->removeWidget(mainWidget_);
 	mustLoginWidget_->setText("You are not logged in.");
-        mustLoginWidget_->show();
+	mustLoginWidget_->show();
 
 	logoutSignal().emit();
 }
@@ -641,55 +641,55 @@ void AdminWidget::AdminGeneralSettingsWidget::reset() {
 void AdminWidget::AdminGeneralSettingsWidget::resetClicked() {
 
 	auto warningBox = addChild(cpp14::make_unique<WMessageBox>("Are you sure?","All changes will be lost. Do you want to continue?",
-									Icon::Warning,StandardButton::Yes | StandardButton::No));
+	                                                           Icon::Warning,StandardButton::Yes | StandardButton::No));
 	warningBox->buttonClicked().connect( [=] (StandardButton button) {
-	switch(button) {
+		switch(button) {
 		case StandardButton::Yes:
 			reset();
 			break;
 		case StandardButton::No:
 			break;
-	}
-	removeChild(warningBox);
+		}
+		removeChild(warningBox);
 	});
 	warningBox->show();
 }
 
 void AdminWidget::AdminGeneralSettingsWidget::applyClicked() {
 
-        if(!siteTitleChanged_ && !siteLogoChanged_ && !siteColorChanged_ && !googleAnalyticsChanged_) return;
+	if(!siteTitleChanged_ && !siteLogoChanged_ && !siteColorChanged_ && !googleAnalyticsChanged_) return;
 
-        WStringStream strm;
+	WStringStream strm;
 
-        strm << "The following data will be updated:<br/><br/>";
-        strm << "<ul>";
-        if(siteTitleChanged_) strm << "<li>Site title to: <b>" << siteTitle_->text().toUTF8() << "</b></li>";
-        if(siteLogoChanged_) strm << "<li>Site logo to: <b>" << siteLogo_->text().toUTF8() << "</b></li>";
-        if(siteColorChanged_) strm << "<li>Site color to: <b>" << siteColor_->color().cssText() << "</b></li>";
-        if(googleAnalyticsChanged_) strm << "<li>Google Analytics to: <b>" << googleAnalytics_->text().toUTF8() << "</b></li>";
-        strm << "</ul>";
-        strm << "<br/>Do you want to continue?";
+	strm << "The following data will be updated:<br/><br/>";
+	strm << "<ul>";
+	if(siteTitleChanged_) strm << "<li>Site title to: <b>" << siteTitle_->text().toUTF8() << "</b></li>";
+	if(siteLogoChanged_) strm << "<li>Site logo to: <b>" << siteLogo_->text().toUTF8() << "</b></li>";
+	if(siteColorChanged_) strm << "<li>Site color to: <b>" << siteColor_->color().cssText() << "</b></li>";
+	if(googleAnalyticsChanged_) strm << "<li>Google Analytics to: <b>" << googleAnalytics_->text().toUTF8() << "</b></li>";
+	strm << "</ul>";
+	strm << "<br/>Do you want to continue?";
 
-        auto warningBox = addChild(cpp14::make_unique<WMessageBox>("Are you sure?","",Icon::Information,StandardButton::Yes | StandardButton::No));
-        warningBox->textWidget()->setTextFormat(TextFormat::XHTML);
-        warningBox->setText(strm.str());
+	auto warningBox = addChild(cpp14::make_unique<WMessageBox>("Are you sure?","",Icon::Information,StandardButton::Yes | StandardButton::No));
+	warningBox->textWidget()->setTextFormat(TextFormat::XHTML);
+	warningBox->setText(strm.str());
 
-        warningBox->buttonClicked().connect( [=] (StandardButton button) {
-                switch(button) {
-                case StandardButton::Yes:
-                        {
-                                if(siteTitleChanged_) dbmodel_->updateSiteSetting("sitetitle", siteTitle_->text().toUTF8());
-                                if(siteLogoChanged_) dbmodel_->updateSiteSetting("sitelogo", siteLogo_->text().toUTF8());
-                                if(siteColorChanged_) dbmodel_->updateSiteSetting("sitecolor",siteColor_->color().cssText());
-                                if(googleAnalyticsChanged_) dbmodel_->updateSiteSetting("googleanalytics",googleAnalytics_->text().toUTF8());
-                        }
-                        break;
-                case StandardButton::No:
-                        break;
-                }
-                removeChild(warningBox);
-        });
-        warningBox->show();
+	warningBox->buttonClicked().connect( [=] (StandardButton button) {
+		switch(button) {
+		case StandardButton::Yes:
+			{
+			        if(siteTitleChanged_) dbmodel_->updateSiteSetting("sitetitle", siteTitle_->text().toUTF8());
+			        if(siteLogoChanged_) dbmodel_->updateSiteSetting("sitelogo", siteLogo_->text().toUTF8());
+			        if(siteColorChanged_) dbmodel_->updateSiteSetting("sitecolor",siteColor_->color().cssText());
+			        if(googleAnalyticsChanged_) dbmodel_->updateSiteSetting("googleanalytics",googleAnalytics_->text().toUTF8());
+			}
+			break;
+		case StandardButton::No:
+			break;
+		}
+		removeChild(warningBox);
+	});
+	warningBox->show();
 }
 
 AdminWidget::AdminMailSettingsWidget::AdminMailSettingsWidget() {
@@ -715,11 +715,11 @@ AdminWidget::AdminMailSettingsWidget::AdminMailSettingsWidget() {
 
 	std::string tmpstr;
 	for(const auto &field: settingFields) {
-		auto tmpLineEdit = cpp14::make_unique<WLineEdit>(app->readConfigurationProperty(field,tmpstr)?tmpstr:"<not set>");
+		auto tmpLineEdit = cpp14::make_unique<WLineEdit>(app->readConfigurationProperty(field,tmpstr) ? tmpstr : "<not set>");
 		tmpLineEdit->disable();
 		bindWidget(field + "-setting",std::move(tmpLineEdit));
 	}
-	auto tmpLineEdit = cpp14::make_unique<WLineEdit>(app->readConfigurationProperty("smtp-auth-password",tmpstr)?"<set and hidden>":"<not set>");
+	auto tmpLineEdit = cpp14::make_unique<WLineEdit>(app->readConfigurationProperty("smtp-auth-password",tmpstr) ? "<set and hidden>" : "<not set>");
 	tmpLineEdit->disable();
 	bindWidget("smtp-auth-password-setting",std::move(tmpLineEdit));
 
@@ -743,14 +743,14 @@ AdminWidget::AdminMailSettingsWidget::AdminMailSettingsWidget() {
 		message.addRecipient(Mail::RecipientType::To,Mail::Mailbox(testEmailPtr->text().toUTF8(),testEmailPtr->text().toUTF8()));
 		message.setSubject("Test email");
 		message.setBody("Mail configuration seems to work!");
-		
+
 		Mail::Client client;
 		client.connect();
 		bool result = client.send(message);
 
-		testEmailPtr->addStyleClass(result?"has-success":"has-error");
+		testEmailPtr->addStyleClass(result ? "has-success" : "has-error");
 	});
-		
+
 	bindWidget("test-mail-button",std::move(testButton));
 }
 

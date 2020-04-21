@@ -19,10 +19,10 @@ AuthWidget::AuthWidget(Session &session) : Auth::AuthWidget(Session::auth(), ses
 
 void AuthWidget::createLoginView() {
 
-  setTemplateText(tr("OJ.template.login"));
+	setTemplateText(tr("OJ.template.login"));
 
-  createPasswordLoginView();
-  createOAuthLoginView();
+	createPasswordLoginView();
+	createOAuthLoginView();
 }
 
 std::unique_ptr<WWidget> AuthWidget::createRegistrationView(const Auth::Identity &id) {
