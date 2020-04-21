@@ -16,6 +16,7 @@ class CategoryStore;
 class CountryStore;
 class ProblemStore;
 class LanguageStore;
+class UserStore;
 
 class DataStore {
 public:
@@ -24,6 +25,7 @@ CategoryStore *getCategoryStore();
 CountryStore *getCountryStore();
 ProblemStore *getProblemStore();
 LanguageStore *getLanguageStore();
+UserStore *getUserStore();
 
 private:
 DBModel *dbModel_;
@@ -31,6 +33,7 @@ CategoryStore *categoryStore_;
 CountryStore *countryStore_;
 ProblemStore *problemStore_;
 LanguageStore *languageStore_;
+UserStore *userStore_;
 };
 
 #endif // DATASTORE_H

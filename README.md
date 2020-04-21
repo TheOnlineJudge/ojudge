@@ -16,6 +16,8 @@ You will also need PostgreSQL installed and running in your system.
 
 oath-toolkit (https://www.nongnu.org/oath-toolkit/index.html) is required for Two Factor Authentication. It is available for install in all major Linux distributions.
 
+GraphicMagick++ is required for some image processing.
+
 ### Building
 Clone this repository, or a fork of it, and from its root directory run:
 
