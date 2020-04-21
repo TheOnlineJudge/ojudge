@@ -308,12 +308,12 @@ void ProfileWidget::AccountWidget::applyClicked() {
 			        Dbo::Transaction transaction = dbmodel_->startTransaction();
 			        dbo::ptr<User> userData = session_->user(login_->user());
 			        if(avatarChanged_) {
-					if((AvatarType)avatarGroup_->checkedId() != AvatarType::Custom) {
-						userData->avatar.modify()->avatarType = (AvatarType)avatarGroup_->checkedId();
+			                if((AvatarType)avatarGroup_->checkedId() != AvatarType::Custom) {
+			                        userData->avatar.modify()->avatarType = (AvatarType)avatarGroup_->checkedId();
 					} else if((AvatarType)avatarGroup_->checkedId() == AvatarType::Custom && customAvatarChanged_) {
-						Dbo::ptr<UserAvatar> avatar = userData->avatar;
-						avatar.modify()->avatarType = (AvatarType)avatarGroup_->checkedId();
-						avatar.modify()->avatar = customAvatar_;
+			                        Dbo::ptr<UserAvatar> avatar = userData->avatar;
+			                        avatar.modify()->avatarType = (AvatarType)avatarGroup_->checkedId();
+			                        avatar.modify()->avatar = customAvatar_;
 					}
 				}
 			        if(emailChanged_) myAuthService.verifyEmailAddress(login_->user(),email_->text().toUTF8());
@@ -325,14 +325,14 @@ void ProfileWidget::AccountWidget::applyClicked() {
 					                                                                                          CountryModel::CountryCodeRole));
 			        if(institutionChanged_) userData.modify()->institution = institution_->text().toUTF8();
 
-				avatarChanged_ = false;
-				customAvatarChanged_ = false;
-				emailChanged_ = false;
-				firstnameChanged_ = false;
-				lastnameChanged_ = false;
-				birthdayChanged_ = false;
-				countryChanged_ = false;
-				institutionChanged_ = false;
+			        avatarChanged_ = false;
+			        customAvatarChanged_ = false;
+			        emailChanged_ = false;
+			        firstnameChanged_ = false;
+			        lastnameChanged_ = false;
+			        birthdayChanged_ = false;
+			        countryChanged_ = false;
+			        institutionChanged_ = false;
 			}
 			break;
 		case StandardButton::No:
@@ -355,7 +355,7 @@ void ProfileWidget::AccountWidget::avatarUploaded() {
 		} else {
 			std::ifstream avatarFile(avatarFileUpload_->spoolFileName(), std::ios::binary);
 			customAvatar_.assign(std::istreambuf_iterator<char>{avatarFile},{});
-			std::string mimeType("image/" + std::string((avatar.magick()=="JPEG"?"jpeg":"png")));
+			std::string mimeType("image/" + std::string((avatar.magick()=="JPEG" ? "jpeg" : "png")));
 			std::string base64data("data:"+mimeType+";base64,"+Utils::base64Encode(std::string(customAvatar_.begin(),customAvatar_.end()),false));
 			avatarImage_->setImageLink(WLink(base64data));
 			customAvatarChanged_ = true;
@@ -762,18 +762,18 @@ void ProfileWidget::NotificationsWidget::applyClicked() {
 			        if(telegramGeneralChanged_) userData->settings.modify()->notifications_browser_general = (telegramGeneral_->isChecked() ? true : false);
 			        if(telegramMessagesChanged_) userData->settings.modify()->notifications_browser_general = (telegramMessages_->isChecked() ? true : false);
 
-				emailResultsChanged_ = false;
-				emailContestsChanged_ = false;
-				emailGeneralChanged_ = false;
-				emailMessagesChanged_ = false;
-				browserResultsChanged_ = false;
-				browserContestsChanged_ = false;
-				browserGeneralChanged_ = false;
-				browserMessagesChanged_ = false;
-				telegramResultsChanged_ = false;
-				telegramContestsChanged_ = false;
-				telegramGeneralChanged_ = false;
-				telegramMessagesChanged_ = false;
+			        emailResultsChanged_ = false;
+			        emailContestsChanged_ = false;
+			        emailGeneralChanged_ = false;
+			        emailMessagesChanged_ = false;
+			        browserResultsChanged_ = false;
+			        browserContestsChanged_ = false;
+			        browserGeneralChanged_ = false;
+			        browserMessagesChanged_ = false;
+			        telegramResultsChanged_ = false;
+			        telegramContestsChanged_ = false;
+			        telegramGeneralChanged_ = false;
+			        telegramMessagesChanged_ = false;
 			}
 			break;
 		case StandardButton::No:
