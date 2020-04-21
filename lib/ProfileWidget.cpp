@@ -37,7 +37,7 @@ using namespace Magick;
 using random_bytes_engine = std::independent_bits_engine<std::default_random_engine, CHAR_BIT, unsigned char>;
 
 ProfileWidget::ProfileWidget(Session *session, DBModel *dbmodel, const std::shared_ptr<CountryModel> countrymodel, AuthWidget* authWidget) :
-			session_(session), dbmodel_(dbmodel), countrymodel_(countrymodel), authWidget_(authWidget) {
+	session_(session), dbmodel_(dbmodel), countrymodel_(countrymodel), authWidget_(authWidget) {
 
 	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout_->setContentsMargins(0,0,0,0);
@@ -134,9 +134,9 @@ ProfileWidget::AccountWidget::AccountWidget(Session *session, DBModel *dbmodel, 
 	avatarGroup->checkedChanged().connect( [=] {
 		avatarChanged_ = true;
 		if((AvatarType)avatarGroup->checkedId() == AvatarType::Custom) {
-			avatarUpload_->removeStyleClass("hidden");
+		        avatarUpload_->removeStyleClass("hidden");
 		} else {
-			avatarUpload_->addStyleClass("hidden");
+		        avatarUpload_->addStyleClass("hidden");
 		}
 		Dbo::Transaction transaction = dbmodel_->startTransaction();
 		dbo::ptr<User> userData = session_->user(login_->user());
@@ -153,6 +153,12 @@ ProfileWidget::AccountWidget::AccountWidget(Session *session, DBModel *dbmodel, 
 		emailChanged_ = true;
 	});
 	email_ = bindWidget("email-setting",std::move(email));
+
+	auto telegramUsername = cpp14::make_unique<WLineEdit>();
+	telegramUsername->changed().connect( [=] {
+		telegramUsernameChanged_ = true;
+	});
+	telegramUsername_ = bindWidget("telegramUsername-setting",std::move(telegramUsername));
 
 	auto firstname = cpp14::make_unique<WLineEdit>();
 	firstname->changed().connect( [=] {
@@ -233,6 +239,8 @@ void ProfileWidget::AccountWidget::reset() {
 	username_->setText(login_->user().identity("loginname"));
 	email_->setText(login_->user().email());
 	emailChanged_ = false;
+	telegramUsername_->setText("@Temp");
+	telegramUsernameChanged_ = false;
 	firstname_->setText(userData->firstName.value_or(""));
 	firstnameChanged_ = false;
 	lastname_->setText(userData->lastName.value_or(""));
@@ -280,6 +288,7 @@ void ProfileWidget::AccountWidget::applyClicked() {
 		}
 	}
 	if(emailChanged_) strm << "<li>eMail address to: <b>" << email_->text().toUTF8() << "</b></li>";
+	if(telegramUsernameChanged_) strm << "<li>Telegram Username to: <b>" << telegramUsername_->text().toUTF8() << "</b><li>";
 	if(firstnameChanged_) strm << "<li>First Name to: <b>" << firstname_->text().toUTF8() << "</b></li>";
 	if(lastnameChanged_) strm << "<li>Last Name to: <b>" << lastname_->text().toUTF8() << "</b></li>";
 	if(birthdayChanged_) strm << "<li>Birthday to: <b>" << birthday_->lineEdit()->text().toUTF8() << "</b></li>";
@@ -308,6 +317,7 @@ void ProfileWidget::AccountWidget::applyClicked() {
 					}
 				}
 			        if(emailChanged_) myAuthService.verifyEmailAddress(login_->user(),email_->text().toUTF8());
+			        if(telegramUsernameChanged_);
 			        if(firstnameChanged_) userData.modify()->firstName = firstname_->text().toUTF8();
 			        if(lastnameChanged_) userData.modify()->lastName = lastname_->text().toUTF8();
 			        if(birthdayChanged_) userData.modify()->birthday = birthday_->date();
@@ -413,7 +423,7 @@ void ProfileWidget::SecurityWidget::TwoFADialogDone(DialogCode code) {
 				OATH_TOTP_DEFAULT_START_TIME,
 				10,
 				twofaDialog_->getAuthCode().c_str()
-			);
+				);
 			oath_done();
 
 			if(result != OATH_INVALID_OTP) {
@@ -440,10 +450,10 @@ void ProfileWidget::SecurityWidget::TwoFADialogDone(DialogCode code) {
 				32,
 				t,
 				OATH_TOTP_DEFAULT_TIME_STEP_SIZE,
-                                OATH_TOTP_DEFAULT_START_TIME,
-                                10,
-                                twofaDialog_->getAuthCode().c_str()
-			);
+				OATH_TOTP_DEFAULT_START_TIME,
+				10,
+				twofaDialog_->getAuthCode().c_str()
+				);
 			oath_done();
 
 			if(result != OATH_INVALID_OTP) {
@@ -472,13 +482,15 @@ void ProfileWidget::SecurityWidget::logout() {
 
 ProfileWidget::SecurityWidget::TwoFADialog::TwoFADialog(Session *session, DBModel *dbmodel, Auth::Login *login, bool disable) : session_(session), dbmodel_(dbmodel), login_(login), secret_(32) {
 
-	setWindowTitle((disable?"Disable":"Enable") + std::string(" 2-Factor Authentication"));
+	setWindowTitle((disable ? "Disable" : "Enable") + std::string(" 2-Factor Authentication"));
 	setClosable(true);
 	auto mainLayout = contents()->setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout->setContentsMargins(0,0,0,0);
 
 	if(!disable) {
-		auto f = [](unsigned char const c) { return std::isspace(c); };
+		auto f = [](unsigned char const c) {
+				 return std::isspace(c);
+			 };
 		auto qrLayout = mainLayout->addLayout(cpp14::make_unique<WHBoxLayout>());
 		qrLayout->setContentsMargins(0,0,0,0);
 		qrLayout->addStretch(1);
@@ -486,35 +498,35 @@ ProfileWidget::SecurityWidget::TwoFADialog::TwoFADialog(Session *session, DBMode
 		qrCode->setHeight(250);
 		qrLayout->addStretch(1);
 
-                std::string qrstr ;
-                qrstr += "otpauth://totp/";
-                std::string sitetitle(dbmodel_->getSiteSetting("sitetitle"));
-                sitetitle.erase(std::remove_if(sitetitle.begin(), sitetitle.end(), f), sitetitle.end());
-                qrstr += sitetitle;
-                qrstr += ":";
-                qrstr += login_->user().identity("loginname").toUTF8();
+		std::string qrstr;
+		qrstr += "otpauth://totp/";
+		std::string sitetitle(dbmodel_->getSiteSetting("sitetitle"));
+		sitetitle.erase(std::remove_if(sitetitle.begin(), sitetitle.end(), f), sitetitle.end());
+		qrstr += sitetitle;
+		qrstr += ":";
+		qrstr += login_->user().identity("loginname").toUTF8();
 
-                random_bytes_engine rbe;
+		random_bytes_engine rbe;
 		rbe.seed(std::chrono::system_clock::now().time_since_epoch().count());
-                std::generate(begin(secret_), end(secret_), std::ref(rbe));
-                char *base32secret;
-                size_t base32len;
+		std::generate(begin(secret_), end(secret_), std::ref(rbe));
+		char *base32secret;
+		size_t base32len;
 		oath_init();
-                oath_base32_encode(reinterpret_cast<char*> (&secret_[0]),32,&base32secret,&base32len);
+		oath_base32_encode(reinterpret_cast<char*> (&secret_[0]),32,&base32secret,&base32len);
 		oath_done();
 
-                qrstr += "?secret=";
-                qrstr += base32secret;
+		qrstr += "?secret=";
+		qrstr += base32secret;
 
-                qrstr += "&algorithm=SHA1&digits=6&period=30" ;
+		qrstr += "&algorithm=SHA1&digits=6&period=30";
 
-                // In case we want to add a logo
-                // qrstr += "&image=<logo_escaped_url>";
+		// In case we want to add a logo
+		// qrstr += "&image=<logo_escaped_url>";
 
-                qrcodegen::QrCode twofaqr = qrcodegen::QrCode::encodeText(qrstr.c_str(), qrcodegen::QrCode::Ecc::MEDIUM);
-                std::string twofaqrsvg = twofaqr.toSvgString(4);
+		qrcodegen::QrCode twofaqr = qrcodegen::QrCode::encodeText(qrstr.c_str(), qrcodegen::QrCode::Ecc::MEDIUM);
+		std::string twofaqrsvg = twofaqr.toSvgString(4);
 
-                qrCode->setImageLink(WLink(std::make_shared<WMemoryResource>("image/svg+xml",std::vector<unsigned char>(twofaqrsvg.begin(), twofaqrsvg.end()))));
+		qrCode->setImageLink(WLink(std::make_shared<WMemoryResource>("image/svg+xml",std::vector<unsigned char>(twofaqrsvg.begin(), twofaqrsvg.end()))));
 
 		mainLayout->addWidget(cpp14::make_unique<WText>("Scan the above QR code with your preferred 2FA app and enter the resulting code below"));
 	} else {
@@ -563,10 +575,12 @@ ProfileWidget::NotificationsWidget::NotificationsWidget(Session *session, DBMode
 
 	notificationsTable->elementAt(0,1)->addWidget(cpp14::make_unique<WText>("eMail"));
 	notificationsTable->elementAt(0,2)->addWidget(cpp14::make_unique<WText>("Browser"));
+	notificationsTable->elementAt(0,3)->addWidget(cpp14::make_unique<WText>("Telegram"));
 
 	notificationsTable->elementAt(1,0)->addWidget(cpp14::make_unique<WText>("Submission results"));
 	notificationsTable->elementAt(2,0)->addWidget(cpp14::make_unique<WText>("Contest announcements"));
 	notificationsTable->elementAt(3,0)->addWidget(cpp14::make_unique<WText>("General information"));
+	notificationsTable->elementAt(4,0)->addWidget(cpp14::make_unique<WText>("Messages"));
 
 	notificationsTable->setHeaderCount(1,Orientation::Horizontal);
 	notificationsTable->setHeaderCount(1,Orientation::Vertical);
@@ -583,6 +597,10 @@ ProfileWidget::NotificationsWidget::NotificationsWidget(Session *session, DBMode
 	emailGeneral_->changed().connect( [=] {
 		emailGeneralChanged_ = true;
 	});
+	emailMessages_ = notificationsTable->elementAt(4,1)->addWidget(cpp14::make_unique<WCheckBox>());
+	emailGeneral_->changed().connect( [=] {
+		emailMessagesChanged_ = true;
+	});
 
 	browserResults_ = notificationsTable->elementAt(1,2)->addWidget(cpp14::make_unique<WCheckBox>());
 	browserResults_->changed().connect( [=] {
@@ -595,6 +613,27 @@ ProfileWidget::NotificationsWidget::NotificationsWidget(Session *session, DBMode
 	browserGeneral_ = notificationsTable->elementAt(3,2)->addWidget(cpp14::make_unique<WCheckBox>());
 	browserGeneral_->changed().connect( [=] {
 		browserGeneralChanged_ = true;
+	});
+	browserMessages_ = notificationsTable->elementAt(4,2)->addWidget(cpp14::make_unique<WCheckBox>());
+	browserGeneral_->changed().connect( [=] {
+		browserMessagesChanged_ = true;
+	});
+
+	telegramResults_ = notificationsTable->elementAt(1,3)->addWidget(cpp14::make_unique<WCheckBox>());
+	browserResults_->changed().connect( [=] {
+		telegramResultsChanged_ = true;
+	});
+	telegramContests_ = notificationsTable->elementAt(2,3)->addWidget(cpp14::make_unique<WCheckBox>());
+	browserContests_->changed().connect( [=] {
+		telegramContestsChanged_ = true;
+	});
+	telegramGeneral_ = notificationsTable->elementAt(3,3)->addWidget(cpp14::make_unique<WCheckBox>());
+	browserGeneral_->changed().connect( [=] {
+		telegramGeneralChanged_ = true;
+	});
+	telegramMessages_ = notificationsTable->elementAt(4,3)->addWidget(cpp14::make_unique<WCheckBox>());
+	browserGeneral_->changed().connect( [=] {
+		telegramMessagesChanged_ = true;
 	});
 
 	bindWidget("notifications-table",std::move(notificationsTable));
@@ -627,10 +666,17 @@ void ProfileWidget::NotificationsWidget::reset() {
 	emailResults_->setCheckState(userData->settings->notifications_email_results.value_or(true) ? CheckState::Checked : CheckState::Unchecked);
 	emailContests_->setCheckState(userData->settings->notifications_email_contests.value_or(true) ? CheckState::Checked : CheckState::Unchecked);
 	emailGeneral_->setCheckState(userData->settings->notifications_email_general.value_or(true) ? CheckState::Checked : CheckState::Unchecked);
+	emailMessages_->setCheckState(userData->settings->notifications_email_general.value_or(true) ? CheckState::Checked : CheckState::Unchecked);
 
 	browserResults_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
 	browserContests_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
 	browserGeneral_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
+	browserMessages_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
+
+	telegramResults_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
+	telegramContests_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
+	telegramGeneral_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
+	telegramMessages_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
 
 	emailResultsChanged_ = false;
 	emailContestsChanged_ = false;
@@ -638,6 +684,18 @@ void ProfileWidget::NotificationsWidget::reset() {
 	browserResultsChanged_ = false;
 	browserContestsChanged_ = false;
 	browserGeneralChanged_ = false;
+	emailResultsChanged_ = false;
+	emailContestsChanged_ = false;
+	emailGeneralChanged_ = false;
+	emailMessagesChanged_ = false;
+	browserResultsChanged_ = false;
+	browserContestsChanged_ = false;
+	browserGeneralChanged_ = false;
+	browserMessagesChanged_ = false;
+	telegramResultsChanged_ = false;
+	telegramContestsChanged_ = false;
+	telegramGeneralChanged_ = false;
+	telegramMessagesChanged_ = false;
 }
 
 void ProfileWidget::NotificationsWidget::resetClicked() {
@@ -669,9 +727,15 @@ void ProfileWidget::NotificationsWidget::applyClicked() {
 	if(emailResultsChanged_) strm << "<li>eMail submission results to: <b>" << (emailResults_->isChecked() ? "enabled" : "disabled") << "</b></li>";
 	if(emailContestsChanged_) strm << "<li>eMail contests announcements to: <b>" << (emailContests_->isChecked() ? "enabled" : "disabled") << "</b></li>";
 	if(emailGeneralChanged_) strm << "<li>eMail general information to: <b>" << (emailGeneral_->isChecked() ? "enabled" : "disabled") << "</b></li>";
+	if(emailMessagesChanged_) strm << "<li>eMail messages to: <b>" << (emailMessages_->isChecked() ? "enabled" : "disabled") << "</b></li>";
 	if(browserResultsChanged_) strm << "<li>Browser submission results to: <b>" << (browserResults_->isChecked() ? "enabled" : "disabled") << "</b></li>";
 	if(browserContestsChanged_) strm << "<li>Browser contests announcements to: <b>" << (browserContests_->isChecked() ? "enabled" : "disabled") << "</b></li>";
 	if(browserGeneralChanged_) strm << "<li>Browser general information to: <b>" << (browserGeneral_->isChecked() ? "enabled" : "disabled") << "</b></li>";
+	if(browserMessagesChanged_) strm << "<li>Browser messages to: <b>" << (browserMessages_->isChecked() ? "enabled" : "disabled") << "</b></li>";
+	if(telegramResultsChanged_) strm << "<li>Telegram submission results to: <b>" << (telegramResults_->isChecked() ? "enabled" : "disabled") << "</b></li>";
+	if(telegramContestsChanged_) strm << "<li>Telegram contests announcements to: <b>" << (telegramContests_->isChecked() ? "enabled" : "disabled") << "</b></li>";
+	if(telegramGeneralChanged_) strm << "<li>Telegram general information to: <b>" << (telegramGeneral_->isChecked() ? "enabled" : "disabled") << "</b></li>";
+	if(telegramMessagesChanged_) strm << "<li>Telegram messages to: <b>" << (telegramMessages_->isChecked() ? "enabled" : "disabled") << "</b></li>";
 	strm << "</ul>";
 	strm << "<br/>Do you want to continue?";
 
@@ -688,16 +752,28 @@ void ProfileWidget::NotificationsWidget::applyClicked() {
 			        if(emailResultsChanged_) userData->settings.modify()->notifications_email_results = (emailResults_->isChecked() ? true : false);
 			        if(emailContestsChanged_) userData->settings.modify()->notifications_email_contests = (emailContests_->isChecked() ? true : false);
 			        if(emailGeneralChanged_) userData->settings.modify()->notifications_email_general = (emailGeneral_->isChecked() ? true : false);
+			        if(emailMessagesChanged_) userData->settings.modify()->notifications_email_general = (emailMessages_->isChecked() ? true : false);
 			        if(browserResultsChanged_) userData->settings.modify()->notifications_browser_results = (browserResults_->isChecked() ? true : false);
 			        if(browserContestsChanged_) userData->settings.modify()->notifications_browser_contests = (browserContests_->isChecked() ? true : false);
 			        if(browserGeneralChanged_) userData->settings.modify()->notifications_browser_general = (browserGeneral_->isChecked() ? true : false);
+			        if(browserMessagesChanged_) userData->settings.modify()->notifications_browser_general = (browserMessages_->isChecked() ? true : false);
+			        if(telegramResultsChanged_) userData->settings.modify()->notifications_browser_results = (telegramResults_->isChecked() ? true : false);
+			        if(telegramContestsChanged_) userData->settings.modify()->notifications_browser_contests = (telegramContests_->isChecked() ? true : false);
+			        if(telegramGeneralChanged_) userData->settings.modify()->notifications_browser_general = (telegramGeneral_->isChecked() ? true : false);
+			        if(telegramMessagesChanged_) userData->settings.modify()->notifications_browser_general = (telegramMessages_->isChecked() ? true : false);
 
 				emailResultsChanged_ = false;
 				emailContestsChanged_ = false;
 				emailGeneralChanged_ = false;
+				emailMessagesChanged_ = false;
 				browserResultsChanged_ = false;
 				browserContestsChanged_ = false;
 				browserGeneralChanged_ = false;
+				browserMessagesChanged_ = false;
+				telegramResultsChanged_ = false;
+				telegramContestsChanged_ = false;
+				telegramGeneralChanged_ = false;
+				telegramMessagesChanged_ = false;
 			}
 			break;
 		case StandardButton::No:

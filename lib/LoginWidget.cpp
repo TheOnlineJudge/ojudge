@@ -29,8 +29,8 @@ LoginWidget::LoginWidget(Session *session) : session_(session) {
 
 	mouseWentOut().connect( [=] (WMouseEvent event) {
 		if(event.widget().x < 0 || event.widget().x > 1279 || event.widget().y > 149) {
-			WAnimation anim(AnimationEffect::SlideInFromTop | AnimationEffect::Fade);
-			animateHide(anim);
+		        WAnimation anim(AnimationEffect::SlideInFromTop | AnimationEffect::Fade);
+		        animateHide(anim);
 		}
 	});
 }
