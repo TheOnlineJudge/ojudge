@@ -272,13 +272,16 @@ Languages DBModel::getLanguages() {
 	return session_->find<Language>();
 }
 
-const std::string User::avatarLink(const AvatarType type, int size) const {
+const std::string DBModel::avatarLink(dbo::ptr<User> user, const AvatarType type, int size) {
 
 	switch(type) {
 	case AvatarType::Default:
-		return "https://cdn.libravatar.org/avatar/" + OJUtils::bin_to_hex(Utils::md5(OJUtils::bin_to_hex(Utils::md5(authInfo->email())))) + "?s=" + std::to_string(size) + "&forcedefault=y&default=identicon" ;
+		return "https://cdn.libravatar.org/avatar/" + OJUtils::bin_to_hex(Utils::md5(OJUtils::bin_to_hex(Utils::md5(user->authInfo->email())))) + "?s=" + std::to_string(size) + "&forcedefault=y&default=identicon" ;
 	case AvatarType::Gravatar:
-		return "https://cdn.libravatar.org/avatar/" + OJUtils::bin_to_hex(Utils::md5(authInfo->email())) + "?s=" + std::to_string(size) + "&default=identicon" ;
+		return "https://cdn.libravatar.org/avatar/" + OJUtils::bin_to_hex(Utils::md5(user->authInfo->email())) + "?s=" + std::to_string(size) + "&default=identicon" ;
+	case AvatarType::Custom:
+		dbo::Transaction t = startTransaction();
+		return "data:image/jpeg;base64,"+Utils::base64Encode(std::string(user->avatar->avatar.value().begin(),user->avatar->avatar.value().end()),false);
 	}
 
 	return "https://www.libravatar.org/static/img/mm/" + std::to_string(size) + ".png";
