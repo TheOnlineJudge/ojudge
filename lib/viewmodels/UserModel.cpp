@@ -18,7 +18,7 @@ UserModel::UserModel(UserStore *userStore) : WAbstractTableModel(), userStore_(u
 }
 
 int UserModel::columnCount(const WModelIndex& parent) const {
-	return 4;
+	return 6;
 }
 
 int UserModel::rowCount(const WModelIndex& parent) const {
@@ -37,6 +37,8 @@ cpp17::any UserModel::data(const WModelIndex& index, ItemDataRole role) const {
 			return userStore_->getUser(index.row()).firstname + " " + userStore_->getUser(index.row()).lastname;
 		case 3:
 			return userStore_->getUser(index.row()).email;
+		case 5:
+			return (int)userStore_->getUser(index.row()).status;
 		}
 	} else if(role == ItemDataRole::StyleClass) {
 		if(index.column()==0) {
@@ -59,6 +61,10 @@ cpp17::any UserModel::headerData(int section, Orientation orientation, ItemDataR
 			return std::string("Name");
 		case 3:
 			return std::string("eMail");
+		case 4:
+			return std::string("Actions");
+		case 5:
+			return std::string("Status");
 		default:
 			return cpp17::any();
 		}

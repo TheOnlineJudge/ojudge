@@ -27,12 +27,13 @@ UserStore::UserStore(DBModel *dbModel) : dbModel_(dbModel) {
 
 	for(Users::const_iterator i = users.begin(); i != users.end(); i++) {
 		dbo::ptr<User> user = *i;
-//		userDataIndex_[user->id] = row;
-//		userData_[row].id = user->id;
-//		userData_[row].username = problem->title;
-//		userData_[row].firstname = ;
-//		userData_[row].lastname = ;
-//		userData_[row].email = ;
+		userDataIndex_[user->authInfo.id()] = row;
+		userData_[row].id = user->authInfo.id();
+		userData_[row].username = user->authInfo->identity("loginname").toUTF8();
+		userData_[row].firstname = user->firstName.value_or("");
+		userData_[row].lastname = user->lastName.value_or("");
+		userData_[row].email = user->authInfo->email();
+		userData_[row].status = user->authInfo->status();
 		row++;
 	}
 }

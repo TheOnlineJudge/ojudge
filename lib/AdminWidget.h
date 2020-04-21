@@ -230,12 +230,17 @@ DBModel *dbmodel_;
 
 class AdminUserWidget : public Wt::WContainerWidget {
 public:
-AdminUserWidget();
+AdminUserWidget(ViewModels *viewModels, DBModel *dbmodel);
 void login(Wt::Auth::Login& login);
 void logout();
 
 private:
+ViewModels *viewModels_;
+DBModel *dbmodel_;
 Wt::WVBoxLayout *mainLayout_;
+Wt::WTableView *tableWidget_;
+Wt::WLineEdit *userSelector_;
+std::shared_ptr<Wt::WSortFilterProxyModel> proxyModel_;
 };
 
 };

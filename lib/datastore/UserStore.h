@@ -13,6 +13,7 @@
 #include <string>
 #include <map>
 #include <Wt/WModelIndex.h>
+#include <Wt/Auth/User.h>
 
 class DBModel;
 
@@ -22,6 +23,7 @@ struct UserData {
 	std::string firstname;
 	std::string lastname;
 	std::string email;
+	Wt::Auth::AccountStatus status;
 };
 
 

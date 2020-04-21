@@ -77,7 +77,7 @@ void AdminWidget::login(Auth::Login& login) {
 		logoutSignal().connect(adminContestWidget.get(),&AdminContestWidget::logout);
 		mainMenu->addItem("Contests",std::move(adminContestWidget));
 
-		auto adminUserWidget = cpp14::make_unique<AdminUserWidget>();
+		auto adminUserWidget = cpp14::make_unique<AdminUserWidget>(viewModels_,dbmodel_);
 		loginSignal().connect(adminUserWidget.get(),&AdminUserWidget::login);
 		logoutSignal().connect(adminUserWidget.get(),&AdminUserWidget::logout);
 		mainMenu->addItem("Users",std::move(adminUserWidget));
@@ -762,10 +762,41 @@ void AdminWidget::AdminMailSettingsWidget::logout() {
 
 }
 
-AdminWidget::AdminUserWidget::AdminUserWidget() {
+AdminWidget::AdminUserWidget::AdminUserWidget(ViewModels *viewModels, DBModel *dbmodel) : viewModels_(viewModels), dbmodel_(dbmodel) {
 
 	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout_->setContentsMargins(0,0,0,0);
+
+        auto toolbarWidget = mainLayout_->addWidget(cpp14::make_unique<WContainerWidget>());
+        auto toolbarLayout = toolbarWidget->setLayout(cpp14::make_unique<WHBoxLayout>());
+
+        auto userSelectorWidget = toolbarLayout->addWidget(cpp14::make_unique<WTemplate>(WString::tr("lineEdit-template")),1);
+        userSelectorWidget->addFunction("id",&WTemplate::Functions::id);
+        auto userSelector = cpp14::make_unique<WLineEdit>();
+        userSelector_ = userSelector.get();
+        userSelectorWidget->bindString("label","Search user");
+        userSelectorWidget->bindWidget("edit",std::move(userSelector));
+
+  //      problemSelector_->setValidator(std::make_shared<Wt::WIntValidator>());
+   //     problemSelector_->textInput().connect(this,&AdminProblemWidget::problemSelectorSlot);
+
+        tableWidget_ = mainLayout_->addWidget(cpp14::make_unique<WTableView>(),1);
+
+        proxyModel_ = std::make_shared<WSortFilterProxyModel>();
+        proxyModel_->setSourceModel(viewModels_->getUserModel());
+        proxyModel_->setDynamicSortFilter(true);
+
+        tableWidget_->setModel(proxyModel_);
+
+        tableWidget_->setRowHeight(26);
+        tableWidget_->setHeaderHeight(26);
+        tableWidget_->setSortingEnabled(false);
+        tableWidget_->setColumnResizeEnabled(false);
+
+//        auto adminActionsDelegate = std::make_shared<AdminUserWidget::AdminActionsDelegate>();
+//        adminActionsDelegate->editProblem().connect(this,&AdminUserWidget::showEditDialog);
+//        tableWidget_->setItemDelegateForColumn(2,adminActionsDelegate);
+        tableWidget_->addStyleClass("oj-admin-user-table");
 }
 
 void AdminWidget::AdminUserWidget::login(Auth::Login& login) {
