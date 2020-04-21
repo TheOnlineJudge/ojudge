@@ -213,6 +213,12 @@ Problems DBModel::getProblems() {
 	return session_->find<Problem>().orderBy("id");
 }
 
+Users DBModel::getUsers() {
+
+	dbo::Transaction t = startTransaction();
+	return session_->find<User>().orderBy("id");
+}
+
 dbo::ptr<Problem> DBModel::getProblem(long long id) {
 
 	dbo::Transaction t = startTransaction();

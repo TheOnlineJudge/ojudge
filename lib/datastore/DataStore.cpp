@@ -14,6 +14,7 @@
 #include "CountryStore.h"
 #include "LanguageStore.h"
 #include "ProblemStore.h"
+#include "UserStore.h"
 
 DataStore::DataStore(DBModel *dbModel) : dbModel_(dbModel) {
 
@@ -21,6 +22,7 @@ DataStore::DataStore(DBModel *dbModel) : dbModel_(dbModel) {
 	countryStore_ = new CountryStore();
 	problemStore_ = new ProblemStore(dbModel_);
 	languageStore_ = new LanguageStore(dbModel_);
+	userStore_ = new UserStore(dbModel_);
 
 }
 
@@ -38,4 +40,8 @@ ProblemStore *DataStore::getProblemStore() {
 
 LanguageStore *DataStore::getLanguageStore() {
 	return languageStore_;
+}
+
+UserStore *DataStore::getUserStore() {
+	return userStore_;
 }
