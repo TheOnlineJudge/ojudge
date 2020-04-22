@@ -82,7 +82,7 @@ void AdminWidget::login(Auth::Login& login) {
 		logoutSignal().connect(adminUserWidget.get(),&AdminUserWidget::logout);
 		mainMenu->addItem("Users",std::move(adminUserWidget));
 
-		auto adminLanguageWidget = cpp14::make_unique<AdminLanguageWidget>();
+		auto adminLanguageWidget = cpp14::make_unique<AdminLanguageWidget>(viewModels_,dbmodel_);
 		loginSignal().connect(adminLanguageWidget.get(),&AdminLanguageWidget::login);
 		logoutSignal().connect(adminLanguageWidget.get(),&AdminLanguageWidget::logout);
 		mainMenu->addItem("Languages",std::move(adminLanguageWidget));
@@ -326,7 +326,7 @@ void AdminWidget::AdminContestWidget::logout() {
 
 }
 
-AdminWidget::AdminLanguageWidget::AdminLanguageWidget() {
+AdminWidget::AdminLanguageWidget::AdminLanguageWidget(ViewModels *viewModels, DBModel *dbmodel) : viewModels_(viewModels), dbmodel_(dbmodel) {
 
 	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout_->setContentsMargins(0,0,0,0);
@@ -340,6 +340,30 @@ AdminWidget::AdminLanguageWidget::AdminLanguageWidget() {
 	addButton->setHeight(WLength(32));
 	addButton->decorationStyle().setCursor(Cursor::PointingHand);
 	addButton->setToolTip(WString("Add new language"));
+	        addButton->clicked().connect( [this] {
+                showAddEditDialog();
+        });
+
+	tableWidget_ = mainLayout_->addWidget(cpp14::make_unique<WTableView>(),1);
+
+	proxyModel_ = std::make_shared<WSortFilterProxyModel>();
+	proxyModel_->setSourceModel(viewModels_->getLanguageModel());
+	proxyModel_->setDynamicSortFilter(true);
+
+	tableWidget_->setModel(proxyModel_);
+
+	tableWidget_->setRowHeight(26);
+	tableWidget_->setHeaderHeight(26);
+	tableWidget_->setSortingEnabled(false);
+//        tableWidget_->setColumnHidden(3,true);
+	//      tableWidget_->setColumnResizeEnabled(false);
+	//    tableWidget_->setColumnWidth(1,WLength(695));
+
+	auto adminActionsDelegate = std::make_shared<AdminLanguageWidget::AdminActionsDelegate>();
+	adminActionsDelegate->editLanguage().connect(this,&AdminLanguageWidget::showAddEditDialog);
+	tableWidget_->setItemDelegateForColumn(3,adminActionsDelegate);
+	tableWidget_->addStyleClass("oj-admin-language-table");
+
 }
 
 void AdminWidget::AdminLanguageWidget::login(Auth::Login& login) {
@@ -347,6 +371,86 @@ void AdminWidget::AdminLanguageWidget::login(Auth::Login& login) {
 }
 
 void AdminWidget::AdminLanguageWidget::logout() {
+
+}
+
+void AdminWidget::AdminLanguageWidget::showAddEditDialog(const WModelIndex& index) {
+
+	std::string dialogTitle;
+
+	if(!index.isValid()) {
+		dialogTitle = "Add new language";
+	} else {
+		dialogTitle = "Edit language";
+	}
+
+	addDialog_ = addChild(cpp14::make_unique<WDialog>(dialogTitle));
+
+	WPushButton *ok = addDialog_->footer()->addWidget(cpp14::make_unique<WPushButton>("Save"));
+	WPushButton *cancel = addDialog_->footer()->addWidget(cpp14::make_unique<WPushButton>("Cancel"));
+
+	ok->clicked().connect(addDialog_, &WDialog::accept);
+	cancel->clicked().connect(addDialog_, &WDialog::reject);
+
+	addDialog_->finished().connect(this,&AdminLanguageWidget::addDialogDone);
+	addDialog_->show();
+
+}
+
+void AdminWidget::AdminLanguageWidget::addDialogDone(DialogCode code) {
+	if(code == DialogCode::Accepted) {
+	}
+
+	removeChild(addDialog_);
+}
+
+AdminWidget::AdminLanguageWidget::AdminActionsDelegate::AdminActionsDelegate() {
+
+}
+
+void AdminWidget::AdminLanguageWidget::AdminActionsDelegate::login(Auth::Login& login) {
+
+}
+
+void AdminWidget::AdminLanguageWidget::AdminActionsDelegate::logout() {
+
+}
+
+std::unique_ptr<WWidget> AdminWidget::AdminLanguageWidget::AdminActionsDelegate::update(WWidget *widget, const WModelIndex& index, WFlags<ViewItemRenderFlag> flags) {
+
+	WidgetRef widgetRef(widget);
+
+	bool isNew = false;
+
+	if(widgetRef.w) {
+		widgetRef.w = nullptr;
+	}
+
+	if(!widgetRef.w) {
+		isNew = true;
+		widgetRef.created = std::unique_ptr<WWidget>(new WContainerWidget());
+		WContainerWidget *t = static_cast<WContainerWidget*>(widgetRef.created.get());
+		t->addStyleClass("oj-actions");
+		auto layout = t->setLayout(cpp14::make_unique<WHBoxLayout>());
+		layout->setContentsMargins(0,4,0,4);
+		auto edit = layout->addWidget(cpp14::make_unique<WImage>("images/edit.svg"));
+		edit->setHeight(18);
+		edit->decorationStyle().setCursor(Cursor::PointingHand);
+		edit->setToolTip("Edit language");
+		edit->clicked().connect( [=] {
+			editLanguage_.emit(index.model()->index(index.row(),0,index.parent()));
+		});
+		auto trash = layout->addWidget(cpp14::make_unique<WImage>("images/trash.svg"));
+		trash->setHeight(18);
+		trash->decorationStyle().setCursor(Cursor::PointingHand);
+		trash->setToolTip("Delete language");
+	}
+
+	if(isNew) {
+		return std::move(widgetRef.created);
+	} else {
+		return nullptr;
+	}
 
 }
 
@@ -767,36 +871,36 @@ AdminWidget::AdminUserWidget::AdminUserWidget(ViewModels *viewModels, DBModel *d
 	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout_->setContentsMargins(0,0,0,0);
 
-        auto toolbarWidget = mainLayout_->addWidget(cpp14::make_unique<WContainerWidget>());
-        auto toolbarLayout = toolbarWidget->setLayout(cpp14::make_unique<WHBoxLayout>());
+	auto toolbarWidget = mainLayout_->addWidget(cpp14::make_unique<WContainerWidget>());
+	auto toolbarLayout = toolbarWidget->setLayout(cpp14::make_unique<WHBoxLayout>());
 
-        auto userSelectorWidget = toolbarLayout->addWidget(cpp14::make_unique<WTemplate>(WString::tr("lineEdit-template")),1);
-        userSelectorWidget->addFunction("id",&WTemplate::Functions::id);
-        auto userSelector = cpp14::make_unique<WLineEdit>();
-        userSelector_ = userSelector.get();
-        userSelectorWidget->bindString("label","Search user");
-        userSelectorWidget->bindWidget("edit",std::move(userSelector));
+	auto userSelectorWidget = toolbarLayout->addWidget(cpp14::make_unique<WTemplate>(WString::tr("lineEdit-template")),1);
+	userSelectorWidget->addFunction("id",&WTemplate::Functions::id);
+	auto userSelector = cpp14::make_unique<WLineEdit>();
+	userSelector_ = userSelector.get();
+	userSelectorWidget->bindString("label","Search user");
+	userSelectorWidget->bindWidget("edit",std::move(userSelector));
 
-  //      problemSelector_->setValidator(std::make_shared<Wt::WIntValidator>());
-   //     problemSelector_->textInput().connect(this,&AdminProblemWidget::problemSelectorSlot);
+	//      problemSelector_->setValidator(std::make_shared<Wt::WIntValidator>());
+	//     problemSelector_->textInput().connect(this,&AdminProblemWidget::problemSelectorSlot);
 
-        tableWidget_ = mainLayout_->addWidget(cpp14::make_unique<WTableView>(),1);
+	tableWidget_ = mainLayout_->addWidget(cpp14::make_unique<WTableView>(),1);
 
-        proxyModel_ = std::make_shared<WSortFilterProxyModel>();
-        proxyModel_->setSourceModel(viewModels_->getUserModel());
-        proxyModel_->setDynamicSortFilter(true);
+	proxyModel_ = std::make_shared<WSortFilterProxyModel>();
+	proxyModel_->setSourceModel(viewModels_->getUserModel());
+	proxyModel_->setDynamicSortFilter(true);
 
-        tableWidget_->setModel(proxyModel_);
+	tableWidget_->setModel(proxyModel_);
 
-        tableWidget_->setRowHeight(26);
-        tableWidget_->setHeaderHeight(26);
-        tableWidget_->setSortingEnabled(false);
-        tableWidget_->setColumnResizeEnabled(false);
+	tableWidget_->setRowHeight(26);
+	tableWidget_->setHeaderHeight(26);
+	tableWidget_->setSortingEnabled(false);
+	tableWidget_->setColumnResizeEnabled(false);
 
-//        auto adminActionsDelegate = std::make_shared<AdminUserWidget::AdminActionsDelegate>();
-//        adminActionsDelegate->editProblem().connect(this,&AdminUserWidget::showEditDialog);
-//        tableWidget_->setItemDelegateForColumn(2,adminActionsDelegate);
-        tableWidget_->addStyleClass("oj-admin-user-table");
+	auto adminActionsDelegate = std::make_shared<AdminUserWidget::AdminActionsDelegate>();
+	adminActionsDelegate->editUser().connect(this,&AdminUserWidget::showEditDialog);
+	tableWidget_->setItemDelegateForColumn(4,adminActionsDelegate);
+	tableWidget_->addStyleClass("oj-admin-user-table");
 }
 
 void AdminWidget::AdminUserWidget::login(Auth::Login& login) {
@@ -804,5 +908,79 @@ void AdminWidget::AdminUserWidget::login(Auth::Login& login) {
 }
 
 void AdminWidget::AdminUserWidget::logout() {
+
+}
+
+void AdminWidget::AdminUserWidget::showEditDialog(const WModelIndex& index) {
+
+	editDialog_ = addChild(cpp14::make_unique<WDialog>("Edit user"));
+
+	auto result = editDialog_->contents()->addWidget(cpp14::make_unique<WTemplate>(WString::tr("editUser-template")));
+	result->addFunction("id",&WTemplate::Functions::id);
+
+	WPushButton *ok = editDialog_->footer()->addWidget(cpp14::make_unique<WPushButton>("Save"));
+	WPushButton *cancel = editDialog_->footer()->addWidget(cpp14::make_unique<WPushButton>("Cancel"));
+
+	ok->clicked().connect(editDialog_, &WDialog::accept);
+	cancel->clicked().connect(editDialog_, &WDialog::reject);
+
+/*      ok->disable();
+        description_->uploaded().connect(ok, &WPushButton::enable);*/
+
+	editDialog_->finished().connect(this,&AdminUserWidget::editDialogDone);
+	editDialog_->show();
+
+}
+
+void AdminWidget::AdminUserWidget::editDialogDone(DialogCode code) {
+	if(code == DialogCode::Accepted) {
+	}
+
+	removeChild(editDialog_);
+}
+
+AdminWidget::AdminUserWidget::AdminActionsDelegate::AdminActionsDelegate() {
+
+}
+
+void AdminWidget::AdminUserWidget::AdminActionsDelegate::login(Auth::Login& login) {
+
+}
+
+void AdminWidget::AdminUserWidget::AdminActionsDelegate::logout() {
+
+}
+
+std::unique_ptr<WWidget> AdminWidget::AdminUserWidget::AdminActionsDelegate::update(WWidget *widget, const WModelIndex& index, WFlags<ViewItemRenderFlag> flags) {
+
+	WidgetRef widgetRef(widget);
+
+	bool isNew = false;
+
+	if(widgetRef.w) {
+		widgetRef.w = nullptr;
+	}
+
+	if(!widgetRef.w) {
+		isNew = true;
+		widgetRef.created = std::unique_ptr<WWidget>(new WContainerWidget());
+		WContainerWidget *t = static_cast<WContainerWidget*>(widgetRef.created.get());
+		t->addStyleClass("oj-actions");
+		auto layout = t->setLayout(cpp14::make_unique<WHBoxLayout>());
+		layout->setContentsMargins(0,4,0,4);
+		auto edit = layout->addWidget(cpp14::make_unique<WImage>("images/edit.svg"));
+		edit->setHeight(18);
+		edit->decorationStyle().setCursor(Cursor::PointingHand);
+		edit->setToolTip("Edit user");
+		edit->clicked().connect( [=] {
+			editUser_.emit(index.model()->index(index.row(),0,index.parent()));
+		});
+	}
+
+	if(isNew) {
+		return std::move(widgetRef.created);
+	} else {
+		return nullptr;
+	}
 
 }
