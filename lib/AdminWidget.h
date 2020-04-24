@@ -115,12 +115,48 @@ Wt::WVBoxLayout *mainLayout_;
 
 class AdminLanguageWidget : public Wt::WContainerWidget {
 public:
-AdminLanguageWidget();
+AdminLanguageWidget(ViewModels *viewModels, DBModel *dbmodel);
 void login(Wt::Auth::Login& login);
 void logout();
 
 private:
 Wt::WVBoxLayout *mainLayout_;
+Wt::WTableView *tableWidget_;
+std::shared_ptr<Wt::WSortFilterProxyModel> proxyModel_;
+ViewModels *viewModels_;
+DBModel *dbmodel_;
+Wt::WDialog *addDialog_;
+
+void showAddEditDialog(const Wt::WModelIndex& index = Wt::WModelIndex());
+void addDialogDone(Wt::DialogCode code);
+
+class AdminActionsDelegate : public Wt::WAbstractItemDelegate {
+public:
+AdminActionsDelegate();
+void login(Wt::Auth::Login& login);
+void logout();
+
+virtual std::unique_ptr<Wt::WWidget> update(Wt::WWidget *widget, const Wt::WModelIndex& index, Wt::WFlags<Wt::ViewItemRenderFlag> flags) override;
+Wt::Signal<const Wt::WModelIndex&>& editLanguage() {
+	return editLanguage_;
+}
+Wt::Signal<const Wt::WModelIndex&>& deleteLanguage() {
+	return deleteLanguage_;
+}
+
+private:
+struct WidgetRef {
+	std::unique_ptr<Wt::WWidget> created;
+	Wt::WWidget *w;
+	WidgetRef(Wt::WWidget *widget) : w(widget) {
+	}
+};
+
+Wt::Signal<const Wt::WModelIndex&> editLanguage_;
+Wt::Signal<const Wt::WModelIndex&> deleteLanguage_;
+
+};
+
 };
 
 class AdminProblemWidget : public Wt::WContainerWidget {
@@ -240,7 +276,35 @@ DBModel *dbmodel_;
 Wt::WVBoxLayout *mainLayout_;
 Wt::WTableView *tableWidget_;
 Wt::WLineEdit *userSelector_;
+Wt::WDialog *editDialog_;
 std::shared_ptr<Wt::WSortFilterProxyModel> proxyModel_;
+
+void showEditDialog(const Wt::WModelIndex& index = Wt::WModelIndex());
+void editDialogDone(Wt::DialogCode code);
+
+class AdminActionsDelegate : public Wt::WAbstractItemDelegate {
+public:
+AdminActionsDelegate();
+void login(Wt::Auth::Login& login);
+void logout();
+
+virtual std::unique_ptr<Wt::WWidget> update(Wt::WWidget *widget, const Wt::WModelIndex& index, Wt::WFlags<Wt::ViewItemRenderFlag> flags) override;
+Wt::Signal<const Wt::WModelIndex&>& editUser() {
+	return editUser_;
+}
+
+private:
+struct WidgetRef {
+	std::unique_ptr<Wt::WWidget> created;
+	Wt::WWidget *w;
+	WidgetRef(Wt::WWidget *widget) : w(widget) {
+	}
+};
+
+Wt::Signal<const Wt::WModelIndex&> editUser_;
+
+};
+
 };
 
 };

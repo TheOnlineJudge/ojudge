@@ -50,7 +50,15 @@ enum class AvatarType {
 	Custom = 2
 };
 
+enum class NotificationType {
+	General = 0,
+	Submission = 1,
+	Message = 2
+};
+
 class User;
+class Notification;
+class Message;
 class UserSettings;
 class UserAvatar;
 class Category;
@@ -67,6 +75,8 @@ typedef Wt::Auth::Dbo::AuthInfo<User> AuthInfo;
 typedef Auth::Dbo::UserDatabase<AuthInfo> UserDatabase;
 
 typedef dbo::collection< dbo::ptr<User> > Users;
+typedef dbo::collection< dbo::ptr<Notification> > Notifications;
+typedef dbo::collection< dbo::ptr<Message> > Messages;
 typedef dbo::collection< dbo::ptr<Category> > Categories;
 typedef dbo::collection< dbo::ptr<Problem> > Problems;
 typedef dbo::collection< dbo::ptr<Description> > Descriptions;
@@ -85,7 +95,6 @@ struct dbo_traits<Problem> : public dbo_default_traits {
 		return 0;
 	}
 };
-
 
 template<>
 struct dbo_traits<Description> : public dbo_default_traits {
@@ -168,6 +177,9 @@ std::optional<std::string> uvaID;
 std::optional<bool> firstlogin;
 Submissions submissions;
 dbo::weak_ptr<UserSettings> settings;
+Notifications notifications;
+Messages messagesSent;
+Messages messagesReceived;
 
 template<class Action>
 void persist(Action& a)
@@ -184,6 +196,9 @@ void persist(Action& a)
 	dbo::field(a, firstlogin, "firstlogin");
 	dbo::hasMany(a, submissions, dbo::ManyToOne, "user");
 	dbo::hasOne(a, settings, "user");
+	dbo::hasMany(a, notifications, dbo::ManyToOne, "user");
+	dbo::hasMany(a, messagesSent, dbo::ManyToOne, "from");
+	dbo::hasMany(a, messagesReceived, dbo::ManyToOne, "to");
 }
 };
 
@@ -218,6 +233,48 @@ void persist(Action& a) {
 	dbo::field(a, notifications_browser_general, "notifications_browser_general");
 	dbo::field(a, twofa_enabled, "twofa_enabled");
 	dbo::field(a, twofa_secret, "twofa_secret");
+}
+};
+
+class Notification {
+public:
+dbo::ptr<User> user;
+NotificationType notificationType;
+WDateTime notificationTime;
+std::optional<WDateTime> readTime;
+std::optional<bool> hidden;
+dbo::ptr<Submission> submission;
+dbo::ptr<Message> message;
+
+template<class Action>
+void persist(Action& a) {
+	dbo::belongsTo(a, user, "user", dbo::NotNull|dbo::OnDeleteCascade);
+	dbo::field(a, notificationType, "notification_type");
+	dbo::field(a, notificationTime, "notification_time");
+	dbo::field(a, readTime, "read_time");
+	dbo::field(a, hidden, "hidden");
+	dbo::belongsTo(a, submission, "submission", dbo::OnDeleteCascade);
+	dbo::belongsTo(a, message, "message", dbo::OnDeleteCascade);
+}
+};
+
+class Message {
+public:
+dbo::ptr<User> from;
+dbo::ptr<User> to;
+WDateTime sendTime;
+std::optional<WDateTime> readTime;
+std::string subject;
+std::string body;
+
+template<class Action>
+void persist(Action& a) {
+	dbo::belongsTo(a, from, "from", dbo::NotNull|dbo::OnDeleteCascade);
+	dbo::belongsTo(a, to, "to", dbo::NotNull|dbo::OnDeleteCascade);
+	dbo::field(a, sendTime, "send_time");
+	dbo::field(a, readTime, "read_time");
+	dbo::field(a, subject, "subject");
+	dbo::field(a, body, "body");
 }
 };
 
