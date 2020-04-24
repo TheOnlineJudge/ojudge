@@ -15,6 +15,7 @@ CountryStore::CountryStore() {
 
 	countryCodes_.push_back("00");
 	countryCodes_.push_back("af");
+	countryCodes_.push_back("ax");
 	countryCodes_.push_back("al");
 	countryCodes_.push_back("dz");
 	countryCodes_.push_back("as");
@@ -80,11 +81,12 @@ CountryStore::CountryStore() {
 	countryCodes_.push_back("ec");
 	countryCodes_.push_back("eg");
 	countryCodes_.push_back("sv");
+	countryCodes_.push_back("gb-eng");
 	countryCodes_.push_back("gq");
 	countryCodes_.push_back("er");
 	countryCodes_.push_back("ee");
-	countryCodes_.push_back("sz");
 	countryCodes_.push_back("et");
+	countryCodes_.push_back("eu");
 	countryCodes_.push_back("fk");
 	countryCodes_.push_back("fo");
 	countryCodes_.push_back("fj");
@@ -133,6 +135,7 @@ CountryStore::CountryStore() {
 	countryCodes_.push_back("ki");
 	countryCodes_.push_back("kp");
 	countryCodes_.push_back("kr");
+	countryCodes_.push_back("xk");
 	countryCodes_.push_back("kw");
 	countryCodes_.push_back("kg");
 	countryCodes_.push_back("la");
@@ -170,6 +173,8 @@ CountryStore::CountryStore() {
 	countryCodes_.push_back("nr");
 	countryCodes_.push_back("np");
 	countryCodes_.push_back("nl");
+	countryCodes_.push_back("an");
+	countryCodes_.push_back("gb-nir");
 	countryCodes_.push_back("nc");
 	countryCodes_.push_back("nz");
 	countryCodes_.push_back("ni");
@@ -199,7 +204,6 @@ CountryStore::CountryStore() {
 	countryCodes_.push_back("rw");
 	countryCodes_.push_back("re");
 	countryCodes_.push_back("bl");
-	countryCodes_.push_back("da");
 	countryCodes_.push_back("sh");
 	countryCodes_.push_back("kn");
 	countryCodes_.push_back("lc");
@@ -210,6 +214,7 @@ CountryStore::CountryStore() {
 	countryCodes_.push_back("sm");
 	countryCodes_.push_back("st");
 	countryCodes_.push_back("sa");
+	countryCodes_.push_back("gb-sct");
 	countryCodes_.push_back("sn");
 	countryCodes_.push_back("rs");
 	countryCodes_.push_back("sc");
@@ -228,6 +233,7 @@ CountryStore::CountryStore() {
 	countryCodes_.push_back("sd");
 	countryCodes_.push_back("sr");
 	countryCodes_.push_back("sj");
+	countryCodes_.push_back("sz");
 	countryCodes_.push_back("se");
 	countryCodes_.push_back("ch");
 	countryCodes_.push_back("sy");
@@ -258,12 +264,12 @@ CountryStore::CountryStore() {
 	countryCodes_.push_back("vn");
 	countryCodes_.push_back("vg");
 	countryCodes_.push_back("vi");
+	countryCodes_.push_back("gb-wls");
 	countryCodes_.push_back("wf");
 	countryCodes_.push_back("eh");
 	countryCodes_.push_back("ye");
 	countryCodes_.push_back("zm");
 	countryCodes_.push_back("zw");
-	countryCodes_.push_back("ax");
 }
 
 const std::vector<std::string> CountryStore::countryCodes() {
