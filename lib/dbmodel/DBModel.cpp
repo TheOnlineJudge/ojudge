@@ -114,6 +114,7 @@ DBModel::DBModel(Session* session) : session_(session) {
 	session_->mapClass<User>("user");
 	session_->mapClass<UserSettings>("user_settings");
 	session_->mapClass<UserAvatar>("user_avatar");
+	session_->mapClass<Notification>("notification");
 	session_->mapClass<Category>("category");
 	session_->mapClass<Problem>("problem");
 	session_->mapClass<Description>("description");
