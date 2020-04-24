@@ -917,6 +917,20 @@ void AdminWidget::AdminUserWidget::showEditDialog(const WModelIndex& index) {
 
 	auto result = editDialog_->contents()->addWidget(cpp14::make_unique<WTemplate>(WString::tr("editUser-template")));
 	result->addFunction("id",&WTemplate::Functions::id);
+	result->addFunction("block",&WTemplate::Functions::block);
+	result->addFunction("tr",&WTemplate::Functions::tr);
+
+	auto id = result->bindWidget("id-setting",cpp14::make_unique<WLineEdit>());
+	id->disable();
+
+	auto username = result->bindWidget("username-setting",cpp14::make_unique<WLineEdit>());
+	username->disable();
+
+	auto firstname = result->bindWidget("firstname-setting",cpp14::make_unique<WLineEdit>());
+	auto lastname = result->bindWidget("lastname-setting",cpp14::make_unique<WLineEdit>());
+	auto email = result->bindWidget("email-setting",cpp14::make_unique<WLineEdit>());
+	auto password = result->bindWidget("password-setting",cpp14::make_unique<WCheckBox>("Reset password"));
+	auto status = result->bindWidget("status-setting",cpp14::make_unique<WComboBox>());
 
 	WPushButton *ok = editDialog_->footer()->addWidget(cpp14::make_unique<WPushButton>("Save"));
 	WPushButton *cancel = editDialog_->footer()->addWidget(cpp14::make_unique<WPushButton>("Cancel"));

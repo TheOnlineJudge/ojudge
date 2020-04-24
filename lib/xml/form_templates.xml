@@ -244,4 +244,13 @@
       ${categories}
     </div>
   </message>
+  <message id="editUser-template">
+    ${block:settingsField-template id}
+    ${block:settingsField-template username}
+    ${block:settingsField-template firstname}
+    ${block:settingsField-template lastname}
+    ${block:settingsField-template email}
+    ${block:settingsField-template password}
+    ${block:settingsField-template status}
+  </message>
 </messages>
