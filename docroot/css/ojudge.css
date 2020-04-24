@@ -302,7 +302,9 @@ body {
 }
 
 .oj-admin-category-tree,
-.oj-admin-problem-table {
+.oj-admin-problem-table,
+.oj-admin-language-table,
+.oj-admin-user-table {
   border:0px;
 }
 
@@ -320,7 +322,9 @@ body {
   transition:0s;
 }
 
-.oj-admin-problem-table .Wt-tv-contents .Wt-tv-c:hover {
+.oj-admin-problem-table .Wt-tv-contents .Wt-tv-c:hover,
+.oj-admin-user-table .Wt-tv-contents .Wt-tv-c:hover,
+.oj-admin-language-table .Wt-tv-contents .Wt-tv:hover {
   background-color:#e7e7e7;
   border-radius:5px;
   transition:0s;
@@ -331,7 +335,9 @@ body {
   height:18px;
 }
 
-.oj-admin-problem-table .Wt-tv-contents .Wt-tv-c {
+.oj-admin-problem-table .Wt-tv-contents .Wt-tv-c,
+.oj-admin-user-table .Wt-tv-contents .Wt-tv-c,
+.oj-admin-language-table .Wt-tv-contents .Wt-tv-c {
   border:0px;
 }
 

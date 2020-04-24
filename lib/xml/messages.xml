@@ -39,6 +39,14 @@
   <message id="wrap-label">Word Wrap</message>
   <message id="theme-label">Theme</message>
 
+  <message id="id-label">ID</message>
+  <message id="username-label">Username</message>
+  <message id="fistname-label">First Name</message>
+  <message id="lastname-label">Last Name</message>
+  <message id="email-label">eMail</message>
+  <message id="password-label">Password</message>
+  <message id="status-label">Status</message>
+
   <message id="OJ.Auth.user-name">Username</message>
   <message id="OJ.Auth.password">Password</message>
   <message id="OJ.Auth.remember-me">Remember me</message>

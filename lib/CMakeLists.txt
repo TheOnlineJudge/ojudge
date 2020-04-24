@@ -23,12 +23,14 @@ datastore/CountryStore.cpp
 datastore/DataStore.cpp
 datastore/LanguageStore.cpp
 datastore/ProblemStore.cpp
+datastore/UserStore.cpp
 dbmodel/DBModel.cpp
 external/QrCode.cpp
 viewmodels/CategoryModel.cpp
 viewmodels/CountryModel.cpp
 viewmodels/LanguageModel.cpp
 viewmodels/ProblemModel.cpp
+viewmodels/UserModel.cpp
 viewmodels/ViewModels.cpp
 widgets/OJCodeEditorWidget.cpp
 widgets/OJColorPicker.cpp
