@@ -14,8 +14,7 @@
 #include <map>
 #include <Wt/WModelIndex.h>
 #include <Wt/Auth/User.h>
-
-class DBModel;
+#include "../dbmodel/DBModel.h"
 
 struct UserData {
 	long long id;
@@ -23,6 +22,7 @@ struct UserData {
 	std::string firstname;
 	std::string lastname;
 	std::string email;
+	Role role;
 	Wt::Auth::AccountStatus status;
 };
 
