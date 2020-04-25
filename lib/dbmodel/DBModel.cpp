@@ -118,6 +118,10 @@ DBModel::DBModel(Session* session) : session_(session) {
 	session_->mapClass<Message>("message");
 	session_->mapClass<Category>("category");
 	session_->mapClass<Problem>("problem");
+	session_->mapClass<ProblemAuthor>("problem_author");
+	session_->mapClass<ProblemSource>("problem_source");
+	session_->mapClass<ProblemRating>("problem_rating");
+	session_->mapClass<ProblemBookmark>("problem_bookmark");
 	session_->mapClass<Description>("description");
 	session_->mapClass<Testcase>("testcase");
 	session_->mapClass<Setting>("setting");
@@ -289,7 +293,10 @@ const std::string DBModel::avatarLink(dbo::ptr<User> user, const AvatarType type
 		return "https://cdn.libravatar.org/avatar/" + OJUtils::bin_to_hex(Utils::md5(user->authInfo->email())) + "?s=" + std::to_string(size) + "&default=identicon";
 	case AvatarType::Custom:
 		dbo::Transaction t = startTransaction();
-		return "data:image/jpeg;base64,"+Utils::base64Encode(std::string(user->avatar->avatar.value().begin(),user->avatar->avatar.value().end()),false);
+		if(user->avatar->avatar.value_or(std::vector<unsigned char>()).size()) {
+			return "data:image/jpeg;base64,"+Utils::base64Encode(std::string(user->avatar->avatar.value().begin(),user->avatar->avatar.value().end()),false);
+		}
+		break;
 	}
 
 	return "https://www.libravatar.org/static/img/mm/" + std::to_string(size) + ".png";

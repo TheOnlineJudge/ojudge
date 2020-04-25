@@ -899,7 +899,7 @@ AdminWidget::AdminUserWidget::AdminUserWidget(ViewModels *viewModels, DBModel *d
 
 	auto adminActionsDelegate = std::make_shared<AdminUserWidget::AdminActionsDelegate>();
 	adminActionsDelegate->editUser().connect(this,&AdminUserWidget::showEditDialog);
-	tableWidget_->setItemDelegateForColumn(4,adminActionsDelegate);
+	tableWidget_->setItemDelegateForColumn(5,adminActionsDelegate);
 	tableWidget_->addStyleClass("oj-admin-user-table");
 }
 
@@ -930,6 +930,7 @@ void AdminWidget::AdminUserWidget::showEditDialog(const WModelIndex& index) {
 	auto lastname = result->bindWidget("lastname-setting",cpp14::make_unique<WLineEdit>());
 	auto email = result->bindWidget("email-setting",cpp14::make_unique<WLineEdit>());
 	auto password = result->bindWidget("password-setting",cpp14::make_unique<WCheckBox>("Reset password"));
+	auto role = result->bindWidget("role-setting",cpp14::make_unique<WComboBox>());
 	auto status = result->bindWidget("status-setting",cpp14::make_unique<WComboBox>());
 
 	WPushButton *ok = editDialog_->footer()->addWidget(cpp14::make_unique<WPushButton>("Save"));

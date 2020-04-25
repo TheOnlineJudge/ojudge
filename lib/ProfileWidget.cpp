@@ -288,7 +288,7 @@ void ProfileWidget::AccountWidget::applyClicked() {
 		}
 	}
 	if(emailChanged_) strm << "<li>eMail address to: <b>" << email_->text().toUTF8() << "</b></li>";
-	if(telegramUsernameChanged_) strm << "<li>Telegram Username to: <b>" << telegramUsername_->text().toUTF8() << "</b><li>";
+	if(telegramUsernameChanged_) strm << "<li>Telegram Username to: <b>" << telegramUsername_->text().toUTF8() << "</b></li>";
 	if(firstnameChanged_) strm << "<li>First Name to: <b>" << firstname_->text().toUTF8() << "</b></li>";
 	if(lastnameChanged_) strm << "<li>Last Name to: <b>" << lastname_->text().toUTF8() << "</b></li>";
 	if(birthdayChanged_) strm << "<li>Birthday to: <b>" << birthday_->lineEdit()->text().toUTF8() << "</b></li>";

@@ -56,6 +56,11 @@ enum class NotificationType {
 	Message = 2
 };
 
+enum class ProblemLicense {
+	PublicDomain = 0,
+	CreativeCommons = 1
+};
+
 class User;
 class Notification;
 class Message;
@@ -63,6 +68,10 @@ class UserSettings;
 class UserAvatar;
 class Category;
 class Problem;
+class ProblemAuthor;
+class ProblemSource;
+class ProblemRating;
+class ProblemBookmark;
 class Description;
 class Setting;
 class Submission;
@@ -79,6 +88,10 @@ typedef dbo::collection< dbo::ptr<Notification> > Notifications;
 typedef dbo::collection< dbo::ptr<Message> > Messages;
 typedef dbo::collection< dbo::ptr<Category> > Categories;
 typedef dbo::collection< dbo::ptr<Problem> > Problems;
+typedef dbo::collection< dbo::ptr<ProblemAuthor> > ProblemAuthors;
+typedef dbo::collection< dbo::ptr<ProblemSource> > ProblemSources;
+typedef dbo::collection< dbo::ptr<ProblemRating> > ProblemRatings;
+typedef dbo::collection< dbo::ptr<ProblemBookmark> > ProblemBookmarks;
 typedef dbo::collection< dbo::ptr<Description> > Descriptions;
 typedef dbo::collection< dbo::ptr<Testcase> > Testcases;
 typedef dbo::collection< dbo::ptr<Submission> > Submissions;
@@ -180,6 +193,8 @@ dbo::weak_ptr<UserSettings> settings;
 Notifications notifications;
 Messages messagesSent;
 Messages messagesReceived;
+ProblemRatings problemRatings;
+ProblemBookmarks problemBookmarks;
 
 template<class Action>
 void persist(Action& a)
@@ -199,6 +214,8 @@ void persist(Action& a)
 	dbo::hasMany(a, notifications, dbo::ManyToOne, "user");
 	dbo::hasMany(a, messagesSent, dbo::ManyToOne, "from");
 	dbo::hasMany(a, messagesReceived, dbo::ManyToOne, "to");
+	dbo::hasMany(a, problemRatings, dbo::ManyToOne, "user");
+	dbo::hasMany(a, problemBookmarks, dbo::ManyToOne, "user");
 }
 };
 
@@ -315,29 +332,104 @@ class Problem {
 public:
 long long id;
 std::string title;
-
+ProblemLicense license;
+dbo::ptr<User> uploadedBy;
+WDateTime uploadedTime;
+dbo::weak_ptr<Description> description;
+int cpulimit;
+int memorylimit;
 Categories categories;
 Testcases testcases;
 Submissions submissions;
-dbo::weak_ptr<Description> description;
 Contests contests;
+ProblemAuthors authors;
+ProblemSources sources;
+ProblemRatings ratings;
+ProblemBookmarks bookmarks;
 
 template<class Action>
 void persist(Action& a) {
 	dbo::id(a, id, "id");
 	dbo::field(a, title, "title");
+	dbo::field(a, license, "license");
+	dbo::belongsTo(a, uploadedBy, "uploaded_by");
+	dbo::field(a, uploadedTime, "uploaded_time");
 	dbo::hasOne(a, description);
+	dbo::field(a, cpulimit, "cpulimit");
+	dbo::field(a, memorylimit, "memorylimit");
 	dbo::hasMany(a, categories, dbo::ManyToMany, "probs_cats");
 	dbo::hasMany(a, testcases, dbo::ManyToOne, "problem");
 	dbo::hasMany(a, submissions, dbo::ManyToOne, "problem");
 	dbo::hasMany(a, contests, dbo::ManyToMany, "probs_contests");
+	dbo::hasMany(a, authors, dbo::ManyToMany, "probs_authors");
+	dbo::hasMany(a, sources, dbo::ManyToMany, "probs_sources");
+	dbo::hasMany(a, ratings, dbo::ManyToOne, "problem");
+	dbo::hasMany(a, bookmarks, dbo::ManyToOne, "problem");
+}
+};
+
+class ProblemAuthor {
+public:
+std::string name;
+std::optional<std::string> contactEmail;
+std::optional<std::string> contactURL;
+Problems problems;
+
+template<class Action>
+void persist(Action& a) {
+	dbo::field(a, name, "name");
+	dbo::field(a, contactEmail, "contact_email");
+	dbo::field(a, contactURL, "contact_url");
+	dbo::hasMany(a, problems, dbo::ManyToMany, "probs_authors");
+}
+};
+
+class ProblemSource {
+public:
+std::string name;
+std::optional<std::string> contactURL;
+Problems problems;
+
+template<class Action>
+void persist(Action& a) {
+	dbo::field(a, name, "name");
+	dbo::field(a, contactURL, "contact_url");
+	dbo::hasMany(a, problems, dbo::ManyToMany, "probs_sources");
+}
+};
+
+class ProblemRating {
+public:
+dbo::ptr<User> user;
+dbo::ptr<Problem> problem;
+int rating;
+
+template<class Action>
+void persist(Action& a) {
+	dbo::belongsTo(a, user, "user", dbo::NotNull|dbo::OnDeleteCascade);
+	dbo::belongsTo(a, problem, "problem", dbo::NotNull|dbo::OnDeleteCascade);
+	dbo::field(a, rating, "rating");
+}
+};
+
+class ProblemBookmark {
+public:
+dbo::ptr<User> user;
+dbo::ptr<Problem> problem;
+bool bookmark;
+
+template<class Action>
+void persist(Action& a) {
+	dbo::belongsTo(a, user, "user", dbo::NotNull|dbo::OnDeleteCascade);
+	dbo::belongsTo(a, problem, "problem", dbo::NotNull|dbo::OnDeleteCascade);
+	dbo::field(a, bookmark, "bookmark");
 }
 };
 
 class Description {
 public:
-std::optional< std::string > htmldata;
-std::optional< std::vector<unsigned char> > pdfdata;
+std::optional<std::string > htmldata;
+std::optional<std::vector<unsigned char> > pdfdata;
 dbo::ptr<Problem> problem;
 
 template<class Action>
@@ -352,10 +444,11 @@ class Language {
 public:
 std::string name;
 std::string compilerVersion;
-std::optional< std::vector<unsigned char> > codeSkeleton;
-std::optional< std::string > aceStyle;
-std::optional< std::vector<unsigned char> > compileScript;
-std::optional< std::vector<unsigned char> > linkScript;
+std::optional<std::string> description;
+std::optional<std::vector<unsigned char> > codeSkeleton;
+std::optional<std::string> aceStyle;
+std::optional<std::vector<unsigned char> > compileScript;
+std::optional<std::vector<unsigned char> > linkScript;
 std::vector<unsigned char> runScript;
 Submissions submissions;
 Contests contests;
@@ -364,6 +457,7 @@ template<class Action>
 void persist(Action& a) {
 	dbo::field(a, name, "name");
 	dbo::field(a, compilerVersion, "compilerversion");
+	dbo::field(a, description, "description");
 	dbo::field(a, codeSkeleton, "codeskeleton");
 	dbo::field(a, aceStyle, "acestyle");
 	dbo::field(a, compileScript, "compilescript");
@@ -378,8 +472,8 @@ class Contest {
 public:
 std::string title;
 std::optional<std::string> subTitle;
-std::optional< std::vector<unsigned char> > description;
-std::optional< std::vector<unsigned char> > logo;
+std::optional<std::vector<unsigned char> > description;
+std::optional<std::vector<unsigned char> > logo;
 bool isVirtual;
 WDateTime startTime;
 WDateTime endTime;
