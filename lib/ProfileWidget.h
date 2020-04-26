@@ -24,17 +24,19 @@
 #include <Wt/WFileUpload.h>
 #include "AuthWidget.h"
 #include "dbmodel/DBModel.h"
+#include "datastore/DataStore.h"
 #include "viewmodels/CountryModel.h"
 
 class ProfileWidget : public Wt::WContainerWidget {
 public:
-ProfileWidget(Session *session, DBModel *dbmodel, const std::shared_ptr<CountryModel> countrymodel, AuthWidget *authWidget);
+ProfileWidget(Session *session, DBModel *dbmodel, DataStore *dataStore, const std::shared_ptr<CountryModel> countrymodel, AuthWidget *authWidget);
 void login(Wt::Auth::Login& login);
 void logout();
 
 private:
 Session *session_;
 DBModel *dbmodel_;
+DataStore *dataStore_;
 AuthWidget *authWidget_;
 Wt::WVBoxLayout *mainLayout_;
 Wt::WContainerWidget *mainWidget_;
@@ -94,13 +96,14 @@ bool institutionChanged_ = false;
 
 class SecurityWidget : public Wt::WTemplate {
 public:
-SecurityWidget(Session *session, DBModel *dbmodel, AuthWidget *authWidget);
+SecurityWidget(Session *session, DBModel *dbmodel, DataStore *dataStore, AuthWidget *authWidget);
 void login(Wt::Auth::Login& login);
 void logout();
 
 private:
 Session *session_;
 DBModel *dbmodel_;
+DataStore *dataStore_;
 AuthWidget *authWidget_;
 Wt::Auth::Login *login_;
 Wt::WPushButton *changePassword_;
@@ -111,14 +114,14 @@ bool disableTwoFA_ = false;
 
 class TwoFADialog : public Wt::WDialog {
 public:
-TwoFADialog(Session *session, DBModel *dbmodel, Wt::Auth::Login *login, bool disable);
+TwoFADialog(Session *session, SettingStore *settingStore, Wt::Auth::Login *login, bool disable);
 std::vector<unsigned char> getSecret();
 std::string getAuthCode();
 void setCodeError();
 
 private:
 Session *session_;
-DBModel *dbmodel_;
+SettingStore *settingStore_;
 Wt::Auth::Login *login_;
 Wt::WLineEdit *authCode_;
 std::vector<unsigned char> secret_;

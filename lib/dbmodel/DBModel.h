@@ -577,7 +577,7 @@ dbo::ptr<Problem> addProblem(long long id, std::string title);
 void setProblemCategories(long long id, std::set<int> categories);
 void updateDescription(long long problemId, std::optional<std::string> htmlData, std::optional<std::vector<unsigned char> > pdfData);
 
-std::string getSiteSetting(std::string settingName);
+const Settings getSiteSettings();
 void updateSiteSetting(std::string settingName, std::string settingValue);
 
 Languages getLanguages();

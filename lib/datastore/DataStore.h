@@ -17,6 +17,7 @@ class CountryStore;
 class ProblemStore;
 class LanguageStore;
 class UserStore;
+class SettingStore;
 
 class DataStore {
 public:
@@ -26,6 +27,7 @@ CountryStore *getCountryStore();
 ProblemStore *getProblemStore();
 LanguageStore *getLanguageStore();
 UserStore *getUserStore();
+SettingStore *getSettingStore();
 
 private:
 DBModel *dbModel_;
@@ -34,6 +36,7 @@ CountryStore *countryStore_;
 ProblemStore *problemStore_;
 LanguageStore *languageStore_;
 UserStore *userStore_;
+SettingStore *settingStore_;
 };
 
 #endif // DATASTORE_H

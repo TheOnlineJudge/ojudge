@@ -26,13 +26,14 @@
 #include <Wt/WText.h>
 #include "viewmodels/ViewModels.h"
 #include "dbmodel/DBModel.h"
+#include "datastore/DataStore.h"
 
 class Session;
 class OJColorPicker;
 
 class AdminWidget : public Wt::WContainerWidget {
 public:
-AdminWidget(Session *session, ViewModels *viewModels, DBModel *dbmodel);
+AdminWidget(Session *session, ViewModels *viewModels, DBModel *dbmodel, DataStore *dataStore);
 void login(Wt::Auth::Login& login);
 void logout();
 
@@ -40,6 +41,7 @@ private:
 Session *session_;
 ViewModels *viewModels_;
 DBModel *dbmodel_;
+DataStore *dataStore_;
 Wt::WVBoxLayout *mainLayout_;
 Wt::WContainerWidget *mainWidget_;
 Wt::WText *mustLoginWidget_;
@@ -115,7 +117,7 @@ Wt::WVBoxLayout *mainLayout_;
 
 class AdminLanguageWidget : public Wt::WContainerWidget {
 public:
-AdminLanguageWidget(ViewModels *viewModels, DBModel *dbmodel);
+AdminLanguageWidget(ViewModels *viewModels);
 void login(Wt::Auth::Login& login);
 void logout();
 
@@ -124,7 +126,6 @@ Wt::WVBoxLayout *mainLayout_;
 Wt::WTableView *tableWidget_;
 std::shared_ptr<Wt::WSortFilterProxyModel> proxyModel_;
 ViewModels *viewModels_;
-DBModel *dbmodel_;
 Wt::WDialog *addDialog_;
 
 void showAddEditDialog(const Wt::WModelIndex& index = Wt::WModelIndex());
@@ -214,12 +215,12 @@ Wt::Signal<const Wt::WModelIndex&> deleteProblem_;
 
 class AdminGeneralSettingsWidget : public Wt::WTemplate {
 public:
-AdminGeneralSettingsWidget(DBModel *dbmodel);
+AdminGeneralSettingsWidget(DataStore *dataStore);
 void login(Wt::Auth::Login& login);
 void logout();
 
 private:
-DBModel *dbmodel_;
+DataStore *dataStore_;
 Wt::WLineEdit* siteTitle_;
 Wt::WLineEdit* siteLogo_;
 OJColorPicker* siteColor_;

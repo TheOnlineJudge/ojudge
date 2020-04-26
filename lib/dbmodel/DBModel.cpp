@@ -264,15 +264,12 @@ void DBModel::updateDescription(long long problemId, std::optional<std::string> 
 	problem.modify()->description = description;
 }
 
-std::string DBModel::getSiteSetting(std::string settingName) {
-
+const Settings DBModel::getSiteSettings() {
 	dbo::Transaction t = startTransaction();
-	dbo::ptr<Setting> setting = session_->find<Setting>().where("settingname = ?").bind(settingName);
-	return setting->settingValue;
+	return session_->find<Setting>();
 }
 
 void DBModel::updateSiteSetting(std::string settingName, std::string settingValue) {
-
 	dbo::Transaction t = startTransaction();
 	dbo::ptr<Setting> setting = session_->find<Setting>().where("settingname = ?").bind(settingName);
 	setting.modify()->settingValue = settingValue;

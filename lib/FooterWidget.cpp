@@ -16,12 +16,12 @@
 #include <string>
 #include <sstream>
 #include "../version.h"
-#include "dbmodel/DBModel.h"
+#include "datastore/SettingStore.h"
 #include "FooterWidget.h"
 
 using namespace Wt;
 
-FooterWidget::FooterWidget(DBModel *dbmodel) : dbmodel_(dbmodel) {
+FooterWidget::FooterWidget(SettingStore *settingStore) : settingStore_(settingStore) {
 
 	setPadding(WLength(5));
 	addStyleClass("oj-footer");
@@ -35,7 +35,7 @@ FooterWidget::FooterWidget(DBModel *dbmodel) : dbmodel_(dbmodel) {
 	auto aboutWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>());
 	auto aboutLayout = aboutWidget->setLayout(cpp14::make_unique<WVBoxLayout>());
 	aboutLayout->setContentsMargins(0,0,0,0);
-	auto aboutTitle = aboutLayout->addWidget(cpp14::make_unique<WText>(dbmodel_->getSiteSetting("sitetitle")));
+	auto aboutTitle = aboutLayout->addWidget(cpp14::make_unique<WText>(settingStore_->getSetting("sitetitle")));
 	aboutTitle->addStyleClass(WString("oj-footer-head"));
 
 	aboutLayout->addWidget(cpp14::make_unique<WAnchor>(WLink(LinkType::InternalPath,"/about"),"About"));

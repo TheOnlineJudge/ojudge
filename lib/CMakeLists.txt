@@ -23,6 +23,7 @@ datastore/CountryStore.cpp
 datastore/DataStore.cpp
 datastore/LanguageStore.cpp
 datastore/ProblemStore.cpp
+datastore/SettingStore.cpp
 datastore/UserStore.cpp
 dbmodel/DBModel.cpp
 external/QrCode.cpp

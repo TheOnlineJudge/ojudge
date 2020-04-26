@@ -30,14 +30,15 @@
 #include <Wt/WMemoryResource.h>
 #include "external/QrCode.h"
 #include "viewmodels/CountryModel.h"
+#include "datastore/SettingStore.h"
 #include "ProfileWidget.h"
 
 using namespace Wt;
 using namespace Magick;
 using random_bytes_engine = std::independent_bits_engine<std::default_random_engine, CHAR_BIT, unsigned char>;
 
-ProfileWidget::ProfileWidget(Session *session, DBModel *dbmodel, const std::shared_ptr<CountryModel> countrymodel, AuthWidget* authWidget) :
-	session_(session), dbmodel_(dbmodel), countrymodel_(countrymodel), authWidget_(authWidget) {
+ProfileWidget::ProfileWidget(Session *session, DBModel *dbmodel, DataStore *dataStore, const std::shared_ptr<CountryModel> countrymodel, AuthWidget* authWidget) :
+	session_(session), dbmodel_(dbmodel), dataStore_(dataStore), countrymodel_(countrymodel), authWidget_(authWidget) {
 
 	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout_->setContentsMargins(0,0,0,0);
@@ -69,7 +70,7 @@ void ProfileWidget::login(Auth::Login& login) {
 	logoutSignal().connect(accountWidget.get(),&AccountWidget::logout);
 	auto accountItem = menuWidget->addItem("Account",std::move(accountWidget));
 
-	auto securityWidget = cpp14::make_unique<SecurityWidget>(session_,dbmodel_,authWidget_);
+	auto securityWidget = cpp14::make_unique<SecurityWidget>(session_,dbmodel_,dataStore_,authWidget_);
 	loginSignal().connect(securityWidget.get(),&SecurityWidget::login);
 	logoutSignal().connect(securityWidget.get(),&SecurityWidget::logout);
 	auto securityItem = menuWidget->addItem("Security",std::move(securityWidget));
@@ -366,7 +367,7 @@ void ProfileWidget::AccountWidget::avatarUploaded() {
 
 }
 
-ProfileWidget::SecurityWidget::SecurityWidget(Session *session, DBModel *dbmodel, AuthWidget *authWidget) : session_(session), dbmodel_(dbmodel), authWidget_(authWidget) {
+ProfileWidget::SecurityWidget::SecurityWidget(Session *session, DBModel *dbmodel, DataStore *dataStore, AuthWidget *authWidget) : session_(session), dbmodel_(dbmodel), dataStore_(dataStore), authWidget_(authWidget) {
 
 	setTemplateText(WString::tr("settings-security"));
 
@@ -383,7 +384,7 @@ ProfileWidget::SecurityWidget::SecurityWidget(Session *session, DBModel *dbmodel
 
 	twofa_ = bindWidget("twofa-setting",cpp14::make_unique<WPushButton>());
 	twofa_->clicked().connect( [=] {
-		twofaDialog_ = addChild(cpp14::make_unique<TwoFADialog>(session_,dbmodel_,login_,disableTwoFA_));
+		twofaDialog_ = addChild(cpp14::make_unique<TwoFADialog>(session_,dataStore_->getSettingStore(),login_,disableTwoFA_));
 		twofaDialog_->finished().connect(this,&ProfileWidget::SecurityWidget::TwoFADialogDone);
 		twofaDialog_->show();
 	});
@@ -480,7 +481,7 @@ void ProfileWidget::SecurityWidget::logout() {
 
 }
 
-ProfileWidget::SecurityWidget::TwoFADialog::TwoFADialog(Session *session, DBModel *dbmodel, Auth::Login *login, bool disable) : session_(session), dbmodel_(dbmodel), login_(login), secret_(32) {
+ProfileWidget::SecurityWidget::TwoFADialog::TwoFADialog(Session *session, SettingStore *settingStore, Auth::Login *login, bool disable) : session_(session), settingStore_(settingStore), login_(login), secret_(32) {
 
 	setWindowTitle((disable ? "Disable" : "Enable") + std::string(" 2-Factor Authentication"));
 	setClosable(true);
@@ -500,7 +501,7 @@ ProfileWidget::SecurityWidget::TwoFADialog::TwoFADialog(Session *session, DBMode
 
 		std::string qrstr;
 		qrstr += "otpauth://totp/";
-		std::string sitetitle(dbmodel_->getSiteSetting("sitetitle"));
+		std::string sitetitle(settingStore_->getSetting("sitetitle"));
 		sitetitle.erase(std::remove_if(sitetitle.begin(), sitetitle.end(), f), sitetitle.end());
 		qrstr += sitetitle;
 		qrstr += ":";
