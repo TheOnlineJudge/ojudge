@@ -251,6 +251,7 @@
     ${block:settingsField-template lastname}
     ${block:settingsField-template email}
     ${block:settingsField-template password}
+    ${block:settingsField-template role}
     ${block:settingsField-template status}
   </message>
 </messages>

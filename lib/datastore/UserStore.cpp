@@ -12,8 +12,6 @@
 #include <mutex>
 #include "../ojudgeApp.h"
 
-#include "../dbmodel/DBModel.h"
-
 #include "UserStore.h"
 
 using namespace Wt;
@@ -33,6 +31,7 @@ UserStore::UserStore(DBModel *dbModel) : dbModel_(dbModel) {
 		userData_[row].firstname = user->firstName.value_or("");
 		userData_[row].lastname = user->lastName.value_or("");
 		userData_[row].email = user->authInfo->email();
+		userData_[row].role = user->role;
 		userData_[row].status = user->authInfo->status();
 		row++;
 	}

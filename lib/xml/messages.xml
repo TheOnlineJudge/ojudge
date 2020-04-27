@@ -45,6 +45,7 @@
   <message id="lastname-label">Last Name</message>
   <message id="email-label">eMail</message>
   <message id="password-label">Password</message>
+  <message id="role-label">Role</message>
   <message id="status-label">Status</message>
 
   <message id="OJ.Auth.user-name">Username</message>
