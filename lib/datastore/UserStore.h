@@ -32,6 +32,8 @@ public:
 UserStore(DBModel *dbModel);
 const std::map<long long,UserData>& getUsers();
 const UserData& getUser(long long id);
+cpp17::any getUserSetting(const Auth::User& user, std::string setting);
+void setUserSetting(const Auth::User& user, std::string setting, cpp17::any value);
 
 private:
 DBModel *dbModel_;

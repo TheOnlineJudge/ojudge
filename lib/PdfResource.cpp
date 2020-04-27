@@ -10,27 +10,25 @@
 #include <Wt/Http/Request.h>
 #include <Wt/Http/Response.h>
 #include "PdfResource.h"
+#include "datastore/ProblemStore.h"
 
 using namespace Wt;
 
-PdfResource::PdfResource(DBModel *dbmodel) : dbmodel_(dbmodel) {
+PdfResource::PdfResource(ProblemStore *problemStore) : problemStore_(problemStore) {
 
 }
 
-void PdfResource::setProblem(dbo::ptr<Problem> problemData) {
-	problemData_ = problemData;
+void PdfResource::setProblem(long long id) {
+	id_ = id;
 }
 
 void PdfResource::handleRequest(const Wt::Http::Request& request, Wt::Http::Response& response) {
 
-	Dbo::Transaction transaction = dbmodel_->startTransaction();
-	dbo::ptr<Description> desc = problemData_->description;
-
 	response.setMimeType("application/pdf");
-	response.addHeader("Content-Disposition","attachment; filename=\"" + std::to_string(problemData_.id()) + ".pdf\"");
-	response.setContentLength(desc->pdfdata.value().size());
+	response.addHeader("Content-Disposition","attachment; filename=\"" + std::to_string(id_) + ".pdf\"");
+	response.setContentLength(problemStore_->getPdfDescription(id_).size());
 
-	for(const auto &i: desc->pdfdata.value()) {
+	for(const auto &i: problemStore_->getPdfDescription(id_)) {
 		response.out() << i;
 	}
 }

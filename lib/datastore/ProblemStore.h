@@ -26,15 +26,20 @@ struct ProblemData {
 
 class ProblemStore {
 public:
-ProblemStore(DBModel *dbModel);
+ProblemStore(DBModel *dbmodel);
 const std::map<long long,ProblemData>& getProblems();
-const ProblemData& getProblem(long long id);
+const std::optional<ProblemData> getProblemByRow(long long row);
+const std::optional<ProblemData> getProblemById(long long id);
 void addProblem(long long id, std::string title, const Wt::WModelIndex& parent);
 void setCategories(long long id, const std::set<int>& categories);
 const std::set<int> getCategories(long long id);
+void updateHtmlDescription(long long id, std::string content);
+void updatePdfDescription(long long id, std::vector<unsigned char> content);
+std::string getHtmlDescription(long long id);
+std::vector<unsigned char> getPdfDescription(long long id);
 
 private:
-DBModel *dbModel_;
+DBModel *dbmodel_;
 std::map<long long,ProblemData> problemData_;
 std::map<long long,long long> problemDataIndex_;
 };

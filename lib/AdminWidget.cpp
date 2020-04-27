@@ -25,6 +25,7 @@
 #include <Wt/Mail/Message.h>
 #include "dbmodel/DBModel.h"
 #include "datastore/SettingStore.h"
+#include "datastore/ProblemStore.h"
 #include "widgets/OJColorPicker.h"
 #include "AdminWidget.h"
 
@@ -63,7 +64,7 @@ void AdminWidget::login(Auth::Login& login) {
 		mainMenu->setWidth(200);
 		auto settingsMenu = cpp14::make_unique<WMenu>(mainStack);
 
-		auto adminProblemWidget = cpp14::make_unique<AdminProblemWidget>(viewModels_,dbmodel_);
+		auto adminProblemWidget = cpp14::make_unique<AdminProblemWidget>(viewModels_,dataStore_->getProblemStore());
 		loginSignal().connect(adminProblemWidget.get(),&AdminProblemWidget::login);
 		logoutSignal().connect(adminProblemWidget.get(),&AdminProblemWidget::logout);
 		mainMenu->addItem("Problems",std::move(adminProblemWidget));
@@ -455,7 +456,7 @@ std::unique_ptr<WWidget> AdminWidget::AdminLanguageWidget::AdminActionsDelegate:
 
 }
 
-AdminWidget::AdminProblemWidget::AdminProblemWidget(ViewModels *viewModels, DBModel *dbmodel) : viewModels_(viewModels), dbmodel_(dbmodel) {
+AdminWidget::AdminProblemWidget::AdminProblemWidget(ViewModels *viewModels, ProblemStore *problemStore) : viewModels_(viewModels), problemStore_(problemStore) {
 
 	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout_->setContentsMargins(0,0,0,0);
@@ -621,7 +622,9 @@ void AdminWidget::AdminProblemWidget::addDialogDone(DialogCode code) {
 		std::string htmlFileContents(std::istreambuf_iterator<char>{htmlFile},{});
 		std::ifstream pdfFile(pdfDescription_->spoolFileName(), std::ios::binary);
 		std::vector<unsigned char> pdfFileContents(std::istreambuf_iterator<char>{pdfFile},{});
-		dbmodel_->updateDescription(std::stoi(id_->text().toUTF8()),std::optional<std::string>{htmlFileContents},std::optional<std::vector<unsigned char> >{pdfFileContents});
+		
+		problemStore_->updatePdfDescription(std::stoi(id_->text().toUTF8()),pdfFileContents);
+		problemStore_->updateHtmlDescription(std::stoi(id_->text().toUTF8()),htmlFileContents);
 	}
 
 	removeChild(addDialog_);

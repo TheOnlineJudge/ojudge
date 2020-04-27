@@ -234,11 +234,13 @@ dbo::ptr<Problem> DBModel::getProblem(long long id) {
 dbo::ptr<Problem> DBModel::addProblem(long long id, std::string title) {
 
 	dbo::Transaction t = startTransaction();
-	std::unique_ptr<Problem> problem(new Problem());
+	auto problem = std::unique_ptr<Problem>(new Problem());
 	problem->id = id;
 	problem->title = title;
+	auto problemRet = session_->add(std::move(problem));
+	problemRet.modify()->description = session_->add(std::unique_ptr<Description>(new Description()));
 
-	return session_->add(std::move(problem));
+	return problemRet;
 }
 
 void DBModel::setProblemCategories(long long id, std::set<int> categories) {
@@ -253,15 +255,22 @@ void DBModel::setProblemCategories(long long id, std::set<int> categories) {
 	}
 }
 
-void DBModel::updateDescription(long long problemId, std::optional<std::string> htmlData, std::optional<std::vector<unsigned char> > pdfData) {
+void DBModel::updateHtmlDescription(long long problemId, std::optional<std::string> content) {
 
 	dbo::Transaction t = startTransaction();
 	dbo::ptr<Problem> problem = session_->find<Problem>().where("id = ?").bind(problemId);
+	dbo::ptr<Description> description = problem->description;
 
-	dbo::ptr<Description> description = session_->add(std::unique_ptr<Description>(new Description()));
-	description.modify()->htmldata = htmlData;
-	description.modify()->pdfdata = pdfData;
-	problem.modify()->description = description;
+	description.modify()->htmldata = content;
+}
+
+void DBModel::updatePdfDescription(long long problemId, std::optional<std::vector<unsigned char> > content) {
+
+	dbo::Transaction t = startTransaction();
+	dbo::ptr<Problem> problem = session_->find<Problem>().where("id = ?").bind(problemId);
+	dbo::ptr<Description> description = problem->description;
+
+	description.modify()->pdfdata = content;
 }
 
 const Settings DBModel::getSiteSettings() {
@@ -273,6 +282,12 @@ void DBModel::updateSiteSetting(std::string settingName, std::string settingValu
 	dbo::Transaction t = startTransaction();
 	dbo::ptr<Setting> setting = session_->find<Setting>().where("settingname = ?").bind(settingName);
 	setting.modify()->settingValue = settingValue;
+}
+
+dbo::ptr<UserSettings> DBModel::getUserSettings(const Auth::User& user) {
+	dbo::Transaction t = startTransaction();
+	dbo::ptr<User> userData = session_->user(user);
+	return userData->settings;
 }
 
 Languages DBModel::getLanguages() {

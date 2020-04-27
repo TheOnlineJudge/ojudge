@@ -37,7 +37,5 @@ bool RegistrationView::validate() {
 
 void RegistrationView::registerUserDetails(Auth::User& user) {
 
-	std::cout << "DEBUG: llama a registerUserDetails" << std::endl;
-
 	session_.createUserData(user);
 }

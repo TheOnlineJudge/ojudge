@@ -229,7 +229,7 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	item->setMenu(std::move(profilePopup));
 	profileFloatMenu_ = mainFloatMenu_->addItem(std::move(item));
 
-	problemWidget_ = mainStack_->addWidget(cpp14::make_unique<ProblemWidget>(dbmodel_,viewModels_,session_));
+	problemWidget_ = mainStack_->addWidget(cpp14::make_unique<ProblemWidget>(viewModels_,dataStore_));
 	loginSignal().connect(problemWidget_,&ProblemWidget::login);
 	logoutSignal().connect(problemWidget_,&ProblemWidget::logout);
 

@@ -162,7 +162,7 @@ Wt::Signal<const Wt::WModelIndex&> deleteLanguage_;
 
 class AdminProblemWidget : public Wt::WContainerWidget {
 public:
-AdminProblemWidget(ViewModels *viewModels, DBModel *dbmodel);
+AdminProblemWidget(ViewModels *viewModels, ProblemStore *problemStore);
 void login(Wt::Auth::Login& login);
 void logout();
 
@@ -171,7 +171,7 @@ Wt::WVBoxLayout *mainLayout_;
 Wt::WTableView *tableWidget_;
 std::shared_ptr<Wt::WSortFilterProxyModel> proxyModel_;
 ViewModels *viewModels_;
-DBModel *dbmodel_;
+ProblemStore *problemStore_;
 Wt::WLineEdit *problemSelector_;
 Wt::WDialog *addDialog_;
 Wt::WLineEdit *id_;
