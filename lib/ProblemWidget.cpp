@@ -14,10 +14,11 @@
 #include "ProblemWidget.h"
 #include "PdfResource.h"
 #include "widgets/OJProblemViewerWidget.h"
+#include "datastore/UserStore.h"
 
 using namespace Wt;
 
-ProblemWidget::ProblemWidget(DBModel *dbmodel, ViewModels *viewModels, Session *session) : dbmodel_(dbmodel),viewModels_(viewModels),session_(session) {
+ProblemWidget::ProblemWidget(ViewModels *viewModels, DataStore *dataStore) : viewModels_(viewModels), dataStore_(dataStore) {
 
 	auto mainLayout = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout->setContentsMargins(0,0,0,0);
@@ -30,16 +31,16 @@ ProblemWidget::ProblemWidget(DBModel *dbmodel, ViewModels *viewModels, Session *
 	auto menuLayout = mainWidget->setLayout(cpp14::make_unique<WHBoxLayout>());
 	menuLayout->setContentsMargins(0,0,0,0);
 
-	descriptionWidget_ = menuLayout->addWidget(cpp14::make_unique<ProblemDescriptionWidget>(dbmodel_,viewModels_),1);
+	descriptionWidget_ = menuLayout->addWidget(cpp14::make_unique<ProblemDescriptionWidget>(viewModels_,dataStore_),1);
 	loginSignal().connect(descriptionWidget_,&ProblemDescriptionWidget::login);
 	logoutSignal().connect(descriptionWidget_,&ProblemDescriptionWidget::logout);
 
-	menuWidget_ = menuLayout->addWidget(cpp14::make_unique<ProblemSidemenuWidget>(dbmodel_,viewModels_),0);
+	menuWidget_ = menuLayout->addWidget(cpp14::make_unique<ProblemSidemenuWidget>(viewModels_,dataStore_),0);
 	loginSignal().connect(menuWidget_,&ProblemSidemenuWidget::login);
 	logoutSignal().connect(menuWidget_,&ProblemSidemenuWidget::logout);
 	menuWidget_->setWidth(350);
 
-	statisticsDialog_ = addChild(cpp14::make_unique<ProblemStatisticsDialog>(dbmodel_,viewModels_));
+	statisticsDialog_ = addChild(cpp14::make_unique<ProblemStatisticsDialog>(viewModels_,dataStore_));
 	loginSignal().connect(statisticsDialog_,&ProblemStatisticsDialog::login);
 	logoutSignal().connect(statisticsDialog_,&ProblemStatisticsDialog::logout);
 
@@ -67,23 +68,23 @@ void ProblemWidget::logout() {
 
 void ProblemWidget::setProblem(long long id) {
 
-	problemData_ = dbmodel_->getProblem(id);
+	problemData_ = dataStore_->getProblemStore()->getProblemById(id);
 
-	if(problemData_.get() == nullptr) {
+	if(!problemData_) {
 		pageTitle_->setText("Problem not found");
 		return;
 	}
 
-	pageTitle_->setText(std::to_string(id) + " - " + problemData_->title);
+	pageTitle_->setText(std::to_string(id) + " - " + problemData_.value().title);
 
-	descriptionWidget_->setProblem(problemData_);
-	menuWidget_->setProblem(problemData_);
+	descriptionWidget_->setProblem(id);
+	menuWidget_->setProblem(id);
 }
 
 void ProblemWidget::showSubmissionDialog() {
 
-	submissionDialog_ = addChild(cpp14::make_unique<ProblemSubmissionDialog>(dbmodel_,viewModels_,session_,login_));
-	submissionDialog_->setProblem(problemData_);
+	submissionDialog_ = addChild(cpp14::make_unique<ProblemSubmissionDialog>(viewModels_,dataStore_,login_));
+	submissionDialog_->setProblem(problemData_.value().id);
 
 	submissionDialog_->finished().connect(this,&ProblemWidget::closeSubmissionDialog);
 	submissionDialog_->show();
@@ -97,7 +98,7 @@ void ProblemWidget::closeSubmissionDialog(DialogCode code) {
 	case DialogCode::Rejected:
 		WStringStream strm;
 
-		strm << "sessionStorage.setItem('OJdraft" << problemData_.id() << "',";
+		strm << "sessionStorage.setItem('OJdraft" << problemData_.value().id << "',";
 		strm << "'" << Utils::base64Encode(Utils::urlEncode(submissionDialog_->code()),false) << "');";
 
 		doJavaScript(strm.str());
@@ -109,8 +110,9 @@ void ProblemWidget::closeSubmissionDialog(DialogCode code) {
 
 void ProblemWidget::showStatisticsDialog() {
 
-	statisticsDialog_ = addChild(cpp14::make_unique<ProblemStatisticsDialog>(dbmodel_,viewModels_));
-	statisticsDialog_->setProblem(problemData_);
+	statisticsDialog_ = addChild(cpp14::make_unique<ProblemStatisticsDialog>(viewModels_,dataStore_));
+	
+	statisticsDialog_->setProblem(problemData_.value().id);
 
 	statisticsDialog_->finished().connect(this,&ProblemWidget::closeStatisticsDialog);
 	statisticsDialog_->show();
@@ -121,7 +123,7 @@ void ProblemWidget::closeStatisticsDialog() {
 	removeChild(statisticsDialog_);
 }
 
-ProblemDescriptionWidget::ProblemDescriptionWidget(DBModel *dbmodel, ViewModels *viewModels) : dbmodel_(dbmodel),viewModels_(viewModels) {
+ProblemDescriptionWidget::ProblemDescriptionWidget(ViewModels *viewModels, DataStore *dataStore) : viewModels_(viewModels), dataStore_(dataStore) {
 
 	problemViewer_ = addWidget(cpp14::make_unique<OJProblemViewerWidget>());
 }
@@ -134,14 +136,12 @@ void ProblemDescriptionWidget::logout() {
 
 }
 
-void ProblemDescriptionWidget::setProblem(dbo::ptr<Problem> problemData) {
+void ProblemDescriptionWidget::setProblem(long long id) {
 
-	Dbo::Transaction transaction = dbmodel_->startTransaction();
-	dbo::ptr<Description> desc = problemData->description;
-	problemViewer_->setContent(desc->htmldata.value());
+	problemViewer_->setContent(dataStore_->getProblemStore()->getHtmlDescription(id));
 }
 
-ProblemSidemenuWidget::ProblemSidemenuWidget(DBModel *dbmodel, ViewModels *viewModels) : dbmodel_(dbmodel), viewModels_(viewModels) {
+ProblemSidemenuWidget::ProblemSidemenuWidget(ViewModels *viewModels, DataStore *dataStore) : viewModels_(viewModels), dataStore_(dataStore) {
 
 	auto mainLayout = setLayout(cpp14::make_unique<WVBoxLayout>());
 
@@ -156,7 +156,7 @@ ProblemSidemenuWidget::ProblemSidemenuWidget(DBModel *dbmodel, ViewModels *viewM
 	downloadBookmarkLayout->setContentsMargins(0,0,0,0);
 
 	downloadButton_ = downloadBookmarkLayout->addWidget(cpp14::make_unique<WPushButton>("Download PDF"),0);
-	downloadButton_->setLink(WLink(std::make_shared<PdfResource>(dbmodel_)));
+	downloadButton_->setLink(WLink(std::make_shared<PdfResource>(dataStore_->getProblemStore())));
 	downloadButton_->setIcon(WLink("images/pdf.svg"));
 
 	bookmarkButton_ = downloadBookmarkLayout->addWidget(cpp14::make_unique<WPushButton>("Bookmark problem"),0);
@@ -218,13 +218,13 @@ void ProblemSidemenuWidget::logout() {
 	rateSet_->setToolTip("You have to log in to rate a problem.");
 }
 
-void ProblemSidemenuWidget::setProblem(dbo::ptr<Problem> problemData) {
+void ProblemSidemenuWidget::setProblem(long long id) {
 
 	PdfResource *tmpPdfRes = (PdfResource*)downloadButton_->link().resource().get();
-	tmpPdfRes->setProblem(problemData);
+	tmpPdfRes->setProblem(id);
 }
 
-ProblemStatisticsDialog::ProblemStatisticsDialog(DBModel *dbmodel, ViewModels *viewModels) : dbmodel_(dbmodel), viewModels_(viewModels) {
+ProblemStatisticsDialog::ProblemStatisticsDialog(ViewModels *viewModels, DataStore *dataStore) : viewModels_(viewModels), dataStore_(dataStore) {
 	setWindowTitle("Statistics dialog");
 	setClosable(true);
 
@@ -239,12 +239,12 @@ void ProblemStatisticsDialog::logout() {
 
 }
 
-void ProblemStatisticsDialog::setProblem(dbo::ptr<Problem> problemData) {
+void ProblemStatisticsDialog::setProblem(long long id) {
 
 }
 
-ProblemSubmissionDialog::ProblemSubmissionDialog(DBModel *dbmodel, ViewModels *viewModels, Session *session, Auth::Login *login)
-	: dbmodel_(dbmodel), viewModels_(viewModels), session_(session), login_(login) {
+ProblemSubmissionDialog::ProblemSubmissionDialog(ViewModels *viewModels, DataStore *dataStore, Auth::Login *login)
+	: viewModels_(viewModels), dataStore_(dataStore), login_(login) {
 	setWindowTitle("Submit");
 	setClosable(true);
 	resize(1024,700);
@@ -253,14 +253,13 @@ ProblemSubmissionDialog::ProblemSubmissionDialog(DBModel *dbmodel, ViewModels *v
 	codeEditor_->resize(774,530);
 	codeEditor_->settingsChanged().connect(this,&ProblemSubmissionDialog::saveSettings);
 
-	Dbo::Transaction transaction = dbmodel_->startTransaction();
-	dbo::ptr<User> userData = session_->user(login_->user());
 	OJCodeEditorSettings settings;
 
-	settings.fontsize = userData->settings->editor_fontsize.value_or(16);
-	settings.indent = userData->settings->editor_indent.value_or(4);
-	settings.wrap = userData->settings->editor_wrap.value_or(true);
-	settings.theme = userData->settings->editor_theme.value_or("textmate");
+	UserStore *userStore = dataStore_->getUserStore();
+	settings.fontsize = cpp17::any_cast<int>(userStore->getUserSetting(login_->user(),"editor_fontsize"));
+	settings.indent = cpp17::any_cast<int>(userStore->getUserSetting(login_->user(),"editor_indent"));
+	settings.wrap = cpp17::any_cast<bool>(userStore->getUserSetting(login_->user(),"editor_wrap"));
+	settings.theme = cpp17::any_cast<std::string>(userStore->getUserSetting(login_->user(),"editor_theme"));
 
 	codeEditor_->setSettings(settings);
 
@@ -271,15 +270,16 @@ ProblemSubmissionDialog::ProblemSubmissionDialog(DBModel *dbmodel, ViewModels *v
 	cancel->clicked().connect(this,&WDialog::reject);
 }
 
-void ProblemSubmissionDialog::setProblem(dbo::ptr<Problem> problemData) {
+void ProblemSubmissionDialog::setProblem(long long id) {
 
-	setWindowTitle(std::to_string(problemData.id())  + " - " + problemData->title);
+	ProblemData problemData = dataStore_->getProblemStore()->getProblemById(id).value();
 
-	codeEditor_->loadCodeFromSession("OJdraft" + std::to_string(problemData.id()));
+	setWindowTitle(std::to_string(id)  + " - " + problemData.title);
+
+	codeEditor_->loadCodeFromSession("OJdraft" + std::to_string(id));
 }
 
 std::string ProblemSubmissionDialog::code() {
-
 	return codeEditor_->code();
 }
 
@@ -289,11 +289,10 @@ void ProblemSubmissionDialog::setCode(std::string code) {
 
 void ProblemSubmissionDialog::saveSettings(OJCodeEditorSettings& settings) {
 
-	Dbo::Transaction transaction = dbmodel_->startTransaction();
-	dbo::ptr<User> userData = session_->user(login_->user());
+	UserStore *userStore = dataStore_->getUserStore();
 
-	userData->settings.modify()->editor_fontsize = settings.fontsize;
-	userData->settings.modify()->editor_indent = settings.indent;
-	userData->settings.modify()->editor_wrap = settings.wrap;
-	userData->settings.modify()->editor_theme = settings.theme;
+	userStore->setUserSetting(login_->user(),"editor_fontsize",settings.fontsize);
+	userStore->setUserSetting(login_->user(),"editor_indent",settings.indent);
+	userStore->setUserSetting(login_->user(),"editor_wrap",settings.wrap);
+	userStore->setUserSetting(login_->user(),"editor_theme",settings.theme);
 }

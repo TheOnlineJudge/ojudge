@@ -22,6 +22,7 @@
 #include <Wt/WSignal.h>
 #include <boost/program_options.hpp>
 #include "viewmodels/ViewModels.h"
+#include "datastore/DataStore.h"
 #include "LoginWidget.h"
 
 namespace xmlResources {
@@ -52,7 +53,7 @@ class TutorialWidget;
 class ojudgeApp : public Wt::WApplication {
 
 public:
-ojudgeApp(const Wt::WEnvironment& env, Session *session, ViewModels *viewModels, DBModel *dbmodel);
+ojudgeApp(const Wt::WEnvironment& env, Session *session, ViewModels *viewModels, DBModel *dbmodel, DataStore *dataStore);
 void authEvent();
 ViewModels *getViewModels();
 
@@ -104,6 +105,7 @@ void logout();
 Session *session_;
 ViewModels *viewModels_;
 DBModel *dbmodel_;
+DataStore *dataStore_;
 
 };
 

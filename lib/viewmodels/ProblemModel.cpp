@@ -53,16 +53,18 @@ int ProblemModel::rowCount(const WModelIndex& parent) const {
 
 cpp17::any ProblemModel::data(const WModelIndex& index, ItemDataRole role) const {
 
+	if(!problemStore_->getProblemByRow(index.row())) return cpp17::any();
+
 	if(role == ItemDataRole::Display) {
 		switch(index.column()) {
 		case 0:
-			return problemStore_->getProblem(index.row()).id;
+			return problemStore_->getProblemByRow(index.row()).value().id;
 		case 1:
-			return problemStore_->getProblem(index.row()).title;
+			return problemStore_->getProblemByRow(index.row()).value().title;
 		case 2:
 			return index.row();
 		case 3:
-			return problemStore_->getProblem(index.row()).categories;
+			return problemStore_->getProblemByRow(index.row()).value().categories;
 		}
 	} else if(role == ItemDataRole::Decoration) {
 		if(index.column()==0) {

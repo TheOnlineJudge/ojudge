@@ -15,6 +15,7 @@
 #include "LanguageStore.h"
 #include "ProblemStore.h"
 #include "UserStore.h"
+#include "SettingStore.h"
 
 DataStore::DataStore(DBModel *dbModel) : dbModel_(dbModel) {
 
@@ -23,6 +24,7 @@ DataStore::DataStore(DBModel *dbModel) : dbModel_(dbModel) {
 	problemStore_ = new ProblemStore(dbModel_);
 	languageStore_ = new LanguageStore(dbModel_);
 	userStore_ = new UserStore(dbModel_);
+	settingStore_ = new SettingStore(dbModel_);
 
 }
 
@@ -44,4 +46,8 @@ LanguageStore *DataStore::getLanguageStore() {
 
 UserStore *DataStore::getUserStore() {
 	return userStore_;
+}
+
+SettingStore *DataStore::getSettingStore() {
+	return settingStore_;
 }

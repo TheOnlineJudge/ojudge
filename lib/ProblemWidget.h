@@ -16,9 +16,11 @@
 #include <Wt/WPushButton.h>
 #include <Wt/WLink.h>
 #include <Wt/WDialog.h>
-#include "dbmodel/DBModel.h"
 #include "widgets/OJCodeEditorWidget.h"
 #include "widgets/OJRatingSetWidget.h"
+#include "datastore/DataStore.h"
+#include "datastore/ProblemStore.h"
+#include "dbmodel/DBModel.h"
 
 class ViewModels;
 class OJProblemViewerWidget;
@@ -35,22 +37,21 @@ enum class ProblemWidgetDialog {
 
 class ProblemWidget : public Wt::WContainerWidget {
 public:
-ProblemWidget(DBModel *dbmodel,ViewModels *viewModels, Session *session);
+ProblemWidget(ViewModels *viewModels, DataStore *dataStore);
 void login(Wt::Auth::Login& login);
 void logout();
 void setProblem(long long id);
 
 private:
-DBModel *dbmodel_;
 ViewModels *viewModels_;
+DataStore *dataStore_;
+std::optional<ProblemData> problemData_;
 Wt::WText *pageTitle_;
 ProblemSidemenuWidget *menuWidget_;
 ProblemDescriptionWidget *descriptionWidget_;
 // Not for milestone 1.0.0 - ProblemDiscussionDialog *discussionDialog_;
 ProblemStatisticsDialog *statisticsDialog_;
 ProblemSubmissionDialog *submissionDialog_;
-dbo::ptr<Problem> problemData_;
-Session *session_;
 Wt::Auth::Login *login_;
 void showStatisticsDialog();
 void showSubmissionDialog();
@@ -69,30 +70,30 @@ Wt::Signal<> logoutSignal_;
 
 class ProblemDescriptionWidget : public Wt::WContainerWidget {
 public:
-ProblemDescriptionWidget(DBModel *dbmodel,ViewModels *viewModels);
+ProblemDescriptionWidget(ViewModels *viewModels, DataStore *dataStore);
 void login(Wt::Auth::Login& login);
 void logout();
-void setProblem(dbo::ptr<Problem> problemData);
+void setProblem(long long id);
 
 private:
-DBModel *dbmodel_;
 ViewModels *viewModels_;
+DataStore *dataStore_;
 OJProblemViewerWidget *problemViewer_;
 };
 
 class ProblemSidemenuWidget : public Wt::WContainerWidget {
 public:
-ProblemSidemenuWidget(DBModel *dbmodel,ViewModels *viewModels);
+ProblemSidemenuWidget(ViewModels *viewModels, DataStore *dataStore);
 void login(Wt::Auth::Login& login);
 void logout();
-void setProblem(dbo::ptr<Problem> problemData);
+void setProblem(long long id);
 Wt::Signal<ProblemWidgetDialog>& showDialog() {
 	return showDialog_;
 }
 
 private:
-DBModel *dbmodel_;
 ViewModels *viewModels_;
+DataStore *dataStore_;
 Wt::WPushButton *downloadButton_;
 Wt::WPushButton *submitButton_;
 Wt::WPushButton *bookmarkButton_;
@@ -104,29 +105,28 @@ Wt::Signal<ProblemWidgetDialog> showDialog_;
 
 class ProblemStatisticsDialog : public Wt::WDialog {
 public:
-ProblemStatisticsDialog(DBModel *dbmodel,ViewModels *viewModels);
+ProblemStatisticsDialog(ViewModels *viewModels, DataStore *dataStore);
 void login(Wt::Auth::Login& login);
 void logout();
-void setProblem(dbo::ptr<Problem> problemData);
+void setProblem(long long id);
 
 private:
-DBModel *dbmodel_;
 ViewModels *viewModels_;
+DataStore *dataStore_;
 };
 
 class ProblemSubmissionDialog : public Wt::WDialog {
 public:
-ProblemSubmissionDialog(DBModel *dbmodel, ViewModels *viewModels, Session *session, Wt::Auth::Login *login);
-void setProblem(dbo::ptr<Problem> problemData);
+ProblemSubmissionDialog(ViewModels *viewModels, DataStore *dataStore, Wt::Auth::Login *login);
+void setProblem(long long id);
 std::string code();
 void setCode(std::string code);
 
 private:
-DBModel *dbmodel_;
 ViewModels *viewModels_;
+DataStore *dataStore_;
 OJCodeEditorWidget *codeEditor_;
 Wt::Auth::Login *login_;
-Session *session_;
 void saveSettings(OJCodeEditorSettings& settings);
 };
 

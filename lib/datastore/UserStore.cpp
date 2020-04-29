@@ -44,3 +44,41 @@ const std::map<long long,UserData>& UserStore::getUsers() {
 const UserData& UserStore::getUser(long long id) {
 	return userData_.at(id);
 }
+
+cpp17::any UserStore::getUserSetting(const Auth::User& user, std::string setting) {
+	Dbo::Transaction t = dbModel_->startTransaction();
+	dbo::ptr<UserSettings> settings = dbModel_->getUserSettings(user);
+
+	if(setting == "editor_fontsize") {
+		return settings->editor_fontsize.value_or(16);
+	} else if(setting == "editor_indent") {
+		return settings->editor_indent.value_or(4);
+	} else if(setting == "editor_wrap") {
+		return settings->editor_wrap.value_or(true);
+	} else if(setting == "editor_theme") {
+		return settings->editor_theme.value_or("textmate");
+	}
+
+	return cpp17::any();
+}
+
+void UserStore::setUserSetting(const Auth::User& user, std::string setting, cpp17::any value) {
+	Dbo::Transaction t = dbModel_->startTransaction();
+	dbo::ptr<UserSettings> settings = dbModel_->getUserSettings(user);
+
+	if(setting == "editor_fontsize") {
+		settings.modify()->editor_fontsize = cpp17::any_cast<int>(value);
+		return;
+	} else if(setting == "editor_indent") {
+		settings.modify()->editor_indent = cpp17::any_cast<int>(value);
+		return;
+	} else if(setting == "editor_wrap") {
+		settings.modify()->editor_wrap = cpp17::any_cast<bool>(value);
+		return;
+	} else if(setting == "editor_theme") {
+		settings.modify()->editor_theme = cpp17::any_cast<std::string>(value);
+		return;
+	}
+
+	return;
+}

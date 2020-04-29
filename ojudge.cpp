@@ -33,7 +33,7 @@ Session *session;
 std::unique_ptr<WApplication> createApplication(const WEnvironment &env) {
 
 	ViewModels *viewModels = new ViewModels(dataStore);
-	return cpp14::make_unique<ojudgeApp>(env,session,viewModels,dbmodel);
+	return cpp14::make_unique<ojudgeApp>(env,session,viewModels,dbmodel,dataStore);
 }
 
 int main(int argc, char **argv) {

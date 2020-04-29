@@ -21,10 +21,10 @@ std::mutex setCategories_mutex;
 
 using namespace Wt;
 
-ProblemStore::ProblemStore(DBModel *dbModel) : dbModel_(dbModel) {
+ProblemStore::ProblemStore(DBModel *dbmodel) : dbmodel_(dbmodel) {
 
-	Problems problems = dbModel_->getProblems();
-	Dbo::Transaction transaction = dbModel_->startTransaction();
+	Problems problems = dbmodel_->getProblems();
+	Dbo::Transaction transaction = dbmodel_->startTransaction();
 
 	int row = 0;
 
@@ -47,15 +47,27 @@ const std::map<long long,ProblemData>& ProblemStore::getProblems() {
 	return problemData_;
 }
 
-const ProblemData& ProblemStore::getProblem(long long id) {
-	return problemData_.at(id);
+const std::optional<ProblemData> ProblemStore::getProblemByRow(long long row) {
+	if(problemData_.find(row) == problemData_.end()) {
+		return std::optional<ProblemData>();
+	} else {
+		return std::optional<ProblemData>(problemData_.at(row));
+	}
+}
+
+const std::optional<ProblemData> ProblemStore::getProblemById(long long id) {
+	if(problemDataIndex_.find(id) == problemDataIndex_.end()) {
+		return std::optional<ProblemData>();
+	} else {
+		return std::optional<ProblemData>(problemData_.at(problemDataIndex_.at(id)));
+	}
 }
 
 void ProblemStore::addProblem(long long id, std::string title, const WModelIndex& parent) {
 
 	std::lock_guard<std::mutex> guard(addProblem_mutex);
 
-	dbo::ptr<Problem> problem = dbModel_->addProblem(id,title);
+	dbo::ptr<Problem> problem = dbmodel_->addProblem(id,title);
 
 	ProblemData tmpProblemData;
 	tmpProblemData.id = id;
@@ -78,7 +90,7 @@ void ProblemStore::setCategories(long long id, const std::set<int>& categories) 
 
 	std::lock_guard<std::mutex> guard(setCategories_mutex);
 
-	dbModel_->setProblemCategories(id,categories);
+	dbmodel_->setProblemCategories(id,categories);
 
 	std::string tmpStr;
 	for(auto tmpCat: categories) {
@@ -92,4 +104,28 @@ void ProblemStore::setCategories(long long id, const std::set<int>& categories) 
 const std::set<int> ProblemStore::getCategories(long long id) {
 
 	return problemData_[problemDataIndex_.at(id)].categoriesSet;
+}
+
+void ProblemStore::updateHtmlDescription(long long id, std::string content) {
+
+	dbmodel_->updateHtmlDescription(id, std::optional<std::string>(content));
+}
+
+void ProblemStore::updatePdfDescription(long long id, std::vector<unsigned char> content) {
+
+	dbmodel_->updatePdfDescription(id, std::optional<std::vector<unsigned char> >(content));
+}
+
+std::string ProblemStore::getHtmlDescription(long long id) {
+
+        Dbo::Transaction transaction = dbmodel_->startTransaction();
+        dbo::ptr<Description> desc = dbmodel_->getProblem(id)->description;
+        return desc->htmldata.value_or("");
+}
+
+std::vector<unsigned char> ProblemStore::getPdfDescription(long long id) {
+
+	Dbo::Transaction transaction = dbmodel_->startTransaction();
+	dbo::ptr<Description> desc = dbmodel_->getProblem(id)->description;
+	return desc->pdfdata.value_or(std::vector<unsigned char>());
 }

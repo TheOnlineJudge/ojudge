@@ -30,6 +30,7 @@
 #include <Wt/WAbstractItemModel.h>
 #include "../version.h"
 #include "dbmodel/DBModel.h"
+#include "datastore/SettingStore.h"
 #include "AboutWidget.h"
 #include "AdminWidget.h"
 #include "ContactWidget.h"
@@ -54,19 +55,19 @@
 using namespace Wt;
 namespace po = boost::program_options;
 
-ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *viewModels, DBModel *dbmodel) : WApplication(env), session_(session), viewModels_(viewModels), dbmodel_(dbmodel) {
+ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *viewModels, DBModel *dbmodel, DataStore *dataStore) : WApplication(env), session_(session), viewModels_(viewModels), dbmodel_(dbmodel), dataStore_(dataStore) {
 
 	enableUpdates(true);
 
-	if(dbmodel_->getSiteSetting("googleanalytics") != "") {
+	if(dataStore_->getSettingStore()->getSetting("googleanalytics") != "") {
 		googleAnalytics_ = true;
-		googleAnalyticsId_ = dbmodel_->getSiteSetting("googleanalytics");
+		googleAnalyticsId_ = dataStore_->getSettingStore()->getSetting("googleanalytics");
 		require(std::string("https://www.googletagmanager.com/gtag/js?id=") + googleAnalyticsId_ );
 	}
 
 
-	setTitle(WString(dbmodel_->getSiteSetting("sitetitle")));
-	instance()->styleSheet().addRule(":root", std::string("--ojcolor: ") + dbmodel_->getSiteSetting("sitecolor"));
+	setTitle(WString(dataStore_->getSettingStore()->getSetting("sitetitle")));
+	instance()->styleSheet().addRule(":root", std::string("--ojcolor: ") + dataStore_->getSettingStore()->getSetting("sitecolor"));
 	useStyleSheet("css/ojudge.css");
 	useStyleSheet("css/oj-problem-viewer.css");
 	setLoadingIndicator(cpp14::make_unique<WOverlayLoadingIndicator>());
@@ -114,20 +115,20 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	mainStack_->addStyleClass("center");
 	mainStack_->addStyleClass("oj-maincontent");
 
-	auto footerWidget = stackContainer->addWidget(std::move(cpp14::make_unique<FooterWidget>(dbmodel_)));
+	auto footerWidget = stackContainer->addWidget(std::move(cpp14::make_unique<FooterWidget>(dataStore_->getSettingStore())));
 	loginSignal().connect(footerWidget,&FooterWidget::login);
 	logoutSignal().connect(footerWidget,&FooterWidget::logout);
 	footerWidget->addStyleClass("center");
 
-	auto logo = cpp14::make_unique<WImage>(dbmodel_->getSiteSetting("sitelogo"));
+	auto logo = cpp14::make_unique<WImage>(dataStore_->getSettingStore()->getSetting("sitelogo"));
 	logo->setHeight(WLength(90));
 	navigationBar->addWidget(std::move(logo));
 
-	auto title = cpp14::make_unique<WText>(dbmodel_->getSiteSetting("sitetitle"));
+	auto title = cpp14::make_unique<WText>(dataStore_->getSettingStore()->getSetting("sitetitle"));
 	title->addStyleClass("oj-title");
 	navigationBar->addWidget(std::move(title));
 
-	auto floattitle = cpp14::make_unique<WText>(dbmodel_->getSiteSetting("sitetitle"));
+	auto floattitle = cpp14::make_unique<WText>(dataStore_->getSettingStore()->getSetting("sitetitle"));
 	floattitle->addStyleClass("oj-float-title");
 	floattitle->setHeight(WLength(50));
 	floatNavBar_->addWidget(std::move(floattitle));
@@ -228,7 +229,7 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	item->setMenu(std::move(profilePopup));
 	profileFloatMenu_ = mainFloatMenu_->addItem(std::move(item));
 
-	problemWidget_ = mainStack_->addWidget(cpp14::make_unique<ProblemWidget>(dbmodel_,viewModels_,session_));
+	problemWidget_ = mainStack_->addWidget(cpp14::make_unique<ProblemWidget>(viewModels_,dataStore_));
 	loginSignal().connect(problemWidget_,&ProblemWidget::login);
 	logoutSignal().connect(problemWidget_,&ProblemWidget::logout);
 
@@ -236,7 +237,7 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	loginSignal().connect(aboutWidget_,&AboutWidget::login);
 	logoutSignal().connect(aboutWidget_,&AboutWidget::logout);
 
-	adminWidget_ = mainStack_->addWidget(cpp14::make_unique<AdminWidget>(session_,viewModels_,dbmodel_));
+	adminWidget_ = mainStack_->addWidget(cpp14::make_unique<AdminWidget>(session_,viewModels_,dbmodel_,dataStore_));
 	loginSignal().connect(adminWidget_,&AdminWidget::login);
 	logoutSignal().connect(adminWidget_,&AdminWidget::logout);
 
@@ -256,7 +257,7 @@ ojudgeApp::ojudgeApp(const WEnvironment& env, Session *session, ViewModels *view
 	loginSignal().connect(languagesWidget_,&LanguagesWidget::login);
 	logoutSignal().connect(languagesWidget_,&LanguagesWidget::logout);
 
-	profileWidget_ = mainStack_->addWidget(cpp14::make_unique<ProfileWidget>(session_,dbmodel_,viewModels_->getCountryModel(),loginWidget_->authWidget()));
+	profileWidget_ = mainStack_->addWidget(cpp14::make_unique<ProfileWidget>(session_,dbmodel_,dataStore_,viewModels_->getCountryModel(),loginWidget_->authWidget()));
 	loginSignal().connect(profileWidget_,&ProfileWidget::login);
 	logoutSignal().connect(profileWidget_,&ProfileWidget::logout);
 

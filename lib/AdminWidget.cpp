@@ -24,12 +24,14 @@
 #include <Wt/Mail/Client.h>
 #include <Wt/Mail/Message.h>
 #include "dbmodel/DBModel.h"
+#include "datastore/SettingStore.h"
+#include "datastore/ProblemStore.h"
 #include "widgets/OJColorPicker.h"
 #include "AdminWidget.h"
 
 using namespace Wt;
 
-AdminWidget::AdminWidget(Session *session,ViewModels *viewModels,DBModel *dbmodel) : session_(session),viewModels_(viewModels),dbmodel_(dbmodel) {
+AdminWidget::AdminWidget(Session *session,ViewModels *viewModels,DBModel *dbmodel,DataStore *dataStore) : session_(session),viewModels_(viewModels),dbmodel_(dbmodel),dataStore_(dataStore) {
 
 	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout_->setContentsMargins(0,0,0,0);
@@ -62,7 +64,7 @@ void AdminWidget::login(Auth::Login& login) {
 		mainMenu->setWidth(200);
 		auto settingsMenu = cpp14::make_unique<WMenu>(mainStack);
 
-		auto adminProblemWidget = cpp14::make_unique<AdminProblemWidget>(viewModels_,dbmodel_);
+		auto adminProblemWidget = cpp14::make_unique<AdminProblemWidget>(viewModels_,dataStore_->getProblemStore());
 		loginSignal().connect(adminProblemWidget.get(),&AdminProblemWidget::login);
 		logoutSignal().connect(adminProblemWidget.get(),&AdminProblemWidget::logout);
 		mainMenu->addItem("Problems",std::move(adminProblemWidget));
@@ -82,12 +84,12 @@ void AdminWidget::login(Auth::Login& login) {
 		logoutSignal().connect(adminUserWidget.get(),&AdminUserWidget::logout);
 		mainMenu->addItem("Users",std::move(adminUserWidget));
 
-		auto adminLanguageWidget = cpp14::make_unique<AdminLanguageWidget>(viewModels_,dbmodel_);
+		auto adminLanguageWidget = cpp14::make_unique<AdminLanguageWidget>(viewModels_);
 		loginSignal().connect(adminLanguageWidget.get(),&AdminLanguageWidget::login);
 		logoutSignal().connect(adminLanguageWidget.get(),&AdminLanguageWidget::logout);
 		mainMenu->addItem("Languages",std::move(adminLanguageWidget));
 
-		auto generalSettingsWidget = cpp14::make_unique<AdminGeneralSettingsWidget>(dbmodel_);
+		auto generalSettingsWidget = cpp14::make_unique<AdminGeneralSettingsWidget>(dataStore_);
 		loginSignal().connect(generalSettingsWidget.get(),&AdminGeneralSettingsWidget::login);
 		logoutSignal().connect(generalSettingsWidget.get(),&AdminGeneralSettingsWidget::logout);
 		auto mailSettingsWidget = cpp14::make_unique<AdminMailSettingsWidget>();
@@ -326,7 +328,7 @@ void AdminWidget::AdminContestWidget::logout() {
 
 }
 
-AdminWidget::AdminLanguageWidget::AdminLanguageWidget(ViewModels *viewModels, DBModel *dbmodel) : viewModels_(viewModels), dbmodel_(dbmodel) {
+AdminWidget::AdminLanguageWidget::AdminLanguageWidget(ViewModels *viewModels) : viewModels_(viewModels) {
 
 	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout_->setContentsMargins(0,0,0,0);
@@ -454,7 +456,7 @@ std::unique_ptr<WWidget> AdminWidget::AdminLanguageWidget::AdminActionsDelegate:
 
 }
 
-AdminWidget::AdminProblemWidget::AdminProblemWidget(ViewModels *viewModels, DBModel *dbmodel) : viewModels_(viewModels), dbmodel_(dbmodel) {
+AdminWidget::AdminProblemWidget::AdminProblemWidget(ViewModels *viewModels, ProblemStore *problemStore) : viewModels_(viewModels), problemStore_(problemStore) {
 
 	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout_->setContentsMargins(0,0,0,0);
@@ -620,7 +622,9 @@ void AdminWidget::AdminProblemWidget::addDialogDone(DialogCode code) {
 		std::string htmlFileContents(std::istreambuf_iterator<char>{htmlFile},{});
 		std::ifstream pdfFile(pdfDescription_->spoolFileName(), std::ios::binary);
 		std::vector<unsigned char> pdfFileContents(std::istreambuf_iterator<char>{pdfFile},{});
-		dbmodel_->updateDescription(std::stoi(id_->text().toUTF8()),std::optional<std::string>{htmlFileContents},std::optional<std::vector<unsigned char> >{pdfFileContents});
+		
+		problemStore_->updatePdfDescription(std::stoi(id_->text().toUTF8()),pdfFileContents);
+		problemStore_->updateHtmlDescription(std::stoi(id_->text().toUTF8()),htmlFileContents);
 	}
 
 	removeChild(addDialog_);
@@ -676,7 +680,7 @@ std::unique_ptr<WWidget> AdminWidget::AdminProblemWidget::AdminActionsDelegate::
 
 }
 
-AdminWidget::AdminGeneralSettingsWidget::AdminGeneralSettingsWidget(DBModel *dbmodel) : dbmodel_(dbmodel) {
+AdminWidget::AdminGeneralSettingsWidget::AdminGeneralSettingsWidget(DataStore *dataStore) : dataStore_(dataStore) {
 
 	setTemplateText(WString::tr("admin-settings-general"));
 
@@ -731,10 +735,10 @@ void AdminWidget::AdminGeneralSettingsWidget::logout() {
 
 void AdminWidget::AdminGeneralSettingsWidget::reset() {
 
-	siteTitle_->setText(dbmodel_->getSiteSetting("sitetitle"));
-	siteLogo_->setText(dbmodel_->getSiteSetting("sitelogo"));
-	siteColor_->setColor(WColor(dbmodel_->getSiteSetting("sitecolor")));
-	googleAnalytics_->setText(dbmodel_->getSiteSetting("googleanalytics"));
+	siteTitle_->setText(dataStore_->getSettingStore()->getSetting("sitetitle"));
+	siteLogo_->setText(dataStore_->getSettingStore()->getSetting("sitelogo"));
+	siteColor_->setColor(WColor(dataStore_->getSettingStore()->getSetting("sitecolor")));
+	googleAnalytics_->setText(dataStore_->getSettingStore()->getSetting("googleanalytics"));
 
 	siteTitleChanged_ = false;
 	siteLogoChanged_ = false;
@@ -782,10 +786,10 @@ void AdminWidget::AdminGeneralSettingsWidget::applyClicked() {
 		switch(button) {
 		case StandardButton::Yes:
 			{
-			        if(siteTitleChanged_) dbmodel_->updateSiteSetting("sitetitle", siteTitle_->text().toUTF8());
-			        if(siteLogoChanged_) dbmodel_->updateSiteSetting("sitelogo", siteLogo_->text().toUTF8());
-			        if(siteColorChanged_) dbmodel_->updateSiteSetting("sitecolor",siteColor_->color().cssText());
-			        if(googleAnalyticsChanged_) dbmodel_->updateSiteSetting("googleanalytics",googleAnalytics_->text().toUTF8());
+			        if(siteTitleChanged_) dataStore_->getSettingStore()->setSetting("sitetitle", siteTitle_->text().toUTF8());
+			        if(siteLogoChanged_) dataStore_->getSettingStore()->setSetting("sitelogo", siteLogo_->text().toUTF8());
+			        if(siteColorChanged_) dataStore_->getSettingStore()->setSetting("sitecolor",siteColor_->color().cssText());
+			        if(googleAnalyticsChanged_) dataStore_->getSettingStore()->setSetting("googleanalytics",googleAnalytics_->text().toUTF8());
 			}
 			break;
 		case StandardButton::No:

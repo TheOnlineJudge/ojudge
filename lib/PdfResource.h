@@ -11,16 +11,16 @@
 #define PDFRESOURCE_H
 
 #include <Wt/WMemoryResource.h>
-#include "dbmodel/DBModel.h"
+#include "datastore/DataStore.h"
 
 class PdfResource : public Wt::WMemoryResource {
 public:
-PdfResource(DBModel *dbmodel);
-void setProblem(dbo::ptr<Problem> problemData);
+PdfResource(ProblemStore *problemStore);
+void setProblem(long long id);
 
 private:
-DBModel *dbmodel_;
-dbo::ptr<Problem> problemData_;
+long long id_;
+ProblemStore *problemStore_;
 virtual void handleRequest(const Wt::Http::Request& request, Wt::Http::Response& response) override;
 };
 

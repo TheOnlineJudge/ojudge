@@ -575,10 +575,13 @@ Users getUsers();
 dbo::ptr<Problem> getProblem(long long id);
 dbo::ptr<Problem> addProblem(long long id, std::string title);
 void setProblemCategories(long long id, std::set<int> categories);
-void updateDescription(long long problemId, std::optional<std::string> htmlData, std::optional<std::vector<unsigned char> > pdfData);
+void updateHtmlDescription(long long problemId, std::optional<std::string> content);
+void updatePdfDescription(long long problemId, std::optional<std::vector<unsigned char> > content);
 
-std::string getSiteSetting(std::string settingName);
+const Settings getSiteSettings();
 void updateSiteSetting(std::string settingName, std::string settingValue);
+
+dbo::ptr<UserSettings> getUserSettings(const Auth::User& user);
 
 Languages getLanguages();
 
