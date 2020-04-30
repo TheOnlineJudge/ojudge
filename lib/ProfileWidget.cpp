@@ -31,14 +31,15 @@
 #include "external/QrCode.h"
 #include "viewmodels/CountryModel.h"
 #include "datastore/SettingStore.h"
+#include "datastore/UserStore.h"
 #include "ProfileWidget.h"
 
 using namespace Wt;
 using namespace Magick;
 using random_bytes_engine = std::independent_bits_engine<std::default_random_engine, CHAR_BIT, unsigned char>;
 
-ProfileWidget::ProfileWidget(Session *session, DBModel *dbmodel, DataStore *dataStore, const std::shared_ptr<CountryModel> countrymodel, AuthWidget* authWidget) :
-	session_(session), dbmodel_(dbmodel), dataStore_(dataStore), countrymodel_(countrymodel), authWidget_(authWidget) {
+ProfileWidget::ProfileWidget(DataStore *dataStore, const std::shared_ptr<CountryModel> countrymodel, AuthWidget* authWidget) :
+	dataStore_(dataStore), countrymodel_(countrymodel), authWidget_(authWidget) {
 
 	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout_->setContentsMargins(0,0,0,0);
@@ -65,17 +66,17 @@ void ProfileWidget::login(Auth::Login& login) {
 	menuWidget->addStyleClass("flex-column");
 	menuWidget->setWidth(200);
 
-	auto accountWidget = cpp14::make_unique<AccountWidget>(session_,dbmodel_,countrymodel_);
+	auto accountWidget = cpp14::make_unique<AccountWidget>(dataStore_->getUserStore(),countrymodel_);
 	loginSignal().connect(accountWidget.get(),&AccountWidget::login);
 	logoutSignal().connect(accountWidget.get(),&AccountWidget::logout);
 	auto accountItem = menuWidget->addItem("Account",std::move(accountWidget));
 
-	auto securityWidget = cpp14::make_unique<SecurityWidget>(session_,dbmodel_,dataStore_,authWidget_);
+	auto securityWidget = cpp14::make_unique<SecurityWidget>(dataStore_,authWidget_);
 	loginSignal().connect(securityWidget.get(),&SecurityWidget::login);
 	logoutSignal().connect(securityWidget.get(),&SecurityWidget::logout);
 	auto securityItem = menuWidget->addItem("Security",std::move(securityWidget));
 
-	auto notificationsWidget = cpp14::make_unique<NotificationsWidget>(session_,dbmodel_);
+	auto notificationsWidget = cpp14::make_unique<NotificationsWidget>(dataStore_->getUserStore());
 	loginSignal().connect(notificationsWidget.get(),&NotificationsWidget::login);
 	logoutSignal().connect(notificationsWidget.get(),&NotificationsWidget::logout);
 	auto notificationsItem = menuWidget->addItem("Notifications",std::move(notificationsWidget));
@@ -91,7 +92,7 @@ void ProfileWidget::logout() {
 	logoutSignal().emit();
 }
 
-ProfileWidget::AccountWidget::AccountWidget(Session *session, DBModel *dbmodel, const std::shared_ptr<CountryModel> countrymodel) : session_(session), dbmodel_(dbmodel), countrymodel_(countrymodel) {
+ProfileWidget::AccountWidget::AccountWidget(UserStore *userStore, const std::shared_ptr<CountryModel> countrymodel) : userStore_(userStore), countrymodel_(countrymodel) {
 
 	setTemplateText(WString::tr("settings-account"));
 
@@ -139,9 +140,7 @@ ProfileWidget::AccountWidget::AccountWidget(Session *session, DBModel *dbmodel, 
 		} else {
 		        avatarUpload_->addStyleClass("hidden");
 		}
-		Dbo::Transaction transaction = dbmodel_->startTransaction();
-		dbo::ptr<User> userData = session_->user(login_->user());
-		avatarImage_->setImageLink(dbmodel_->avatarLink(userData,(AvatarType)avatarGroup->checkedId()));
+		avatarImage_->setImageLink(userStore_->getAvatarLink(std::stoll(login_->user().id()),(AvatarType)avatarGroup->checkedId()));
 	});
 	avatarGroup_ = avatarGroup.get();
 
@@ -225,35 +224,34 @@ void ProfileWidget::AccountWidget::logout() {
 
 void ProfileWidget::AccountWidget::reset() {
 
-	Dbo::Transaction transaction = dbmodel_->startTransaction();
-	dbo::ptr<User> userData = session_->user(login_->user());
+	UserData userData = userStore_->getUserById(std::stoll(login_->user().id()));
 
-	avatarGroup_->button((int)userData->avatar->avatarType)->setChecked();
-	avatarImage_->setImageLink(dbmodel_->avatarLink(userData,userData->avatar->avatarType));
-	if((AvatarType)userData->avatar->avatarType == AvatarType::Custom) {
+	avatarGroup_->button((int)userData.avatarType)->setChecked();
+	avatarImage_->setImageLink(userStore_->getAvatarLink(userData.id));
+	if(userData.avatarType == AvatarType::Custom) {
 		avatarUpload_->removeStyleClass("hidden");
 	} else {
 		avatarUpload_->addStyleClass("hidden");
 	}
 	avatarChanged_ = false;
 	customAvatarChanged_ = false;
-	username_->setText(login_->user().identity("loginname"));
-	email_->setText(login_->user().email());
+	username_->setText(userData.username);
+	email_->setText(userData.email);
 	emailChanged_ = false;
 	telegramUsername_->setText("@Temp");
 	telegramUsernameChanged_ = false;
-	firstname_->setText(userData->firstName.value_or(""));
+	firstname_->setText(userData.firstname);
 	firstnameChanged_ = false;
-	lastname_->setText(userData->lastName.value_or(""));
+	lastname_->setText(userData.lastname);
 	lastnameChanged_ = false;
-	birthday_->setDate(userData->birthday.value_or(WDate()));
+	birthday_->setDate(userData.birthday);
 	birthdayChanged_ = false;
-	country_->setCurrentIndex(countrymodel_->match(countrymodel_->index(0,0),CountryModel::CountryCodeRole,userData->country.value_or("00"),1,MatchFlag::Exactly|MatchFlag::Wrap).at(0).row());
+	country_->setCurrentIndex(countrymodel_->match(countrymodel_->index(0,0),CountryModel::CountryCodeRole,userData.country,1,MatchFlag::Exactly|MatchFlag::Wrap).at(0).row());
 	countryFlag_->setImageLink(cpp17::any_cast<std::string>(countrymodel_->data(countrymodel_->index(country_->currentIndex(),0),ItemDataRole::Decoration)));
 	countryChanged_ = false;
-	institution_->setText(userData->institution.value_or(""));
+	institution_->setText(userData.institution);
 	institutionChanged_ = false;
-	uvaid_->setText(userData->uvaID.value_or("none"));
+	uvaid_->setText(userData.uvaID);
 }
 
 void ProfileWidget::AccountWidget::resetClicked() {
@@ -306,25 +304,22 @@ void ProfileWidget::AccountWidget::applyClicked() {
 		switch(button) {
 		case StandardButton::Yes:
 			{
-			        Dbo::Transaction transaction = dbmodel_->startTransaction();
-			        dbo::ptr<User> userData = session_->user(login_->user());
 			        if(avatarChanged_) {
 			                if((AvatarType)avatarGroup_->checkedId() != AvatarType::Custom) {
-			                        userData->avatar.modify()->avatarType = (AvatarType)avatarGroup_->checkedId();
+						userStore_->setUserSetting(login_->user(),UserSettingType::AvatarType,(AvatarType)avatarGroup_->checkedId());
 					} else if((AvatarType)avatarGroup_->checkedId() == AvatarType::Custom && customAvatarChanged_) {
-			                        Dbo::ptr<UserAvatar> avatar = userData->avatar;
-			                        avatar.modify()->avatarType = (AvatarType)avatarGroup_->checkedId();
-			                        avatar.modify()->avatar = customAvatar_;
+						userStore_->setUserSetting(login_->user(),UserSettingType::AvatarType,(AvatarType)avatarGroup_->checkedId());
+						userStore_->setUserSetting(login_->user(),UserSettingType::Avatar,customAvatar_);
 					}
 				}
 			        if(emailChanged_) myAuthService.verifyEmailAddress(login_->user(),email_->text().toUTF8());
 			        if(telegramUsernameChanged_);
-			        if(firstnameChanged_) userData.modify()->firstName = firstname_->text().toUTF8();
-			        if(lastnameChanged_) userData.modify()->lastName = lastname_->text().toUTF8();
-			        if(birthdayChanged_) userData.modify()->birthday = birthday_->date();
-			        if(countryChanged_) userData.modify()->country = cpp17::any_cast<std::string>(countrymodel_->data(countrymodel_->index(country_->currentIndex(),0),
-					                                                                                          CountryModel::CountryCodeRole));
-			        if(institutionChanged_) userData.modify()->institution = institution_->text().toUTF8();
+			        if(firstnameChanged_) userStore_->setUserSetting(login_->user(),UserSettingType::Firstname,firstname_->text().toUTF8());
+				if(lastnameChanged_) userStore_->setUserSetting(login_->user(),UserSettingType::Lastname,lastname_->text().toUTF8());
+			        if(birthdayChanged_) userStore_->setUserSetting(login_->user(),UserSettingType::Birthday,birthday_->date());
+				if(countryChanged_) userStore_->setUserSetting(login_->user(),UserSettingType::Country,countrymodel_->data(countrymodel_->index(country_->currentIndex(),0),
+                                                                                                                                  CountryModel::CountryCodeRole));
+				if(institutionChanged_) userStore_->setUserSetting(login_->user(),UserSettingType::Institution, institution_->text().toUTF8());
 
 			        avatarChanged_ = false;
 			        customAvatarChanged_ = false;
@@ -367,7 +362,7 @@ void ProfileWidget::AccountWidget::avatarUploaded() {
 
 }
 
-ProfileWidget::SecurityWidget::SecurityWidget(Session *session, DBModel *dbmodel, DataStore *dataStore, AuthWidget *authWidget) : session_(session), dbmodel_(dbmodel), dataStore_(dataStore), authWidget_(authWidget) {
+ProfileWidget::SecurityWidget::SecurityWidget(DataStore *dataStore, AuthWidget *authWidget) : dataStore_(dataStore), authWidget_(authWidget) {
 
 	setTemplateText(WString::tr("settings-security"));
 
@@ -384,19 +379,17 @@ ProfileWidget::SecurityWidget::SecurityWidget(Session *session, DBModel *dbmodel
 
 	twofa_ = bindWidget("twofa-setting",cpp14::make_unique<WPushButton>());
 	twofa_->clicked().connect( [=] {
-		twofaDialog_ = addChild(cpp14::make_unique<TwoFADialog>(session_,dataStore_->getSettingStore(),login_,disableTwoFA_));
+		twofaDialog_ = addChild(cpp14::make_unique<TwoFADialog>(dataStore_,login_,disableTwoFA_));
 		twofaDialog_->finished().connect(this,&ProfileWidget::SecurityWidget::TwoFADialogDone);
 		twofaDialog_->show();
 	});
-	twofaButtonReset();
 }
 
 void ProfileWidget::SecurityWidget::twofaButtonReset() {
 
-	dbo::Transaction transaction = dbmodel_->startTransaction();
-	dbo::ptr<User> userData = session_->user(session_->login().user());
+	UserStore *userStore = dataStore_->getUserStore();
 
-	if(userData->settings->twofa_enabled == true) {
+	if(cpp17::any_cast<bool>(userStore->getUserSetting(login_->user(),UserSettingType::TwoFAEnabled)) == true) {
 		twofa_->setText("Disable 2FA");
 		twofa_->removeStyleClass("btn-primary");
 		twofa_->addStyleClass("btn-default");
@@ -428,21 +421,16 @@ void ProfileWidget::SecurityWidget::TwoFADialogDone(DialogCode code) {
 			oath_done();
 
 			if(result != OATH_INVALID_OTP) {
-				dbo::Transaction transaction = dbmodel_->startTransaction();
-				dbo::ptr<User> userData = session_->user(session_->login().user());
-				dbo::ptr<UserSettings> settings = userData->settings;
-				settings.modify()->twofa_enabled = true;
-				settings.modify()->twofa_secret = secret;
+				UserStore *userStore = dataStore_->getUserStore();
+				userStore->setUserSetting(login_->user(), UserSettingType::TwoFAEnabled, true);
+				userStore->setUserSetting(login_->user(), UserSettingType::TwoFASecret, secret);
 			} else {
 				twofaDialog_->setCodeError();
 				twofaDialog_->show();
 				return;
 			}
 		} else {
-			dbo::Transaction transaction = dbmodel_->startTransaction();
-			dbo::ptr<User> userData = session_->user(session_->login().user());
-			dbo::ptr<UserSettings> settings = userData->settings;
-			std::vector<unsigned char> secret(userData->settings->twofa_secret.value());
+			std::vector<unsigned char> secret(cpp17::any_cast<std::vector<unsigned char> >(dataStore_->getUserStore()->getUserSetting(login_->user(),UserSettingType::TwoFASecret)));
 
 			auto t = time(NULL);
 			oath_init();
@@ -458,8 +446,8 @@ void ProfileWidget::SecurityWidget::TwoFADialogDone(DialogCode code) {
 			oath_done();
 
 			if(result != OATH_INVALID_OTP) {
-				settings.modify()->twofa_enabled = false;
-				settings.modify()->twofa_secret = std::vector<unsigned char>();
+				dataStore_->getUserStore()->setUserSetting(login_->user(),UserSettingType::TwoFAEnabled,false);
+				dataStore_->getUserStore()->setUserSetting(login_->user(),UserSettingType::TwoFASecret,std::vector<unsigned char>());
 			} else {
 				twofaDialog_->setCodeError();
 				twofaDialog_->show();
@@ -475,13 +463,14 @@ void ProfileWidget::SecurityWidget::TwoFADialogDone(DialogCode code) {
 void ProfileWidget::SecurityWidget::login(Auth::Login& login) {
 
 	login_ = &login;
+	twofaButtonReset();
 }
 
 void ProfileWidget::SecurityWidget::logout() {
 
 }
 
-ProfileWidget::SecurityWidget::TwoFADialog::TwoFADialog(Session *session, SettingStore *settingStore, Auth::Login *login, bool disable) : session_(session), settingStore_(settingStore), login_(login), secret_(32) {
+ProfileWidget::SecurityWidget::TwoFADialog::TwoFADialog(DataStore *dataStore, Auth::Login *login, bool disable) : dataStore_(dataStore), login_(login), secret_(32) {
 
 	setWindowTitle((disable ? "Disable" : "Enable") + std::string(" 2-Factor Authentication"));
 	setClosable(true);
@@ -501,7 +490,7 @@ ProfileWidget::SecurityWidget::TwoFADialog::TwoFADialog(Session *session, Settin
 
 		std::string qrstr;
 		qrstr += "otpauth://totp/";
-		std::string sitetitle(settingStore_->getSetting("sitetitle"));
+		std::string sitetitle(dataStore_->getSettingStore()->getSetting("sitetitle"));
 		sitetitle.erase(std::remove_if(sitetitle.begin(), sitetitle.end(), f), sitetitle.end());
 		qrstr += sitetitle;
 		qrstr += ":";
@@ -563,7 +552,7 @@ void ProfileWidget::SecurityWidget::TwoFADialog::setCodeError() {
 	authCode_->addStyleClass("has-error");
 }
 
-ProfileWidget::NotificationsWidget::NotificationsWidget(Session *session, DBModel *dbmodel) : session_(session), dbmodel_(dbmodel) {
+ProfileWidget::NotificationsWidget::NotificationsWidget(UserStore *userStore) : userStore_(userStore) {
 
 	setTemplateText(WString::tr("settings-notifications"));
 
@@ -621,19 +610,19 @@ ProfileWidget::NotificationsWidget::NotificationsWidget(Session *session, DBMode
 	});
 
 	telegramResults_ = notificationsTable->elementAt(1,3)->addWidget(cpp14::make_unique<WCheckBox>());
-	browserResults_->changed().connect( [=] {
+	telegramResults_->changed().connect( [=] {
 		telegramResultsChanged_ = true;
 	});
 	telegramContests_ = notificationsTable->elementAt(2,3)->addWidget(cpp14::make_unique<WCheckBox>());
-	browserContests_->changed().connect( [=] {
+	telegramContests_->changed().connect( [=] {
 		telegramContestsChanged_ = true;
 	});
 	telegramGeneral_ = notificationsTable->elementAt(3,3)->addWidget(cpp14::make_unique<WCheckBox>());
-	browserGeneral_->changed().connect( [=] {
+	telegramGeneral_->changed().connect( [=] {
 		telegramGeneralChanged_ = true;
 	});
 	telegramMessages_ = notificationsTable->elementAt(4,3)->addWidget(cpp14::make_unique<WCheckBox>());
-	browserGeneral_->changed().connect( [=] {
+	telegramGeneral_->changed().connect( [=] {
 		telegramMessagesChanged_ = true;
 	});
 
@@ -661,24 +650,21 @@ void ProfileWidget::NotificationsWidget::logout() {
 
 void ProfileWidget::NotificationsWidget::reset() {
 
-	Dbo::Transaction transaction = dbmodel_->startTransaction();
-	dbo::ptr<User> userData = session_->user(login_->user());
-
-	emailResults_->setCheckState(userData->settings->notifications_email_results.value_or(true) ? CheckState::Checked : CheckState::Unchecked);
-	emailContests_->setCheckState(userData->settings->notifications_email_contests.value_or(true) ? CheckState::Checked : CheckState::Unchecked);
-	emailGeneral_->setCheckState(userData->settings->notifications_email_general.value_or(true) ? CheckState::Checked : CheckState::Unchecked);
-	emailMessages_->setCheckState(userData->settings->notifications_email_general.value_or(true) ? CheckState::Checked : CheckState::Unchecked);
-
-	browserResults_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
-	browserContests_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
-	browserGeneral_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
-	browserMessages_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
-
-	telegramResults_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
-	telegramContests_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
-	telegramGeneral_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
-	telegramMessages_->setCheckState(userData->settings->notifications_browser_results.value_or(false) ? CheckState::Checked : CheckState::Unchecked);
-
+	emailResults_->setCheckState(cpp17::any_cast<bool>(userStore_->getUserSetting(login_->user(), UserSettingType::NotificationsEmailResults)) ? CheckState::Checked : CheckState::Unchecked);
+	emailContests_->setCheckState(cpp17::any_cast<bool>(userStore_->getUserSetting(login_->user(), UserSettingType::NotificationsEmailContests)) ? CheckState::Checked : CheckState::Unchecked);
+	emailGeneral_->setCheckState(cpp17::any_cast<bool>(userStore_->getUserSetting(login_->user(), UserSettingType::NotificationsEmailGeneral)) ? CheckState::Checked : CheckState::Unchecked);
+	emailMessages_->setCheckState(cpp17::any_cast<bool>(userStore_->getUserSetting(login_->user(), UserSettingType::NotificationsEmailMessages)) ? CheckState::Checked : CheckState::Unchecked);
+	
+	browserResults_->setCheckState(cpp17::any_cast<bool>(userStore_->getUserSetting(login_->user(), UserSettingType::NotificationsBrowserResults)) ? CheckState::Checked : CheckState::Unchecked);
+	browserContests_->setCheckState(cpp17::any_cast<bool>(userStore_->getUserSetting(login_->user(), UserSettingType::NotificationsBrowserContests)) ? CheckState::Checked : CheckState::Unchecked);
+	browserGeneral_->setCheckState(cpp17::any_cast<bool>(userStore_->getUserSetting(login_->user(), UserSettingType::NotificationsBrowserGeneral)) ? CheckState::Checked : CheckState::Unchecked);
+	browserMessages_->setCheckState(cpp17::any_cast<bool>(userStore_->getUserSetting(login_->user(), UserSettingType::NotificationsBrowserMessages)) ? CheckState::Checked : CheckState::Unchecked);
+	
+	telegramResults_->setCheckState(cpp17::any_cast<bool>(userStore_->getUserSetting(login_->user(), UserSettingType::NotificationsTelegramResults)) ? CheckState::Checked : CheckState::Unchecked);
+	telegramContests_->setCheckState(cpp17::any_cast<bool>(userStore_->getUserSetting(login_->user(), UserSettingType::NotificationsTelegramContests)) ? CheckState::Checked : CheckState::Unchecked);
+	telegramGeneral_->setCheckState(cpp17::any_cast<bool>(userStore_->getUserSetting(login_->user(), UserSettingType::NotificationsTelegramGeneral)) ? CheckState::Checked : CheckState::Unchecked);
+	telegramMessages_->setCheckState(cpp17::any_cast<bool>(userStore_->getUserSetting(login_->user(), UserSettingType::NotificationsTelegramMessages)) ? CheckState::Checked : CheckState::Unchecked);
+	
 	emailResultsChanged_ = false;
 	emailContestsChanged_ = false;
 	emailGeneralChanged_ = false;
@@ -718,8 +704,9 @@ void ProfileWidget::NotificationsWidget::resetClicked() {
 
 void ProfileWidget::NotificationsWidget::applyClicked() {
 
-	if(!emailResultsChanged_ && !emailContestsChanged_ && !emailGeneralChanged_ &&
-	   !browserResultsChanged_ && !browserContestsChanged_ && !browserGeneralChanged_) return;
+	if(!emailResultsChanged_ && !emailContestsChanged_ && !emailGeneralChanged_ && !emailMessagesChanged_ &&
+	   !browserResultsChanged_ && !browserContestsChanged_ && !browserGeneralChanged_ && !browserMessagesChanged_ &&
+	   !telegramResultsChanged_ && !telegramContestsChanged_ && !telegramGeneralChanged_ && !telegramMessagesChanged_) return;
 
 	WStringStream strm;
 
@@ -748,20 +735,20 @@ void ProfileWidget::NotificationsWidget::applyClicked() {
 		switch(button) {
 		case StandardButton::Yes:
 			{
-			        Dbo::Transaction transaction = dbmodel_->startTransaction();
-			        dbo::ptr<User> userData = session_->user(login_->user());
-			        if(emailResultsChanged_) userData->settings.modify()->notifications_email_results = (emailResults_->isChecked() ? true : false);
-			        if(emailContestsChanged_) userData->settings.modify()->notifications_email_contests = (emailContests_->isChecked() ? true : false);
-			        if(emailGeneralChanged_) userData->settings.modify()->notifications_email_general = (emailGeneral_->isChecked() ? true : false);
-			        if(emailMessagesChanged_) userData->settings.modify()->notifications_email_general = (emailMessages_->isChecked() ? true : false);
-			        if(browserResultsChanged_) userData->settings.modify()->notifications_browser_results = (browserResults_->isChecked() ? true : false);
-			        if(browserContestsChanged_) userData->settings.modify()->notifications_browser_contests = (browserContests_->isChecked() ? true : false);
-			        if(browserGeneralChanged_) userData->settings.modify()->notifications_browser_general = (browserGeneral_->isChecked() ? true : false);
-			        if(browserMessagesChanged_) userData->settings.modify()->notifications_browser_general = (browserMessages_->isChecked() ? true : false);
-			        if(telegramResultsChanged_) userData->settings.modify()->notifications_browser_results = (telegramResults_->isChecked() ? true : false);
-			        if(telegramContestsChanged_) userData->settings.modify()->notifications_browser_contests = (telegramContests_->isChecked() ? true : false);
-			        if(telegramGeneralChanged_) userData->settings.modify()->notifications_browser_general = (telegramGeneral_->isChecked() ? true : false);
-			        if(telegramMessagesChanged_) userData->settings.modify()->notifications_browser_general = (telegramMessages_->isChecked() ? true : false);
+				if(emailResultsChanged_) userStore_->setUserSetting(login_->user(),UserSettingType::NotificationsEmailResults,(emailResults_->isChecked() ? true : false));
+				if(emailContestsChanged_) userStore_->setUserSetting(login_->user(),UserSettingType::NotificationsEmailContests,(emailContests_->isChecked() ? true : false));
+				if(emailGeneralChanged_) userStore_->setUserSetting(login_->user(),UserSettingType::NotificationsEmailGeneral,(emailGeneral_->isChecked() ? true : false));
+				if(emailMessagesChanged_) userStore_->setUserSetting(login_->user(),UserSettingType::NotificationsEmailMessages,(emailMessages_->isChecked() ? true : false));
+
+				if(browserResultsChanged_) userStore_->setUserSetting(login_->user(),UserSettingType::NotificationsBrowserResults,(browserResults_->isChecked() ? true : false));
+				if(browserContestsChanged_) userStore_->setUserSetting(login_->user(),UserSettingType::NotificationsBrowserContests,(browserContests_->isChecked() ? true : false));
+				if(browserGeneralChanged_) userStore_->setUserSetting(login_->user(),UserSettingType::NotificationsBrowserGeneral,(browserGeneral_->isChecked() ? true : false));
+				if(browserMessagesChanged_) userStore_->setUserSetting(login_->user(),UserSettingType::NotificationsBrowserMessages,(browserMessages_->isChecked() ? true : false));
+
+				if(telegramResultsChanged_) userStore_->setUserSetting(login_->user(),UserSettingType::NotificationsTelegramResults,(telegramResults_->isChecked() ? true : false));
+				if(telegramContestsChanged_) userStore_->setUserSetting(login_->user(),UserSettingType::NotificationsTelegramContests,(telegramContests_->isChecked() ? true : false));
+				if(telegramGeneralChanged_) userStore_->setUserSetting(login_->user(),UserSettingType::NotificationsTelegramGeneral,(telegramGeneral_->isChecked() ? true : false));
+				if(telegramMessagesChanged_) userStore_->setUserSetting(login_->user(),UserSettingType::NotificationsTelegramMessages,(telegramMessages_->isChecked() ? true : false));
 
 			        emailResultsChanged_ = false;
 			        emailContestsChanged_ = false;

@@ -22,21 +22,56 @@ struct UserData {
 	std::string firstname;
 	std::string lastname;
 	std::string email;
+	WDate birthday;
+	std::string country;
+	std::string institution;
+	std::string uvaID;
 	Role role;
 	Wt::Auth::AccountStatus status;
+	AvatarType avatarType;
+};
+
+enum class UserSettingType {
+	NotificationsEmailResults,
+	NotificationsEmailContests,
+	NotificationsEmailGeneral,
+	NotificationsEmailMessages,
+	NotificationsBrowserResults,
+	NotificationsBrowserContests,
+	NotificationsBrowserGeneral,
+	NotificationsBrowserMessages,
+	NotificationsTelegramResults,
+	NotificationsTelegramContests,
+	NotificationsTelegramGeneral,
+	NotificationsTelegramMessages,
+	EditorFontsize,
+	EditorIndent,
+	EditorWrap,
+	EditorTheme,
+	AvatarType,
+	Avatar,
+	Firstname,
+	Lastname,
+	Birthday,
+	Country,
+	Institution,
+	TwoFAEnabled,
+	TwoFASecret
 };
 
 
 class UserStore {
 public:
-UserStore(DBModel *dbModel);
+UserStore(DBModel *dbmodel);
 const std::map<long long,UserData>& getUsers();
-const UserData& getUser(long long id);
-cpp17::any getUserSetting(const Auth::User& user, std::string setting);
-void setUserSetting(const Auth::User& user, std::string setting, cpp17::any value);
+const UserData& getUserByRow(long long id);
+const UserData& getUserById(long long id);
+cpp17::any getUserSetting(const Auth::User& user, UserSettingType setting);
+void setUserSetting(const Auth::User& user, UserSettingType setting, cpp17::any value);
+const std::string getAvatarLink(long long userId, AvatarType type = AvatarType::Set, int size = 128);
 
 private:
-DBModel *dbModel_;
+DBModel *dbmodel_;
 std::map<long long,UserData> userData_;
 std::map<long long,long long> userDataIndex_;
 };

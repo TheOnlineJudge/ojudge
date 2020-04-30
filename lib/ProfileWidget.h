@@ -29,13 +29,11 @@
 
 class ProfileWidget : public Wt::WContainerWidget {
 public:
-ProfileWidget(Session *session, DBModel *dbmodel, DataStore *dataStore, const std::shared_ptr<CountryModel> countrymodel, AuthWidget *authWidget);
+ProfileWidget(DataStore *dataStore, const std::shared_ptr<CountryModel> countrymodel, AuthWidget *authWidget);
 void login(Wt::Auth::Login& login);
 void logout();
 
 private:
-Session *session_;
-DBModel *dbmodel_;
 DataStore *dataStore_;
 AuthWidget *authWidget_;
 Wt::WVBoxLayout *mainLayout_;
@@ -55,13 +53,12 @@ Wt::Signal<> logoutSignal_;
 
 class AccountWidget : public Wt::WTemplate {
 public:
-AccountWidget(Session *session, DBModel *dbmodel, const std::shared_ptr<CountryModel> countrymodel);
+AccountWidget(UserStore *userStore, const std::shared_ptr<CountryModel> countrymodel);
 void login(Wt::Auth::Login& login);
 void logout();
 
 private:
-Session *session_;
-DBModel *dbmodel_;
+UserStore *userStore_;
 Wt::Auth::Login *login_;
 const std::shared_ptr<CountryModel> countrymodel_;
 void reset();
@@ -96,13 +93,11 @@ bool institutionChanged_ = false;
 
 class SecurityWidget : public Wt::WTemplate {
 public:
-SecurityWidget(Session *session, DBModel *dbmodel, DataStore *dataStore, AuthWidget *authWidget);
+SecurityWidget(DataStore *dataStore, AuthWidget *authWidget);
 void login(Wt::Auth::Login& login);
 void logout();
 
 private:
-Session *session_;
-DBModel *dbmodel_;
 DataStore *dataStore_;
 AuthWidget *authWidget_;
 Wt::Auth::Login *login_;
@@ -114,14 +109,13 @@ bool disableTwoFA_ = false;
 
 class TwoFADialog : public Wt::WDialog {
 public:
-TwoFADialog(Session *session, SettingStore *settingStore, Wt::Auth::Login *login, bool disable);
+TwoFADialog(DataStore *dataStore, Wt::Auth::Login *login, bool disable);
 std::vector<unsigned char> getSecret();
 std::string getAuthCode();
 void setCodeError();
 
 private:
-Session *session_;
-SettingStore *settingStore_;
+DataStore *dataStore_;
 Wt::Auth::Login *login_;
 Wt::WLineEdit *authCode_;
 std::vector<unsigned char> secret_;
@@ -133,13 +127,12 @@ TwoFADialog *twofaDialog_;
 
 class NotificationsWidget : public Wt::WTemplate {
 public:
-NotificationsWidget(Session *session, DBModel *dbmodel);
+NotificationsWidget(UserStore *userStore);
 void login(Wt::Auth::Login& login);
 void logout();
 
 private:
-Session *session_;
-DBModel *dbmodel_;
+UserStore *userStore_;
 Wt::Auth::Login *login_;
 void reset();
 void resetClicked();
@@ -170,5 +163,6 @@ bool telegramGeneralChanged_ = false;
 bool telegramMessagesChanged_ = false;
 };
 
+SettingStore *settingStore_;
 };
 #endif // PROFILEWIDGET_H
