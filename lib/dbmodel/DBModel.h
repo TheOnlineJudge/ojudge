@@ -45,6 +45,7 @@ enum class Role {
 };
 
 enum class AvatarType {
+	Set = -1,
 	Default = 0,
 	Gravatar = 1,
 	Custom = 2
@@ -229,9 +230,15 @@ std::optional<std::string> editor_theme;
 std::optional<bool> notifications_email_results;
 std::optional<bool> notifications_email_contests;
 std::optional<bool> notifications_email_general;
+std::optional<bool> notifications_email_messages;
 std::optional<bool> notifications_browser_results;
 std::optional<bool> notifications_browser_contests;
 std::optional<bool> notifications_browser_general;
+std::optional<bool> notifications_browser_messages;
+std::optional<bool> notifications_telegram_results;
+std::optional<bool> notifications_telegram_contests;
+std::optional<bool> notifications_telegram_general;
+std::optional<bool> notifications_telegram_messages;
 std::optional<bool> twofa_enabled;
 std::optional<std::vector<unsigned char> > twofa_secret;
 
@@ -245,9 +252,15 @@ void persist(Action& a) {
 	dbo::field(a, notifications_email_results, "notifications_email_results");
 	dbo::field(a, notifications_email_contests, "notifications_email_contests");
 	dbo::field(a, notifications_email_general, "notifications_email_general");
+	dbo::field(a, notifications_email_messages, "notifications_email_messages");
 	dbo::field(a, notifications_browser_results, "notifications_browser_results");
 	dbo::field(a, notifications_browser_contests, "notifications_browser_contests");
 	dbo::field(a, notifications_browser_general, "notifications_browser_general");
+	dbo::field(a, notifications_browser_messages, "notifications_browser_messages");
+	dbo::field(a, notifications_telegram_results, "notifications_telegram_results");
+	dbo::field(a, notifications_telegram_contests, "notifications_telegram_contests");
+	dbo::field(a, notifications_telegram_general, "notifications_telegram_general");
+	dbo::field(a, notifications_telegram_messages, "notifications_telegram_messages");
 	dbo::field(a, twofa_enabled, "twofa_enabled");
 	dbo::field(a, twofa_secret, "twofa_secret");
 }
@@ -572,6 +585,7 @@ dbo::ptr<Category> addCategory(std::string title, int parent);
 
 Problems getProblems();
 Users getUsers();
+dbo::ptr<User> getUser(long long id);
 dbo::ptr<Problem> getProblem(long long id);
 dbo::ptr<Problem> addProblem(long long id, std::string title);
 void setProblemCategories(long long id, std::set<int> categories);
@@ -584,8 +598,6 @@ void updateSiteSetting(std::string settingName, std::string settingValue);
 dbo::ptr<UserSettings> getUserSettings(const Auth::User& user);
 
 Languages getLanguages();
-
-const std::string avatarLink(dbo::ptr<User> user, const AvatarType type, int size = 128);
 
 private:
 Session* session_;

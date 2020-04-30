@@ -30,17 +30,17 @@ cpp17::any UserModel::data(const WModelIndex& index, ItemDataRole role) const {
 	if(role == ItemDataRole::Display) {
 		switch(index.column()) {
 		case 0:
-			return userStore_->getUser(index.row()).id;
+			return userStore_->getUserByRow(index.row()).id;
 		case 1:
-			return userStore_->getUser(index.row()).username;
+			return userStore_->getUserByRow(index.row()).username;
 		case 2:
-			return userStore_->getUser(index.row()).firstname + " " + userStore_->getUser(index.row()).lastname;
+			return userStore_->getUserByRow(index.row()).firstname + " " + userStore_->getUserByRow(index.row()).lastname;
 		case 3:
-			return userStore_->getUser(index.row()).email;
+			return userStore_->getUserByRow(index.row()).email;
 		case 4:
-			return (int)userStore_->getUser(index.row()).role;
+			return (int)userStore_->getUserByRow(index.row()).role;
 		case 6:
-			return (int)userStore_->getUser(index.row()).status;
+			return (int)userStore_->getUserByRow(index.row()).status;
 		}
 	} else if(role == ItemDataRole::StyleClass) {
 		if(index.column()==0) {

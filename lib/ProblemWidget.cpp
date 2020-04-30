@@ -256,10 +256,10 @@ ProblemSubmissionDialog::ProblemSubmissionDialog(ViewModels *viewModels, DataSto
 	OJCodeEditorSettings settings;
 
 	UserStore *userStore = dataStore_->getUserStore();
-	settings.fontsize = cpp17::any_cast<int>(userStore->getUserSetting(login_->user(),"editor_fontsize"));
-	settings.indent = cpp17::any_cast<int>(userStore->getUserSetting(login_->user(),"editor_indent"));
-	settings.wrap = cpp17::any_cast<bool>(userStore->getUserSetting(login_->user(),"editor_wrap"));
-	settings.theme = cpp17::any_cast<std::string>(userStore->getUserSetting(login_->user(),"editor_theme"));
+	settings.fontsize = cpp17::any_cast<int>(userStore->getUserSetting(login_->user(),UserSettingType::EditorFontsize));
+	settings.indent = cpp17::any_cast<int>(userStore->getUserSetting(login_->user(),UserSettingType::EditorIndent));
+	settings.wrap = cpp17::any_cast<bool>(userStore->getUserSetting(login_->user(),UserSettingType::EditorWrap));
+	settings.theme = cpp17::any_cast<std::string>(userStore->getUserSetting(login_->user(),UserSettingType::EditorTheme));
 
 	codeEditor_->setSettings(settings);
 
@@ -291,8 +291,8 @@ void ProblemSubmissionDialog::saveSettings(OJCodeEditorSettings& settings) {
 
 	UserStore *userStore = dataStore_->getUserStore();
 
-	userStore->setUserSetting(login_->user(),"editor_fontsize",settings.fontsize);
-	userStore->setUserSetting(login_->user(),"editor_indent",settings.indent);
-	userStore->setUserSetting(login_->user(),"editor_wrap",settings.wrap);
-	userStore->setUserSetting(login_->user(),"editor_theme",settings.theme);
+	userStore->setUserSetting(login_->user(),UserSettingType::EditorFontsize,settings.fontsize);
+	userStore->setUserSetting(login_->user(),UserSettingType::EditorIndent,settings.indent);
+	userStore->setUserSetting(login_->user(),UserSettingType::EditorWrap,settings.wrap);
+	userStore->setUserSetting(login_->user(),UserSettingType::EditorTheme,settings.theme);
 }

@@ -17,7 +17,6 @@
 #include <Wt/Utils.h>
 
 #include "DBModel.h"
-#include "../OJUtils.h"
 #include "../Joomla10HashFunction.h"
 
 void Session::configureAuth() {
@@ -225,6 +224,12 @@ Users DBModel::getUsers() {
 	return session_->find<User>().orderBy("id");
 }
 
+dbo::ptr<User> DBModel::getUser(long long id) {
+
+	dbo::Transaction t = startTransaction();
+	return session_->find<User>().where("id = ?").bind(id);
+}
+
 dbo::ptr<Problem> DBModel::getProblem(long long id) {
 
 	dbo::Transaction t = startTransaction();
@@ -294,22 +299,4 @@ Languages DBModel::getLanguages() {
 
 	dbo::Transaction t = startTransaction();
 	return session_->find<Language>();
-}
-
-const std::string DBModel::avatarLink(dbo::ptr<User> user, const AvatarType type, int size) {
-
-	switch(type) {
-	case AvatarType::Default:
-		return "https://cdn.libravatar.org/avatar/" + OJUtils::bin_to_hex(Utils::md5(OJUtils::bin_to_hex(Utils::md5(user->authInfo->email())))) + "?s=" + std::to_string(size) + "&forcedefault=y&default=identicon";
-	case AvatarType::Gravatar:
-		return "https://cdn.libravatar.org/avatar/" + OJUtils::bin_to_hex(Utils::md5(user->authInfo->email())) + "?s=" + std::to_string(size) + "&default=identicon";
-	case AvatarType::Custom:
-		dbo::Transaction t = startTransaction();
-		if(user->avatar->avatar.value_or(std::vector<unsigned char>()).size()) {
-			return "data:image/jpeg;base64,"+Utils::base64Encode(std::string(user->avatar->avatar.value().begin(),user->avatar->avatar.value().end()),false);
-		}
-		break;
-	}
-
-	return "https://www.libravatar.org/static/img/mm/" + std::to_string(size) + ".png";
 }
