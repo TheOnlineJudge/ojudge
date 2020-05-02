@@ -586,6 +586,7 @@ dbo::ptr<Category> addCategory(std::string title, int parent);
 Problems getProblems();
 Users getUsers();
 dbo::ptr<User> getUser(long long id);
+dbo::ptr<User> getUser(const Auth::User& user);
 dbo::ptr<Problem> getProblem(long long id);
 dbo::ptr<Problem> addProblem(long long id, std::string title);
 void setProblemCategories(long long id, std::set<int> categories);

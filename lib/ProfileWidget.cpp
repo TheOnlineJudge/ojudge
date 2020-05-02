@@ -92,7 +92,8 @@ void ProfileWidget::logout() {
 	logoutSignal().emit();
 }
 
-ProfileWidget::AccountWidget::AccountWidget(UserStore *userStore, const std::shared_ptr<CountryModel> countrymodel) : userStore_(userStore), countrymodel_(countrymodel) {
+ProfileWidget::AccountWidget::AccountWidget(UserStore *userStore, const std::shared_ptr<CountryModel> countrymodel) :
+				userStore_(userStore), countrymodel_(countrymodel) {
 
 	setTemplateText(WString::tr("settings-account"));
 
@@ -308,8 +309,8 @@ void ProfileWidget::AccountWidget::applyClicked() {
 			                if((AvatarType)avatarGroup_->checkedId() != AvatarType::Custom) {
 						userStore_->setUserSetting(login_->user(),UserSettingType::AvatarType,(AvatarType)avatarGroup_->checkedId());
 					} else if((AvatarType)avatarGroup_->checkedId() == AvatarType::Custom && customAvatarChanged_) {
-						userStore_->setUserSetting(login_->user(),UserSettingType::AvatarType,(AvatarType)avatarGroup_->checkedId());
 						userStore_->setUserSetting(login_->user(),UserSettingType::Avatar,customAvatar_);
+						userStore_->setUserSetting(login_->user(),UserSettingType::AvatarType,(AvatarType)avatarGroup_->checkedId());
 					}
 				}
 			        if(emailChanged_) myAuthService.verifyEmailAddress(login_->user(),email_->text().toUTF8());
@@ -362,7 +363,8 @@ void ProfileWidget::AccountWidget::avatarUploaded() {
 
 }
 
-ProfileWidget::SecurityWidget::SecurityWidget(DataStore *dataStore, AuthWidget *authWidget) : dataStore_(dataStore), authWidget_(authWidget) {
+ProfileWidget::SecurityWidget::SecurityWidget(DataStore *dataStore, AuthWidget *authWidget) :
+							dataStore_(dataStore), authWidget_(authWidget) {
 
 	setTemplateText(WString::tr("settings-security"));
 
@@ -422,8 +424,8 @@ void ProfileWidget::SecurityWidget::TwoFADialogDone(DialogCode code) {
 
 			if(result != OATH_INVALID_OTP) {
 				UserStore *userStore = dataStore_->getUserStore();
-				userStore->setUserSetting(login_->user(), UserSettingType::TwoFAEnabled, true);
 				userStore->setUserSetting(login_->user(), UserSettingType::TwoFASecret, secret);
+				userStore->setUserSetting(login_->user(), UserSettingType::TwoFAEnabled, true);
 			} else {
 				twofaDialog_->setCodeError();
 				twofaDialog_->show();
