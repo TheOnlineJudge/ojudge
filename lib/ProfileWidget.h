@@ -23,7 +23,6 @@
 #include <Wt/WDialog.h>
 #include <Wt/WFileUpload.h>
 #include "AuthWidget.h"
-#include "dbmodel/DBModel.h"
 #include "datastore/DataStore.h"
 #include "viewmodels/CountryModel.h"
 

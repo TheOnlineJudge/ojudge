@@ -230,6 +230,12 @@ dbo::ptr<User> DBModel::getUser(long long id) {
 	return session_->find<User>().where("id = ?").bind(id);
 }
 
+dbo::ptr<User> DBModel::getUser(const Auth::User& user) {
+
+	dbo::Transaction t = startTransaction();
+	return session_->user(user);
+}
+
 dbo::ptr<Problem> DBModel::getProblem(long long id) {
 
 	dbo::Transaction t = startTransaction();

@@ -16,6 +16,8 @@
 #include "UserStore.h"
 #include "../OJUtils.h"
 
+std::mutex setUserSetting_mutex;
+
 using namespace Wt;
 
 UserStore::UserStore(DBModel *dbmodel) : dbmodel_(dbmodel) {
@@ -58,8 +60,6 @@ const UserData& UserStore::getUserById(long long id) {
 
 cpp17::any UserStore::getUserSetting(const Auth::User& user, UserSettingType setting) {
 	Dbo::Transaction t = dbmodel_->startTransaction();
-
-	std::cout << "DEBUG: " << user.id() << std::endl;
 
 	dbo::ptr<User> userInDb = dbmodel_->getUser(std::stoll(user.id()));
 	dbo::ptr<UserSettings> settings = userInDb->settings;
@@ -107,6 +107,9 @@ cpp17::any UserStore::getUserSetting(const Auth::User& user, UserSettingType set
 }
 
 void UserStore::setUserSetting(const Auth::User& user, UserSettingType setting, cpp17::any value) {
+
+	std::lock_guard<std::mutex> guard(setUserSetting_mutex);
+
 	Dbo::Transaction t = dbmodel_->startTransaction();
 	dbo::ptr<User> userInDb = dbmodel_->getUser(std::stoll(user.id()));
 	dbo::ptr<UserSettings> settings = userInDb->settings;
