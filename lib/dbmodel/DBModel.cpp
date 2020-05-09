@@ -126,6 +126,7 @@ DBModel::DBModel(Session* session) : session_(session) {
 	session_->mapClass<Setting>("setting");
 	session_->mapClass<Submission>("submission");
 	session_->mapClass<Verdict>("verdict");
+	session_->mapClass<VerdictResult>("verdict_result");
 	session_->mapClass<Language>("language");
 	session_->mapClass<Contest>("contest");
 	session_->mapClass<AuthInfo>("auth_info");
@@ -158,6 +159,33 @@ DBModel::DBModel(Session* session) : session_(session) {
 				setting->settingName = i.first;
 				setting->settingValue = i.second;
 				session_->add(std::move(setting));
+			}
+
+			// Load all the possible verdicts
+			std::map<long long, std::pair<std::string, std::string> > defaultVerdicts;
+	
+			defaultVerdicts[10] = std::make_pair("Submission Error","SE");
+			defaultVerdicts[15] = std::make_pair("Can't be judged","CJ");
+			defaultVerdicts[20] = std::make_pair("In Queue","QU");
+			defaultVerdicts[30] = std::make_pair("Compilation Error","CE");
+			defaultVerdicts[35] = std::make_pair("Restricted Function","RF");
+			defaultVerdicts[40] = std::make_pair("Runtime Error","RE");
+			defaultVerdicts[45] = std::make_pair("Output Limit Exceeded","OL");
+			defaultVerdicts[50] = std::make_pair("Time Limit Exceeded","TL");
+			defaultVerdicts[60] = std::make_pair("Memory Limit Exceeded","ML");
+			defaultVerdicts[65] = std::make_pair("Broken Communication","BC");
+			defaultVerdicts[66] = std::make_pair("Protocol Violation","PV");
+			defaultVerdicts[67] = std::make_pair("Protocol Limit Exceeded","PL");
+			defaultVerdicts[70] = std::make_pair("Wrong Answer","WA");
+			defaultVerdicts[80] = std::make_pair("Presentation Error","PE");
+			defaultVerdicts[90] = std::make_pair("Accepted","AC");
+
+			for(const std::pair<long long, std::pair<std::string, std::string> > &i : defaultVerdicts) {
+				std::unique_ptr<VerdictResult> vr(new VerdictResult());
+				vr->id = i.first;
+				vr->longname = i.second.first;
+				vr->shortname = i.second.second;
+				session_->add(std::move(vr));
 			}
 
 			// Add username admin with password admin
@@ -305,4 +333,10 @@ Languages DBModel::getLanguages() {
 
 	dbo::Transaction t = startTransaction();
 	return session_->find<Language>();
+}
+
+VerdictResults DBModel::getVerdictResults() {
+
+	dbo::Transaction t = startTransaction();
+	return session_->find<VerdictResult>();
 }

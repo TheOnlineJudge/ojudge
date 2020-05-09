@@ -7,22 +7,17 @@
 * Read the LICENSE file for information on license terms
 *********************************************************************/
 
-#ifndef SETTINGSTORE_H
-#define SETTINGSTORE_H
+#ifndef SUBMISSIONSTORE_H
+#define SUBMISSIONSTORE_H
 
-#include <string>
-#include <map>
 #include "../dbmodel/DBModel.h"
 
-class SettingStore {
+class SubmissionStore {
 public:
-SettingStore(DBModel *dbModel);
-const std::string getSetting(std::string setting);
-bool setSetting(std::string setting, std::string value);
+SubmissionStore(DBModel *dbModel);
 
 private:
-DBModel *dbModel_;
-std::map<std::string,std::string> settingData_;
+DBModel *dbmodel_;
 };
 
-#endif // SETTINGSTORE_H
+#endif // SUBMISSIONSTORE_H

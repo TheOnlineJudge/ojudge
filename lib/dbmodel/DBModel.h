@@ -57,9 +57,24 @@ enum class NotificationType {
 	Message = 2
 };
 
+enum class ProblemType {
+	General = 0,
+	ContestOnly = 1,
+	Private = 2
+};
+	
+
 enum class ProblemLicense {
 	PublicDomain = 0,
-	CreativeCommons = 1
+	CreativeCommons = 1,
+	Private = 2
+};
+
+enum class SubmissionType {
+	General = 0,
+	Contest = 1,
+	VirtualContest = 2,
+	Test = 3
 };
 
 class User;
@@ -78,6 +93,7 @@ class Setting;
 class Submission;
 class Testcase;
 class Verdict;
+class VerdictResult;
 class Language;
 class Contest;
 
@@ -97,6 +113,7 @@ typedef dbo::collection< dbo::ptr<Description> > Descriptions;
 typedef dbo::collection< dbo::ptr<Testcase> > Testcases;
 typedef dbo::collection< dbo::ptr<Submission> > Submissions;
 typedef dbo::collection< dbo::ptr<Verdict> > Verdicts;
+typedef dbo::collection< dbo::ptr<VerdictResult> > VerdictResults;
 typedef dbo::collection< dbo::ptr<Setting> > Settings;
 typedef dbo::collection< dbo::ptr<Language> > Languages;
 typedef dbo::collection< dbo::ptr<Contest> > Contests;
@@ -105,6 +122,13 @@ namespace Wt {
 namespace Dbo {
 template<>
 struct dbo_traits<Problem> : public dbo_default_traits {
+	static const char *surrogateIdField() {
+		return 0;
+	}
+};
+
+template<>
+struct dbo_traits<VerdictResult> : public dbo_default_traits {
 	static const char *surrogateIdField() {
 		return 0;
 	}
@@ -351,6 +375,7 @@ WDateTime uploadedTime;
 dbo::weak_ptr<Description> description;
 int cpulimit;
 int memorylimit;
+ProblemType type;
 Categories categories;
 Testcases testcases;
 Submissions submissions;
@@ -370,6 +395,7 @@ void persist(Action& a) {
 	dbo::hasOne(a, description);
 	dbo::field(a, cpulimit, "cpulimit");
 	dbo::field(a, memorylimit, "memorylimit");
+	dbo::field(a, type, "type");
 	dbo::hasMany(a, categories, dbo::ManyToMany, "probs_cats");
 	dbo::hasMany(a, testcases, dbo::ManyToOne, "problem");
 	dbo::hasMany(a, submissions, dbo::ManyToOne, "problem");
@@ -378,6 +404,22 @@ void persist(Action& a) {
 	dbo::hasMany(a, sources, dbo::ManyToMany, "probs_sources");
 	dbo::hasMany(a, ratings, dbo::ManyToOne, "problem");
 	dbo::hasMany(a, bookmarks, dbo::ManyToOne, "problem");
+}
+};
+
+class VerdictResult {
+public:
+long long id;
+std::string longname;
+std::string shortname;
+Verdicts verdicts;
+
+template<class Action>
+void persist(Action& a) {
+	dbo::id(a, id, "id");
+	dbo::field(a, longname, "longname");
+	dbo::field(a, shortname, "shortname");
+	dbo::hasMany(a, verdicts, dbo::ManyToOne, "result");
 }
 };
 
@@ -538,26 +580,31 @@ public:
 dbo::ptr<Problem> problem;
 dbo::ptr<User> user;
 dbo::ptr<Testcase> testcase;
+SubmissionType type;
 dbo::ptr<Contest> contest;
 WDateTime datetime;
 dbo::ptr<Language> language;
 Verdicts verdicts;
+std::vector<unsigned char> code;
 
 template<class Action>
 void persist(Action& a) {
 	dbo::belongsTo(a, problem, "problem", Dbo::NotNull);
 	dbo::belongsTo(a, user, "user", Dbo::NotNull);
 	dbo::belongsTo(a, testcase, "testcase", Dbo::NotNull);
+	dbo::field(a, type, "type");
 	dbo::belongsTo(a, contest, "contest");
 	dbo::field(a, datetime, "datetime");
 	dbo::belongsTo(a, language, "language", Dbo::NotNull);
 	dbo::hasMany(a, verdicts, dbo::ManyToOne, "submission");
+	dbo::field(a, code, "code");
 }
 };
 
 class Verdict {
 public:
 dbo::ptr<Submission> submission;
+dbo::ptr<VerdictResult> verdictResult;
 WDateTime datetime;
 int cpuused;
 int memoryused;
@@ -566,6 +613,7 @@ std::optional<std::string> reason;
 template<class Action>
 void persist(Action& a) {
 	dbo::belongsTo(a, submission, "submission", Dbo::NotNull);
+	dbo::belongsTo(a, verdictResult, "result");
 	dbo::field(a, datetime, "datetime");
 	dbo::field(a, cpuused, "cpuused");
 	dbo::field(a, memoryused, "memoryused");
@@ -585,6 +633,7 @@ dbo::ptr<Category> addCategory(std::string title, int parent);
 
 Problems getProblems();
 Users getUsers();
+VerdictResults getVerdictResults();
 dbo::ptr<User> getUser(long long id);
 dbo::ptr<User> getUser(const Auth::User& user);
 dbo::ptr<Problem> getProblem(long long id);

@@ -14,8 +14,11 @@
 #include "CountryStore.h"
 #include "LanguageStore.h"
 #include "ProblemStore.h"
-#include "UserStore.h"
 #include "SettingStore.h"
+#include "StatisticsStore.h"
+#include "SubmissionStore.h"
+#include "UserStore.h"
+#include "VerdictResultStore.h"
 
 DataStore::DataStore(DBModel *dbModel) : dbModel_(dbModel) {
 
@@ -23,8 +26,11 @@ DataStore::DataStore(DBModel *dbModel) : dbModel_(dbModel) {
 	countryStore_ = new CountryStore();
 	problemStore_ = new ProblemStore(dbModel_);
 	languageStore_ = new LanguageStore(dbModel_);
-	userStore_ = new UserStore(dbModel_);
 	settingStore_ = new SettingStore(dbModel_);
+	statisticsStore_ = new StatisticsStore(dbModel_);
+	submissionStore_ = new SubmissionStore(dbModel_);
+	userStore_ = new UserStore(dbModel_);
+	verdictResultStore_ = new VerdictResultStore(dbModel_);
 
 }
 
@@ -50,4 +56,16 @@ UserStore *DataStore::getUserStore() {
 
 SettingStore *DataStore::getSettingStore() {
 	return settingStore_;
+}
+
+StatisticsStore *DataStore::getStatisticsStore() {
+	return statisticsStore_;
+}
+
+SubmissionStore *DataStore::getSubmissionStore() {
+	return submissionStore_;
+}
+
+VerdictResultStore *DataStore::getVerdictResultStore() {
+	return verdictResultStore_;
 }
