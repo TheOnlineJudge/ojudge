@@ -225,34 +225,32 @@ void ProfileWidget::AccountWidget::logout() {
 
 void ProfileWidget::AccountWidget::reset() {
 
-	UserData userData = userStore_->getUserById(std::stoll(login_->user().id()));
-
-	avatarGroup_->button((int)userData.avatarType)->setChecked();
-	avatarImage_->setImageLink(userStore_->getAvatarLink(userData.id));
-	if(userData.avatarType == AvatarType::Custom) {
+	avatarGroup_->button((int)cpp17::any_cast<AvatarType>(userStore_->getUserSetting(login_->user(),UserSettingType::AvatarType)))->setChecked();
+	avatarImage_->setImageLink(userStore_->getAvatarLink(std::stoll(login_->user().id())));
+	if(cpp17::any_cast<AvatarType>(userStore_->getUserSetting(login_->user(),UserSettingType::AvatarType)) == AvatarType::Custom) {
 		avatarUpload_->removeStyleClass("hidden");
 	} else {
 		avatarUpload_->addStyleClass("hidden");
 	}
 	avatarChanged_ = false;
 	customAvatarChanged_ = false;
-	username_->setText(userData.username);
-	email_->setText(userData.email);
+	username_->setText(cpp17::any_cast<std::string>(userStore_->getUserSetting(login_->user(),UserSettingType::Username)));
+	email_->setText(cpp17::any_cast<std::string>(userStore_->getUserSetting(login_->user(),UserSettingType::Email)));
 	emailChanged_ = false;
 	telegramUsername_->setText("@Temp");
 	telegramUsernameChanged_ = false;
-	firstname_->setText(userData.firstname);
+	firstname_->setText(cpp17::any_cast<std::string>(userStore_->getUserSetting(login_->user(),UserSettingType::Firstname)));
 	firstnameChanged_ = false;
-	lastname_->setText(userData.lastname);
+	lastname_->setText(cpp17::any_cast<std::string>(userStore_->getUserSetting(login_->user(),UserSettingType::Lastname)));
 	lastnameChanged_ = false;
-	birthday_->setDate(userData.birthday);
+	birthday_->setDate(cpp17::any_cast<WDate>(userStore_->getUserSetting(login_->user(),UserSettingType::Birthday)));
 	birthdayChanged_ = false;
-	country_->setCurrentIndex(countrymodel_->match(countrymodel_->index(0,0),CountryModel::CountryCodeRole,userData.country,1,MatchFlag::Exactly|MatchFlag::Wrap).at(0).row());
+	country_->setCurrentIndex(countrymodel_->match(countrymodel_->index(0,0),CountryModel::CountryCodeRole,cpp17::any_cast<std::string>(userStore_->getUserSetting(login_->user(),UserSettingType::Country)),1,MatchFlag::Exactly|MatchFlag::Wrap).at(0).row());
 	countryFlag_->setImageLink(cpp17::any_cast<std::string>(countrymodel_->data(countrymodel_->index(country_->currentIndex(),0),ItemDataRole::Decoration)));
 	countryChanged_ = false;
-	institution_->setText(userData.institution);
+	institution_->setText(cpp17::any_cast<std::string>(userStore_->getUserSetting(login_->user(),UserSettingType::Institution)));
 	institutionChanged_ = false;
-	uvaid_->setText(userData.uvaID);
+	uvaid_->setText(cpp17::any_cast<std::string>(userStore_->getUserSetting(login_->user(),UserSettingType::UvaID)));
 }
 
 void ProfileWidget::AccountWidget::resetClicked() {

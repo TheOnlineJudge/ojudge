@@ -24,7 +24,10 @@ datastore/DataStore.cpp
 datastore/LanguageStore.cpp
 datastore/ProblemStore.cpp
 datastore/SettingStore.cpp
+datastore/StatisticsStore.cpp
+datastore/SubmissionStore.cpp
 datastore/UserStore.cpp
+datastore/VerdictResultStore.cpp
 dbmodel/DBModel.cpp
 external/QrCode.cpp
 viewmodels/CategoryModel.cpp

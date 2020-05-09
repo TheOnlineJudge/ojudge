@@ -16,8 +16,11 @@ class CategoryStore;
 class CountryStore;
 class ProblemStore;
 class LanguageStore;
-class UserStore;
 class SettingStore;
+class StatisticsStore;
+class SubmissionStore;
+class UserStore;
+class VerdictResultStore;
 
 class DataStore {
 public:
@@ -26,8 +29,11 @@ CategoryStore *getCategoryStore();
 CountryStore *getCountryStore();
 ProblemStore *getProblemStore();
 LanguageStore *getLanguageStore();
-UserStore *getUserStore();
 SettingStore *getSettingStore();
+StatisticsStore *getStatisticsStore();
+SubmissionStore *getSubmissionStore();
+UserStore *getUserStore();
+VerdictResultStore *getVerdictResultStore();
 
 private:
 DBModel *dbModel_;
@@ -35,8 +41,11 @@ CategoryStore *categoryStore_;
 CountryStore *countryStore_;
 ProblemStore *problemStore_;
 LanguageStore *languageStore_;
-UserStore *userStore_;
 SettingStore *settingStore_;
+StatisticsStore *statisticsStore_;
+SubmissionStore *submissionStore_;
+UserStore *userStore_;
+VerdictResultStore *verdictResultStore_;
 };
 
 #endif // DATASTORE_H

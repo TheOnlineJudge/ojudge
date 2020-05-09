@@ -59,10 +59,17 @@ const UserData& UserStore::getUserById(long long id) {
 }
 
 cpp17::any UserStore::getUserSetting(const Auth::User& user, UserSettingType setting) {
+	return getUserSetting(std::stoll(user.id()), setting);
+}
+
+cpp17::any UserStore::getUserSetting(long long user, UserSettingType setting) {
 	Dbo::Transaction t = dbmodel_->startTransaction();
 
-	dbo::ptr<User> userInDb = dbmodel_->getUser(std::stoll(user.id()));
+	dbo::ptr<User> userInDb = dbmodel_->getUser(user);
 	dbo::ptr<UserSettings> settings = userInDb->settings;
+	dbo::ptr<UserAvatar> avatar = userInDb->avatar;
+
+	UserData currentUserData = userData_.at(userDataIndex_.at(user));
 
 	switch(setting) {
 	case UserSettingType::NotificationsEmailResults:
@@ -101,17 +108,43 @@ cpp17::any UserStore::getUserSetting(const Auth::User& user, UserSettingType set
 		return settings->twofa_enabled.value_or(false);
 	case UserSettingType::TwoFASecret:
 		return settings->twofa_secret.value_or(std::vector<unsigned char>());
+	case UserSettingType::AvatarType:
+		return currentUserData.avatarType;
+	case UserSettingType::Avatar:
+		return avatar->avatar.value_or(std::vector<unsigned char>());
+	case UserSettingType::Username:
+		return currentUserData.username;
+	case UserSettingType::Email:
+		return currentUserData.email;
+	case UserSettingType::Firstname:
+		return currentUserData.firstname;
+	case UserSettingType::Lastname:
+		return currentUserData.lastname;
+	case UserSettingType::Birthday:
+		return currentUserData.birthday;
+	case UserSettingType::Country:
+		return currentUserData.country;
+	case UserSettingType::Institution:
+		return currentUserData.institution;
+	case UserSettingType::UvaID:
+		return currentUserData.uvaID;
+	case UserSettingType::Role:
+		return currentUserData.role;
 	}
 
 	return cpp17::any();
 }
 
 void UserStore::setUserSetting(const Auth::User& user, UserSettingType setting, cpp17::any value) {
+	setUserSetting(std::stoll(user.id()), setting, value);
+}
+
+void UserStore::setUserSetting(long long user, UserSettingType setting, cpp17::any value) {
 
 	std::lock_guard<std::mutex> guard(setUserSetting_mutex);
 
 	Dbo::Transaction t = dbmodel_->startTransaction();
-	dbo::ptr<User> userInDb = dbmodel_->getUser(std::stoll(user.id()));
+	dbo::ptr<User> userInDb = dbmodel_->getUser(user);
 	dbo::ptr<UserSettings> settings = userInDb->settings;
 	dbo::ptr<UserAvatar> avatar = userInDb->avatar;
 
@@ -165,30 +198,30 @@ void UserStore::setUserSetting(const Auth::User& user, UserSettingType setting, 
 		settings.modify()->editor_theme = cpp17::any_cast<std::string>(value);
 		break;
 	case UserSettingType::AvatarType:
-		userData_[userDataIndex_[std::stoll(user.id())]].avatarType = cpp17::any_cast<AvatarType>(value);
+		userData_[userDataIndex_[user]].avatarType = cpp17::any_cast<AvatarType>(value);
 		avatar.modify()->avatarType = cpp17::any_cast<AvatarType>(value);
 		break;
 	case UserSettingType::Avatar:
 		avatar.modify()->avatar = cpp17::any_cast<std::vector<unsigned char> >(value);
 		break;
 	case UserSettingType::Firstname:
-		userData_[userDataIndex_[std::stoll(user.id())]].firstname = cpp17::any_cast<std::string>(value);
+		userData_[userDataIndex_[user]].firstname = cpp17::any_cast<std::string>(value);
 		userInDb.modify()->firstName = cpp17::any_cast<std::string>(value);
 		break;
 	case UserSettingType::Lastname:
-		userData_[userDataIndex_[std::stoll(user.id())]].lastname = cpp17::any_cast<std::string>(value);
+		userData_[userDataIndex_[user]].lastname = cpp17::any_cast<std::string>(value);
 		userInDb.modify()->lastName = cpp17::any_cast<std::string>(value);
 		break;
 	case UserSettingType::Birthday:
-		userData_[userDataIndex_[std::stoll(user.id())]].birthday = cpp17::any_cast<WDate>(value);
+		userData_[userDataIndex_[user]].birthday = cpp17::any_cast<WDate>(value);
 		userInDb.modify()->birthday = cpp17::any_cast<WDate>(value);
 		break;
 	case UserSettingType::Country:
-		userData_[userDataIndex_[std::stoll(user.id())]].country = cpp17::any_cast<std::string>(value);
+		userData_[userDataIndex_[user]].country = cpp17::any_cast<std::string>(value);
 		userInDb.modify()->country = cpp17::any_cast<std::string>(value);
 		break;
 	case UserSettingType::Institution:
-		userData_[userDataIndex_[std::stoll(user.id())]].institution = cpp17::any_cast<std::string>(value);
+		userData_[userDataIndex_[user]].institution = cpp17::any_cast<std::string>(value);
 		userInDb.modify()->institution = cpp17::any_cast<std::string>(value);
 		break;
 	case UserSettingType::TwoFAEnabled:

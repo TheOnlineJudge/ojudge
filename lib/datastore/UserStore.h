@@ -50,13 +50,17 @@ enum class UserSettingType {
 	EditorTheme,
 	AvatarType,
 	Avatar,
+	Username,
+	Email,
+	Role,
 	Firstname,
 	Lastname,
 	Birthday,
 	Country,
 	Institution,
 	TwoFAEnabled,
-	TwoFASecret
+	TwoFASecret,
+	UvaID
 };
 
 
@@ -67,7 +71,9 @@ const std::map<long long,UserData>& getUsers();
 const UserData& getUserByRow(long long id);
 const UserData& getUserById(long long id);
 cpp17::any getUserSetting(const Auth::User& user, UserSettingType setting);
+cpp17::any getUserSetting(long long id, UserSettingType setting);
 void setUserSetting(const Auth::User& user, UserSettingType setting, cpp17::any value);
+void setUserSetting(long long user, UserSettingType setting, cpp17::any value);
 const std::string getAvatarLink(long long userId, AvatarType type = AvatarType::Set, int size = 128);
 
 private:
