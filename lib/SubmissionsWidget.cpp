@@ -9,6 +9,7 @@
 
 #include <Wt/WText.h>
 #include <Wt/WVBoxLayout.h>
+#include <Wt/WTable.h>
 #include "SubmissionsWidget.h"
 
 using namespace Wt;
@@ -23,6 +24,19 @@ SubmissionsWidget::SubmissionsWidget() {
 
 	auto mainWidget = mainLayout->addWidget(cpp14::make_unique<WContainerWidget>(),1);
 
+	auto submissionTable = mainLayout->addWidget(cpp14::make_unique<WTable>(),2);
+	submissionTable->setHeaderCount(1);
+
+	
+	submissionTable->elementAt(0,1)->addNew<WText>("ID");
+	submissionTable->elementAt(0,2)->addNew<WText>("version");
+	submissionTable->elementAt(0,3)->addNew<WText>("problem");
+	submissionTable->elementAt(0,4)->addNew<WText>("user");
+	submissionTable->elementAt(0,5)->addNew<WText>("testcase");
+	submissionTable->elementAt(0,6)->addNew<WText>("contest");
+	submissionTable->elementAt(0,7)->addNew<WText>("time");
+	submissionTable->elementAt(0,8)->addNew<WText>("language");
+	
 }
 
 void SubmissionsWidget::login(Auth::Login& login) {
