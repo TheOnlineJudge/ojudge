@@ -386,6 +386,11 @@ void ojudgeApp::showLoginBar() {
 	WAnimation anim(AnimationEffect::SlideInFromTop | AnimationEffect::Fade);
 
 	loginWidget_->animateShow(anim);
+	doJavaScript("setTimeout(() => { \
+		document.getElementById('username_field').control.focus() \
+		}," + std::to_string(anim.duration()) + ");");
+	
+
 }
 
 void ojudgeApp::logout() {

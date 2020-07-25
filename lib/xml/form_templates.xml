@@ -55,8 +55,8 @@
     <div class="password-auth">
          <div class="username-auth">
           ${block:OJ.Auth.field user-name}
+          ${block:OJ.Auth.fieldpassword password}
           ${block:OJ.Auth.fieldremember remember-me}
-	  ${block:OJ.Auth.fieldpassword password}
           <div class="lost-password">${lost-password}</div>
          </div>
     </div>
@@ -75,7 +75,7 @@
     ${<if:{1}>}
     <div class="form-inline">
     <div class="form-group">
-    <label for="${id:{1}}" class="control-label">
+    <label id='username_field' for="${id:{1}}" class="control-label">
       ${tr:OJ.Auth.{1}}
     </label>
     ${{1}}
