@@ -339,13 +339,9 @@ dbo::ptr<Language> DBModel::addLanguage(std::unordered_map<std::string, cpp17::a
 
 	auto language = std::unique_ptr<Language>(new Language());
 	
-	std::cerr << "A\n" << std::endl;
 	language->name = cpp17::any_cast<std::string>(args["name"]);
-	std::cerr << "A\n" << std::endl;
 	language->compilerVersion = cpp17::any_cast<std::string>(args["compilerVersion"]);
-	std::cerr << "A\n" << std::endl;
 	language->runScript = cpp17::any_cast<std::vector<unsigned char>>(args["runScript"]);
-	std::cerr << "A\n" << std::endl;
 	
 	if(args.find("description") != args.end())
 		language->description = cpp17::any_cast<std::string>(args["description"]);
@@ -358,7 +354,6 @@ dbo::ptr<Language> DBModel::addLanguage(std::unordered_map<std::string, cpp17::a
 	if(args.find("linkScript") != args.end())
 		language->linkScript = cpp17::any_cast<std::vector<unsigned char>>(args["linkScript"]);
 	
-	std::cerr << "A\n" << std::endl;
 	dbo::Transaction t = startTransaction();
 	auto languageRet = session_->add(std::move(language));
 

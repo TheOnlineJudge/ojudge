@@ -406,6 +406,7 @@ void AdminWidget::AdminLanguageWidget::showAddEditDialog(const WModelIndex& inde
 	auto name = cpp14::make_unique<WLineEdit>();
 	name->setValidator(nameValidator);
 	name_ = name.get();
+	name_->setFocus();
 
 	auto aceStyle = cpp14::make_unique<WLineEdit>();
 	aceStyle_ = aceStyle.get();
@@ -446,9 +447,9 @@ void AdminWidget::AdminLanguageWidget::showAddEditDialog(const WModelIndex& inde
 
 	auto codeSkeletonProgress = cpp14::make_unique<WProgressBar>();
 	WProgressBar *codeSkeletonProgress_ = codeSkeletonProgress.get();
-	codeSkeleton_->setProgressBar(compileScriptProgress_);
+	codeSkeleton_->setProgressBar(codeSkeletonProgress_);
 
-	auto errorMessage = cpp14::make_unique<WText>("asdf");
+	auto errorMessage = cpp14::make_unique<WText>("");
 	WText *errorMessage_ = errorMessage.get();
 
 	result->bindString("namelabel",WString("Name"));
@@ -492,12 +493,34 @@ void AdminWidget::AdminLanguageWidget::showAddEditDialog(const WModelIndex& inde
 
 void AdminWidget::AdminLanguageWidget::addDialogDone(DialogCode code) {
 	if(code == DialogCode::Accepted) {
-		std::vector<unsigned char> rs = {'a'};
 		std::unordered_map<std::string, Wt::cpp17::any> args;
 		args["name"] = name_->text().toUTF8();
 		args["compilerVersion"] = compilerVersion_->text().toUTF8();
-		args["aceStyle"] = aceStyle_->text().toUTF8();
-		args["runScript"] = rs;
+		if(!aceStyle_->text().empty())
+			args["aceStyle"] = aceStyle_->text().toUTF8();
+		
+		std::ifstream runScriptFile(runScript_->spoolFileName(), std::ios::binary);
+		std::vector<unsigned char> runScriptFileContents(std::istreambuf_iterator<char>{runScriptFile},{});
+		args["runScript"] = runScriptFileContents;
+		
+		if(!codeSkeleton_->empty()){
+			std::ifstream codeSkeletonFile(codeSkeleton_->spoolFileName(), std::ios::binary);
+			std::vector<unsigned char> codeSkeletonFileContents(std::istreambuf_iterator<char>{codeSkeletonFile},{});
+			args["codeSkeleton"] = codeSkeletonFileContents;
+		}
+
+		if(!linkScript_->empty()){
+			std::ifstream linkScriptFile(linkScript_->spoolFileName(), std::ios::binary);
+			std::vector<unsigned char> linkScriptFileContents(std::istreambuf_iterator<char>{linkScriptFile},{});
+			args["linkScript"] = linkScriptFileContents;
+		}
+
+		if(!compileScript_->empty()){
+			std::ifstream compileScriptFile(compileScript_->spoolFileName(), std::ios::binary);
+			std::vector<unsigned char> compileScriptFileContents(std::istreambuf_iterator<char>{compileScriptFile},{});
+			args["compileScript"] = compileScriptFileContents;
+		}
+
 		viewModels_->getLanguageModel()->addLanguage(args);
 	}
 
