@@ -13,6 +13,8 @@
 #include <string>
 #include <map>
 #include <Wt/WModelIndex.h>
+#include <unordered_map>
+#include <any>
 
 class DBModel;
 
@@ -33,7 +35,7 @@ public:
 LanguageStore(DBModel *dbModel);
 const std::map<long long,LanguageData>& getLanguages();
 const LanguageData& getLanguage(long long id);
-//void addLanguage(long long id, std::string title, const Wt::WModelIndex& parent);
+void addLanguage(std::unordered_map<std::string, Wt::cpp17::any> args, const Wt::WModelIndex& parent) ;
 
 private:
 DBModel *dbModel_;

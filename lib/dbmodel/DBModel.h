@@ -24,6 +24,8 @@
 #include <Wt/WGlobal.h>
 #include <Wt/Auth/Dbo/AuthInfo.h>
 #include <string>
+#include <unordered_map>
+#include <any>
 
 using namespace Wt;
 
@@ -251,6 +253,7 @@ std::optional<int> editor_fontsize;
 std::optional<int> editor_indent;
 std::optional<bool> editor_wrap;
 std::optional<std::string> editor_theme;
+std::optional<std::string> editor_style;
 std::optional<bool> notifications_email_results;
 std::optional<bool> notifications_email_contests;
 std::optional<bool> notifications_email_general;
@@ -648,6 +651,7 @@ void updateSiteSetting(std::string settingName, std::string settingValue);
 dbo::ptr<UserSettings> getUserSettings(const Auth::User& user);
 
 Languages getLanguages();
+dbo::ptr<Language> addLanguage(std::unordered_map<std::string, cpp17::any> args);
 
 private:
 Session* session_;

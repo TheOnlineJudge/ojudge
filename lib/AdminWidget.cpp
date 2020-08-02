@@ -332,7 +332,7 @@ AdminWidget::AdminLanguageWidget::AdminLanguageWidget(ViewModels *viewModels) : 
 
 	mainLayout_ = setLayout(cpp14::make_unique<WVBoxLayout>());
 	mainLayout_->setContentsMargins(0,0,0,0);
-
+	
 	auto toolbarWidget = mainLayout_->addWidget(cpp14::make_unique<WContainerWidget>());
 	auto toolbarLayout = toolbarWidget->setLayout(cpp14::make_unique<WHBoxLayout>());
 
@@ -386,12 +386,103 @@ void AdminWidget::AdminLanguageWidget::showAddEditDialog(const WModelIndex& inde
 		dialogTitle = "Edit language";
 	}
 
+
 	addDialog_ = addChild(cpp14::make_unique<WDialog>(dialogTitle));
+	addDialog_->setHeight("100%");
+	WStringStream strm;
+	strm << "var element = " << addDialog_->jsRef() << ";" 
+		 << "element.children[0].style.height='100%';" 
+		 << "element.style.left = \"calc(50% - \" + element.offsetWidth/2 + \"px)\";";
+
+	doJavaScript(strm.str());	
+
+	auto result = addDialog_->contents()->addWidget(cpp14::make_unique<WTemplate>(WString::tr("addLanguage-template")));
+	result->parent()->addStyleClass("vertical_scrollable");
+	result->addFunction("id",&WTemplate::Functions::id);
+
+
+	auto nameValidator = std::make_shared<Wt::WValidator>();
+	nameValidator->setMandatory(true);
+	auto name = cpp14::make_unique<WLineEdit>();
+	name->setValidator(nameValidator);
+	name_ = name.get();
+
+	auto aceStyle = cpp14::make_unique<WLineEdit>();
+	aceStyle_ = aceStyle.get();
+
+	auto compilerValidator = std::make_shared<Wt::WValidator>();
+	compilerValidator->setMandatory(true);
+	auto compilerVersion = cpp14::make_unique<WLineEdit>();
+	compilerVersion->setValidator(compilerValidator);
+	compilerVersion_ = compilerVersion.get();
+
+	auto compileScript = cpp14::make_unique<WFileUpload>();
+	compileScript_ = compileScript.get();
+	compileScript_->changed().connect(compileScript_, &WFileUpload::upload);
+
+	auto compileScriptProgress = cpp14::make_unique<WProgressBar>();
+	WProgressBar *compileScriptProgress_ = compileScriptProgress.get();
+	compileScript_->setProgressBar(compileScriptProgress_);
+
+	auto linkScript = cpp14::make_unique<WFileUpload>();
+	linkScript_ = linkScript.get();
+	linkScript_->changed().connect(linkScript_, &WFileUpload::upload);
+
+	auto linkScriptProgress = cpp14::make_unique<WProgressBar>();
+	WProgressBar *linkScriptProgress_ = linkScriptProgress.get();
+	linkScript_->setProgressBar(linkScriptProgress_);
+
+	auto runScript = cpp14::make_unique<WFileUpload>();
+	runScript_ = runScript.get();
+	runScript_->changed().connect(runScript_, &WFileUpload::upload);
+
+	auto runScriptProgress = cpp14::make_unique<WProgressBar>();
+	WProgressBar *runScriptProgress_ = runScriptProgress.get();
+	runScript_->setProgressBar(runScriptProgress_);
+
+	auto codeSkeleton = cpp14::make_unique<WFileUpload>();
+	codeSkeleton_ = codeSkeleton.get();
+	codeSkeleton_->changed().connect(codeSkeleton_, &WFileUpload::upload);
+
+	auto codeSkeletonProgress = cpp14::make_unique<WProgressBar>();
+	WProgressBar *codeSkeletonProgress_ = codeSkeletonProgress.get();
+	codeSkeleton_->setProgressBar(compileScriptProgress_);
+
+	auto errorMessage = cpp14::make_unique<WText>("asdf");
+	WText *errorMessage_ = errorMessage.get();
+
+	result->bindString("namelabel",WString("Name"));
+	result->bindString("aceStylelabel",WString("Ace style"));
+	result->bindString("compilerVersionlabel",WString("Compiler version"));
+	result->bindString("compileScriptlabel",WString("Compile script"));
+	result->bindString("linkScriptlabel",WString("Link script"));
+	result->bindString("runScriptlabel",WString("Run script"));
+	result->bindString("codeSkeletonlabel",WString("Code skeleton"));
+
+	result->bindWidget("errorMessage",std::move(errorMessage));
+	result->bindWidget("name",std::move(name));
+	result->bindWidget("aceStyle",std::move(aceStyle));
+	result->bindWidget("compilerVersion",std::move(compilerVersion));
+	result->bindWidget("compileScript",std::move(compileScript));
+	result->bindWidget("compileScriptProgress",std::move(compileScriptProgress));
+	result->bindWidget("linkScript",std::move(linkScript));
+	result->bindWidget("linkScriptProgress",std::move(linkScriptProgress));
+	result->bindWidget("runScript",std::move(runScript));
+	result->bindWidget("runScriptProgress",std::move(runScriptProgress));
+	result->bindWidget("codeSkeleton",std::move(codeSkeleton));
+	result->bindWidget("codeSkeletonProgress",std::move(codeSkeletonProgress));
 
 	WPushButton *ok = addDialog_->footer()->addWidget(cpp14::make_unique<WPushButton>("Save"));
 	WPushButton *cancel = addDialog_->footer()->addWidget(cpp14::make_unique<WPushButton>("Cancel"));
 
-	ok->clicked().connect(addDialog_, &WDialog::accept);
+	ok->clicked().connect([=] {
+		if(!runScript_->empty()){
+			addDialog_->accept();
+		}else{
+			errorMessage_->setText("Please upload a run script");
+			errorMessage_->setStyleClass("alert alert-danger");
+		}
+	});
 	cancel->clicked().connect(addDialog_, &WDialog::reject);
 
 	addDialog_->finished().connect(this,&AdminLanguageWidget::addDialogDone);
@@ -401,6 +492,13 @@ void AdminWidget::AdminLanguageWidget::showAddEditDialog(const WModelIndex& inde
 
 void AdminWidget::AdminLanguageWidget::addDialogDone(DialogCode code) {
 	if(code == DialogCode::Accepted) {
+		std::vector<unsigned char> rs = {'a'};
+		std::unordered_map<std::string, Wt::cpp17::any> args;
+		args["name"] = name_->text().toUTF8();
+		args["compilerVersion"] = compilerVersion_->text().toUTF8();
+		args["aceStyle"] = aceStyle_->text().toUTF8();
+		args["runScript"] = rs;
+		viewModels_->getLanguageModel()->addLanguage(args);
 	}
 
 	removeChild(addDialog_);

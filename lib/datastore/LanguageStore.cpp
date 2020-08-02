@@ -49,26 +49,32 @@ const LanguageData& LanguageStore::getLanguage(long long id) {
 	return languageData_.at(id);
 }
 
-/*
-   void LanguageStore::addLanguage(long long id, std::string title, const WModelIndex& parent) {
 
-        std::lock_guard<std::mutex> guard(addLanguage_mutex);
+void LanguageStore::addLanguage(std::unordered_map<std::string, Wt::cpp17::any> args, const Wt::WModelIndex& parent) {
 
-        dbo::ptr<Problem> problem = dbModel_->addProblem(id,title);
+	std::lock_guard<std::mutex> guard(addLanguage_mutex);
 
-        ProblemData tmpProblemData;
-        tmpProblemData.id = id;
-        tmpProblemData.title = title;
+	dbo::ptr<Language> language = dbModel_->addLanguage(args);
 
-        int row = problemData_.size();
-        problemData_[row] = tmpProblemData;
+	LanguageData tmpLanguageData;
+	tmpLanguageData.id = language.id();
+	tmpLanguageData.name = language->name;
+	tmpLanguageData.runScript = language->runScript;
+	tmpLanguageData.compilerVersion = language->compilerVersion;
 
-        auto server = Wt::WServer::instance();
-        server->postAll([=]{
-                auto app = dynamic_cast<ojudgeApp*>(Wt::WApplication::instance());
-                assert(app != nullptr);
-                app->getViewModels()->getProblemModel()->insertProblem(row,parent);
-                app->triggerUpdate();
-        });
-   }
- */
+	if(args.find("aceStyle") != args.end()){
+		tmpLanguageData.aceStyle = Wt::cpp17::any_cast<std::string>(args["aceStyle"]);
+	}
+
+	int row = languageData_.size();
+	languageData_[row] = tmpLanguageData;
+
+	auto server = Wt::WServer::instance();
+	server->postAll([=]{
+			auto app = dynamic_cast<ojudgeApp*>(Wt::WApplication::instance());
+			assert(app != nullptr);
+			app->getViewModels()->getLanguageModel()->insertLanguage(row, parent);
+			app->triggerUpdate();
+	});
+}
+

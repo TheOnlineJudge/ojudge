@@ -244,6 +244,43 @@
       ${categories}
     </div>
   </message>
+  <message id="addLanguage-template">
+      <div class="form-group">
+        <label for="${id:name}">${namelabel}</label>
+        ${name}
+      </div>
+      <div class="form-group">
+        <label for="${id:aceStyle}">${aceStylelabel}</label>
+        ${aceStyle}
+      </div>
+      <div class="form-group">
+        <label for="${id:compilerVersion}">${compilerVersionlabel}</label>
+        ${compilerVersion}
+      </div>
+      <div class="form-group">
+        <label for="${id:compileScript}">${compileScriptlabel}</label>
+        ${compileScript}
+        ${compileScriptProgress}
+      </div>
+      <div class="form-group">
+        <label for="${id:linkScript}">${linkScriptlabel}</label>
+        ${linkScript}
+        ${linkScriptProgress}
+      </div>
+      <div class="form-group">
+        <label for="${id:runScript}">${runScriptlabel}</label>
+        ${runScript}
+        ${runScriptProgress}
+      </div>
+      <div class="form-group">
+        <label for="${id:codeSkeleton}">${codeSkeletonlabel}</label>
+        ${codeSkeleton}
+        ${codeSkeletonProgress}
+      </div>
+      <div>
+          ${errorMessage}
+      </div>
+  </message>
   <message id="editUser-template">
     ${block:settingsField-template id}
     ${block:settingsField-template username}

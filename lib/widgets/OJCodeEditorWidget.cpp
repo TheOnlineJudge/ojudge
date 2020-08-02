@@ -19,12 +19,22 @@
 #include <Wt/Utils.h>
 #include <Wt/WSpinBox.h>
 #include "OJCodeEditorWidget.h"
+#include <map>
 
 using namespace Wt;
 
 OJCodeEditorWidget::OJCodeEditorWidget() : editorCodeSignal_(this,"editorcode"), aceThemesSignal_(this,"acethemes") {
 	create();
 }
+
+OJCodeEditorWidget::OJCodeEditorWidget(std::map<std::string,std::string> languagues):
+	editorCodeSignal_(this,"editorcode"),
+	aceThemesSignal_(this,"acethemes"),
+	languages_{languagues}
+{
+	create();
+}
+
 
 void OJCodeEditorWidget::render(WFlags<RenderFlag> flags) {
 
@@ -92,6 +102,11 @@ void OJCodeEditorWidget::render(WFlags<RenderFlag> flags) {
 		editorTheme_->activated().connect(this,&OJCodeEditorWidget::themeChanged);
 		editorTheme_->setWidth(150);
 		editorTheme_->setToolTip("Select editor theme");
+		
+		editorStyle_ = toolbarLayout->addWidget(cpp14::make_unique<WComboBox>());
+		editorStyle_->activated().connect(this,&OJCodeEditorWidget::styleChanged);
+		editorStyle_->setWidth(150);
+		editorStyle_->setToolTip("Select language");
 
 		toolbarLayout->addStretch(1);
 
@@ -134,7 +149,7 @@ void OJCodeEditorWidget::render(WFlags<RenderFlag> flags) {
 		strm << "var editor = ace.edit(self);";
 		strm << "var timeout = null;";
 		strm << "editor.setTheme('ace/theme/" << theme_ << "');";
-		strm << "editor.session.setMode('ace/mode/c_cpp');";
+		strm << "editor.session.setMode('ace/mode/" << style_ << "');";
 		strm << "editor.session.setUseSoftTabs(false);";
 		strm << "editor.session.setTabSize(" << tabSize_ << ");";
 		strm << "editor.session.setUseWrapMode(" << (wordWrap_ ? "true" : "false") << ");";
@@ -236,6 +251,7 @@ void OJCodeEditorWidget::setCode(const std::string& code) {
 	code_ = code;
 
 	WStringStream strm;
+	strm << "console.log('from setCode');";
 	strm << "setTimeout(function(){";
 	strm << "editor.session.setValue('" << code_ << "');";
 	strm << savedStatus_->jsRef() << ".classList.remove('oj-unsaved');";
@@ -248,6 +264,8 @@ void OJCodeEditorWidget::loadCodeFromSession(const std::string& key) {
 	ensureEditor();
 
 	WStringStream strm;
+	strm << "console.log('hello');";
+	strm << "console.log('" << key << "');";
 	strm << "if(sessionStorage.getItem('" << key << "')) {";
 	strm << "setTimeout(function(){";
 	strm << "editor.session.setValue(decodeURIComponent(atob(sessionStorage.getItem('" << key << "'))));";
@@ -263,10 +281,13 @@ void OJCodeEditorWidget::setSettings(OJCodeEditorSettings& settings) {
 	tabSize_ = settings.indent;
 	wordWrap_ = settings.wrap;
 	theme_ = settings.theme;
+	style_ = settings.style;
 }
 
 void OJCodeEditorWidget::getEditorCode(std::string editorCode) {
 	code_ = editorCode;
+
+	doJavaScript("console.log('in getEditorCode');");
 
 	codeLengthProgress_->setValue(Utils::urlDecode(code_).size());
 
@@ -288,7 +309,10 @@ void OJCodeEditorWidget::getAceThemes(std::string aceThemes) {
 		ct++;
 	}
 
+	std::cout << comboModel->match(comboModel->index(0),ItemDataRole::User + 1,theme_,1,MatchFlag::Exactly | MatchFlag::Wrap).size() << " " << theme_ << std::endl;	
 	editorTheme_->setCurrentIndex(comboModel->match(comboModel->index(0),ItemDataRole::User + 1,theme_,1,MatchFlag::Exactly | MatchFlag::Wrap).at(0).row());
+	getAceStyles();
+
 }
 
 void OJCodeEditorWidget::themeChanged(int index) {
@@ -306,6 +330,44 @@ void OJCodeEditorWidget::themeChanged(int index) {
 	doJavaScript(strm.str());
 
 	theme_ = cpp17::any_cast<std::string>(comboModel->data(comboModel->index(index),ItemDataRole::User + 1));
+	saveSettings();
+}
+
+void OJCodeEditorWidget::getAceStyles() {
+	WStringListModel *comboModel = (WStringListModel *) editorStyle_->model().get();
+	int ct = 0;
+	for(const std::pair<std::string, std::string> &language: languages_) {
+		comboModel->addString(std::string(language.first));
+		comboModel->setData(comboModel->index(ct),std::string(language.first),ItemDataRole::User + 1);
+		comboModel->setData(comboModel->index(ct),std::string(language.second),ItemDataRole::User + 2);
+		ct++;
+	}
+
+	editorStyle_->setCurrentIndex(comboModel->match(comboModel->index(0),ItemDataRole::User + 2,style_,1,MatchFlag::Exactly | MatchFlag::Wrap).at(0).row());
+}
+
+void OJCodeEditorWidget::styleChanged(int index) {
+
+	WStringListModel *comboModel = (WStringListModel *)editorStyle_->model().get();
+
+	ensureEditor();
+
+	std::cout << cpp17::any_cast<std::string>(comboModel->data(comboModel->index(index),ItemDataRole::User + 2)) << std::endl ;
+
+	
+	WStringStream strm;
+	strm << "editor.session.setMode('ace/mode/"
+	     << cpp17::any_cast<std::string>(comboModel->data(comboModel->index(index),ItemDataRole::User + 2))
+	     << "');";
+	strm << "editor.focus();";
+
+	doJavaScript(strm.str());
+	
+	std::cout << strm.str() << std::endl;
+
+
+	std::cout << cpp17::any_cast<std::string>(comboModel->data(comboModel->index(index),ItemDataRole::User + 1)) << std::endl ;
+	style_ = cpp17::any_cast<std::string>(comboModel->data(comboModel->index(index),ItemDataRole::User + 1));
 	saveSettings();
 }
 
@@ -332,6 +394,7 @@ void OJCodeEditorWidget::saveSettings() {
 	settings.indent = tabSize_;
 	settings.wrap = wordWrap_;
 	settings.theme = theme_;
+	settings.style = style_;
 
 	settingsChanged_.emit(settings);
 }
