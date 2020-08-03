@@ -38,7 +38,8 @@ ProblemWidget::ProblemWidget(ViewModels *viewModels, DataStore *dataStore) : vie
 	menuWidget_ = menuLayout->addWidget(cpp14::make_unique<ProblemSidemenuWidget>(viewModels_,dataStore_),0);
 	loginSignal().connect(menuWidget_,&ProblemSidemenuWidget::login);
 	logoutSignal().connect(menuWidget_,&ProblemSidemenuWidget::logout);
-	menuWidget_->setWidth(350);
+	menuWidget_->setWidth("35%");
+	menuWidget_->setMinimumSize(200, "100%");
 
 	statisticsDialog_ = addChild(cpp14::make_unique<ProblemStatisticsDialog>(viewModels_,dataStore_));
 	loginSignal().connect(statisticsDialog_,&ProblemStatisticsDialog::login);
@@ -84,6 +85,7 @@ void ProblemWidget::setProblem(long long id) {
 void ProblemWidget::showSubmissionDialog() {
 
 	submissionDialog_ = addChild(cpp14::make_unique<ProblemSubmissionDialog>(viewModels_,dataStore_,login_));
+	//submissionDialog_->resize("100%", "100%");
 	submissionDialog_->setProblem(problemData_.value().id);
 
 	submissionDialog_->finished().connect(this,&ProblemWidget::closeSubmissionDialog);
@@ -247,10 +249,48 @@ ProblemSubmissionDialog::ProblemSubmissionDialog(ViewModels *viewModels, DataSto
 	: viewModels_(viewModels), dataStore_(dataStore), login_(login) {
 	setWindowTitle("Submit");
 	setClosable(true);
-	resize(1024,700);
+	setId("editor_box");
+	resize("80%", "100%");
+	setMinimumSize("50%", "50%");
+	setLayoutSizeAware(true);
 
-	codeEditor_ = contents()->addWidget(cpp14::make_unique<OJCodeEditorWidget>());
-	codeEditor_->resize(774,530);
+	auto hpanel  = contents()->setLayout(cpp14::make_unique<Wt::WHBoxLayout>());
+	auto left_buttons = hpanel->addWidget(cpp14::make_unique<Wt::WContainerWidget>());
+	auto left_buttons_layout = left_buttons->setLayout(cpp14::make_unique<Wt::WVBoxLayout>());
+	left_buttons->setWidth(200);
+
+	WStringStream strm;
+	strm << left_buttons->jsRef() << ".style.resize='horizontal';";
+	doJavaScript(strm.str());
+
+	WPushButton *submit = left_buttons_layout->addWidget(cpp14::make_unique<WPushButton>("Submit"));
+	submit->clicked().connect(this,&WDialog::accept);
+	
+	WContainerWidget *submitedCard = left_buttons_layout->addWidget(cpp14::make_unique<WContainerWidget>());
+	auto submitedCardLayout = submitedCard->setLayout(cpp14::make_unique<Wt::WVBoxLayout>());
+	submitedCard->addStyleClass("oj-code-card");
+	submitedCardLayout->addWidget(cpp14::make_unique<WText>("DRAFT"));
+	auto saved_at = submitedCardLayout->addWidget(cpp14::make_unique<WText>(""));
+
+	// This is only an example, we should recover from SumbssionStore the last N submissions and
+	// make a code-card with this format for each sumbmission
+	WContainerWidget *example = left_buttons_layout->addWidget(cpp14::make_unique<WContainerWidget>());
+	example->addStyleClass("oj-code-card");
+	auto exampleLayout = example->setLayout(cpp14::make_unique<Wt::WVBoxLayout>());
+	exampleLayout->addWidget(cpp14::make_unique<WText>("WA"));
+	exampleLayout->addWidget(cpp14::make_unique<WText>("20/07/2020"));
+	
+	left_buttons_layout->addStretch(1);
+
+	LanguageStore *languageStore = dataStore_->getLanguageStore();
+	std::map<std::string, std::string> languages;
+	for( auto &i : languageStore->getLanguages()){
+		if(i.second.aceStyle.has_value())
+			languages[i.second.name] = i.second.aceStyle.value(); 
+	}
+
+	codeEditor_ = hpanel->addWidget(cpp14::make_unique<OJCodeEditorWidget>(languages));
+	codeEditor_->resize("100%","100%");
 	codeEditor_->settingsChanged().connect(this,&ProblemSubmissionDialog::saveSettings);
 
 	OJCodeEditorSettings settings;
@@ -261,13 +301,11 @@ ProblemSubmissionDialog::ProblemSubmissionDialog(ViewModels *viewModels, DataSto
 	settings.wrap = cpp17::any_cast<bool>(userStore->getUserSetting(login_->user(),UserSettingType::EditorWrap));
 	settings.theme = cpp17::any_cast<std::string>(userStore->getUserSetting(login_->user(),UserSettingType::EditorTheme));
 
-	codeEditor_->setSettings(settings);
-
-	WPushButton *submit = footer()->addWidget(cpp14::make_unique<WPushButton>("Submit"));
-	WPushButton *cancel = footer()->addWidget(cpp14::make_unique<WPushButton>("Cancel"));
-
-	submit->clicked().connect(this,&WDialog::accept);
-	cancel->clicked().connect(this,&WDialog::reject);
+	doJavaScript("setTimeout(() => {\
+		editor_box = document.getElementById('editor_box').children[0];\
+				editor_box.style.height = '100%';\
+				editor_box.style.width = '100%';\
+		}, 250 );");
 }
 
 void ProblemSubmissionDialog::setProblem(long long id) {
@@ -295,4 +333,5 @@ void ProblemSubmissionDialog::saveSettings(OJCodeEditorSettings& settings) {
 	userStore->setUserSetting(login_->user(),UserSettingType::EditorIndent,settings.indent);
 	userStore->setUserSetting(login_->user(),UserSettingType::EditorWrap,settings.wrap);
 	userStore->setUserSetting(login_->user(),UserSettingType::EditorTheme,settings.theme);
+	userStore->setUserSetting(login_->user(),UserSettingType::EditorStyle,settings.style);
 }

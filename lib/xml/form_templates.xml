@@ -55,8 +55,8 @@
     <div class="password-auth">
          <div class="username-auth">
           ${block:OJ.Auth.field user-name}
+          ${block:OJ.Auth.fieldpassword password}
           ${block:OJ.Auth.fieldremember remember-me}
-	  ${block:OJ.Auth.fieldpassword password}
           <div class="lost-password">${lost-password}</div>
          </div>
     </div>
@@ -75,7 +75,7 @@
     ${<if:{1}>}
     <div class="form-inline">
     <div class="form-group">
-    <label for="${id:{1}}" class="control-label">
+    <label id='username_field' for="${id:{1}}" class="control-label">
       ${tr:OJ.Auth.{1}}
     </label>
     ${{1}}
@@ -243,6 +243,43 @@
       <label for="${id:categories}">${categorieslabel}</label>
       ${categories}
     </div>
+  </message>
+  <message id="addLanguage-template">
+      <div class="form-group">
+        <label for="${id:name}">${namelabel}</label>
+        ${name}
+      </div>
+      <div class="form-group">
+        <label for="${id:aceStyle}">${aceStylelabel}</label>
+        ${aceStyle}
+      </div>
+      <div class="form-group">
+        <label for="${id:compilerVersion}">${compilerVersionlabel}</label>
+        ${compilerVersion}
+      </div>
+      <div class="form-group">
+        <label for="${id:compileScript}">${compileScriptlabel}</label>
+        ${compileScript}
+        ${compileScriptProgress}
+      </div>
+      <div class="form-group">
+        <label for="${id:linkScript}">${linkScriptlabel}</label>
+        ${linkScript}
+        ${linkScriptProgress}
+      </div>
+      <div class="form-group">
+        <label for="${id:runScript}">${runScriptlabel}</label>
+        ${runScript}
+        ${runScriptProgress}
+      </div>
+      <div class="form-group">
+        <label for="${id:codeSkeleton}">${codeSkeletonlabel}</label>
+        ${codeSkeleton}
+        ${codeSkeletonProgress}
+      </div>
+      <div>
+          ${errorMessage}
+      </div>
   </message>
   <message id="editUser-template">
     ${block:settingsField-template id}

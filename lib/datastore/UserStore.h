@@ -48,6 +48,7 @@ enum class UserSettingType {
 	EditorIndent,
 	EditorWrap,
 	EditorTheme,
+	EditorStyle,
 	AvatarType,
 	Avatar,
 	Username,

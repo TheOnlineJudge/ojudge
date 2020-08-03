@@ -19,17 +19,20 @@
 #include <Wt/WComboBox.h>
 #include <Wt/Json/Object.h>
 #include <Wt/Json/Array.h>
+#include <map>
 
 struct OJCodeEditorSettings {
 	int fontsize;
 	int indent;
 	bool wrap;
 	std::string theme;
+	std::string style;
 };
 
 class OJCodeEditorWidget : public Wt::WCompositeWidget {
 public:
 OJCodeEditorWidget();
+OJCodeEditorWidget(std::map<std::string, std::string> languages);
 std::string code();
 void setCode(const std::string& code);
 void loadCodeFromSession(const std::string& key);
@@ -55,6 +58,7 @@ Wt::WContainerWidget *impl_;
 std::string code_;
 void getEditorCode(std::string editorCode);
 void getAceThemes(std::string aceThemes);
+void getAceStyles();
 Wt::WContainerWidget *editorWidget_;
 std::unique_ptr<Wt::WContainerWidget> savedStatusTmp_;
 Wt::WContainerWidget *savedStatus_;
@@ -64,6 +68,7 @@ std::unique_ptr<Wt::WText> cursorColumnValueTmp_;
 Wt::WText *cursorColumnValue_;
 OJCodeEditorProgress *codeLengthProgress_;
 Wt::WComboBox *editorTheme_;
+Wt::WComboBox *editorStyle_;
 void editorFocus();
 void ensureEditor();
 void saveSettings();
@@ -73,10 +78,13 @@ int tabSize_ = 4;
 int fontSize_ = 16;
 bool wordWrap_ = true;
 std::string theme_ = "textmate";
+std::string style_ = "c_cpp";
 Wt::JSignal<std::string> editorCodeSignal_;
 Wt::JSignal<std::string> aceThemesSignal_;
+std::map<std::string,std::string> languages_;
 Wt::Json::Array aceThemes_;
 void themeChanged(int index);
+void styleChanged(int index);
 Wt::Signal<OJCodeEditorSettings&> settingsChanged_;
 };
 

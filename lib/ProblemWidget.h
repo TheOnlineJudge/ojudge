@@ -20,6 +20,8 @@
 #include "widgets/OJRatingSetWidget.h"
 #include "datastore/DataStore.h"
 #include "datastore/ProblemStore.h"
+#include "datastore/LanguageStore.h"
+#include "datastore/SubmissionStore.h"
 #include "dbmodel/DBModel.h"
 
 class ViewModels;

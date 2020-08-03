@@ -329,6 +329,51 @@ dbo::ptr<UserSettings> DBModel::getUserSettings(const Auth::User& user) {
 	return userData->settings;
 }
 
+dbo::ptr<Language> DBModel::addLanguage(std::unordered_map<std::string, cpp17::any> args){
+	
+	bool mandatoryArgsNotNull = true;
+	mandatoryArgsNotNull = mandatoryArgsNotNull && args.find("name") != args.end(); 
+	mandatoryArgsNotNull = mandatoryArgsNotNull && args.find("compilerVersion") != args.end(); 
+	mandatoryArgsNotNull = mandatoryArgsNotNull && args.find("runScript") != args.end(); 
+	//if (!mandatoryArgsNotNull) return ;
+
+	auto language = std::unique_ptr<Language>(new Language());
+	
+	language->name = cpp17::any_cast<std::string>(args["name"]);
+	language->compilerVersion = cpp17::any_cast<std::string>(args["compilerVersion"]);
+	language->runScript = cpp17::any_cast<std::vector<unsigned char>>(args["runScript"]);
+	
+	if(args.find("description") != args.end())
+		language->description = cpp17::any_cast<std::string>(args["description"]);
+	if(args.find("codeSkeleton") != args.end())
+		language->codeSkeleton = cpp17::any_cast<std::vector<unsigned char>>(args["codeSkeleton"]);
+	if(args.find("aceStyle") != args.end())
+		language->aceStyle = cpp17::any_cast<std::string>(args["aceStyle"]);
+	if(args.find("compileScript") != args.end())
+		language->compileScript = cpp17::any_cast<std::vector<unsigned char>>(args["compileScript"]);
+	if(args.find("linkScript") != args.end())
+		language->linkScript = cpp17::any_cast<std::vector<unsigned char>>(args["linkScript"]);
+	
+	dbo::Transaction t = startTransaction();
+	auto languageRet = session_->add(std::move(language));
+
+	if(args.find("submissions") != args.end())
+	{
+		for (const dbo::ptr<Submission> &submission : std::any_cast<Submissions>(args["submissions"])){
+			languageRet.modify()->submissions.insert(submission);
+		}
+	}
+
+	if(args.find("contests") != args.end())
+	{
+		for (const dbo::ptr<Contest> &contest : std::any_cast<Contests>(args["contests"])){
+			languageRet.modify()->contests.insert(contest);
+		}
+	}
+
+	return languageRet;
+}
+
 Languages DBModel::getLanguages() {
 
 	dbo::Transaction t = startTransaction();

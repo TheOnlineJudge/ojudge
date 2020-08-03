@@ -127,10 +127,17 @@ Wt::WTableView *tableWidget_;
 std::shared_ptr<Wt::WSortFilterProxyModel> proxyModel_;
 ViewModels *viewModels_;
 Wt::WDialog *addDialog_;
+Wt::WLineEdit *name_;
+Wt::WLineEdit *aceStyle_;
+Wt::WLineEdit *compilerVersion_;
+Wt::WFileUpload *compileScript_;
+Wt::WFileUpload *linkScript_;
+Wt::WFileUpload *runScript_;
+Wt::WFileUpload *codeSkeleton_;
+Wt::WText *errorMessage_;
 
 void showAddEditDialog(const Wt::WModelIndex& index = Wt::WModelIndex());
 void addDialogDone(Wt::DialogCode code);
-
 class AdminActionsDelegate : public Wt::WAbstractItemDelegate {
 public:
 AdminActionsDelegate();
